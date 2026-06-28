@@ -7,11 +7,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
-
-/* ── Top bar ── */
-.topbar{background:#161b22;border-bottom:2px solid #f97316;padding:0 20px;
-        display:flex;align-items:center;justify-content:space-between;
-        height:56px;position:sticky;top:0;z-index:200}
+.topbar{background:#161b22;border-bottom:2px solid #f97316;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200}
 .topbar h1{color:#f97316;font-size:18px;font-weight:700}
 .topbar .sub{color:#8b949e;font-size:11px;margin-top:2px}
 .topbar-right{display:flex;align-items:center;gap:10px}
@@ -20,100 +16,48 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;mi
 .btn-blue{background:#1c2333;color:#60a5fa;border:1px solid #374151}.btn-blue:hover{border-color:#60a5fa}
 .btn-green{background:#065f46;color:#4ade80;border:1px solid #16a34a}.btn-green:hover{background:#047857}
 .btn:disabled{background:#374151;color:#6b7280;cursor:default}
-
-/* ── Status ── */
 .status{padding:8px 20px;font-size:13px;font-weight:500;display:none}
-.status.ok {background:#052e16;color:#4ade80;display:block}
+.status.ok{background:#052e16;color:#4ade80;display:block}
 .status.err{background:#2a0505;color:#f87171;display:block}
 .status.inf{background:#1e3a5f;color:#93c5fd;display:block}
-
-/* ── Tab bar ── */
-.tabs{display:flex;gap:4px;padding:12px 20px 0;background:#0d1117;
-      border-bottom:1px solid #21262d;overflow-x:auto;align-items:center}
-.tab{padding:8px 18px;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;
-     cursor:pointer;border:1px solid transparent;border-bottom:none;white-space:nowrap;
-     background:#161b22;color:#8b949e}
+.tabs{display:flex;gap:4px;padding:12px 20px 0;background:#0d1117;border-bottom:1px solid #21262d;overflow-x:auto;align-items:center}
+.tab{padding:8px 18px;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;border-bottom:none;white-space:nowrap;background:#161b22;color:#8b949e}
 .tab.active{background:#1c2333;color:#f97316;border-color:#30363d}
 .tab:hover:not(.active){color:#e6edf3}
-.tab-add{padding:7px 14px;border-radius:8px 8px 0 0;font-size:18px;cursor:pointer;
-         color:#4b5563;background:none;border:1px dashed #374151;border-bottom:none}
+.tab-add{padding:7px 14px;border-radius:8px 8px 0 0;font-size:18px;cursor:pointer;color:#4b5563;background:none;border:1px dashed #374151;border-bottom:none}
 .tab-add:hover{color:#f97316;border-color:#f97316}
-
-/* ── Sheet content ── */
-.sheet{display:none;padding:20px}
-.sheet.active{display:block}
-
-/* ── Sheet toolbar ── */
+.sheet{display:none;padding:20px}.sheet.active{display:block}
 .sheet-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.sheet-name-input{background:#161b22;border:1px solid #374151;border-radius:6px;
-                  color:#f97316;font-size:16px;font-weight:700;padding:6px 12px;width:180px}
+.sheet-name-input{background:#161b22;border:1px solid #374151;border-radius:6px;color:#f97316;font-size:16px;font-weight:700;padding:6px 12px;width:180px}
 .sheet-name-input:focus{outline:none;border-color:#f97316}
-
-/* ── Carrier blocks ── */
-.carrier-block{background:#161b22;border:1px solid #30363d;border-radius:10px;
-               margin-bottom:16px;overflow:hidden}
-.carrier-head{background:#1c2333;padding:10px 16px;display:flex;align-items:center;
-              gap:10px;border-bottom:1px solid #30363d}
-.carrier-name-input{background:#0d1117;border:1px solid #374151;border-radius:6px;
-                    color:#60a5fa;font-size:14px;font-weight:700;padding:5px 12px;width:260px}
+.carrier-block{background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:16px;overflow:hidden}
+.carrier-head{background:#1c2333;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363d}
+.carrier-name-input{background:#0d1117;border:1px solid #374151;border-radius:6px;color:#60a5fa;font-size:14px;font-weight:700;padding:5px 12px;width:260px}
 .carrier-name-input:focus{outline:none;border-color:#60a5fa}
 .carrier-head-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-
-/* ── Spreadsheet table ── */
 .cpt-table{width:100%;border-collapse:collapse}
-.cpt-table th{background:#0d1117;color:#6b7280;font-size:11px;font-weight:600;
-              text-transform:uppercase;letter-spacing:.05em;padding:6px 8px;
-              border:1px solid #21262d;text-align:left;white-space:nowrap}
+.cpt-table th{background:#0d1117;color:#6b7280;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:6px 8px;border:1px solid #21262d;text-align:left;white-space:nowrap}
 .cpt-table td{padding:2px 3px;border:1px solid #21262d}
 .cpt-table tr:hover td{background:#161b22}
-.cell{background:transparent;border:none;color:#e6edf3;font-size:13px;
-      padding:5px 8px;width:100%;min-width:80px}
+.cell{background:transparent;border:none;color:#e6edf3;font-size:13px;padding:5px 8px;width:100%;min-width:80px}
 .cell:focus{outline:2px solid #f97316;border-radius:3px;background:#0d1117}
-.cell.owner{color:#4ade80}
-.cell.bay{color:#fbbf24;width:60px;min-width:50px}
-.cell.sort{color:#a78bfa;min-width:70px}
-.del-row-btn{background:none;border:none;color:#374151;cursor:pointer;font-size:16px;
-             padding:4px 8px;width:100%}
+.cell.owner{color:#4ade80}.cell.bay{color:#fbbf24;width:60px;min-width:50px}.cell.sort{color:#a78bfa;min-width:70px}
+.del-row-btn{background:none;border:none;color:#374151;cursor:pointer;font-size:16px;padding:4px 8px;width:100%}
 .del-row-btn:hover{color:#f87171}
-
-/* ── Add row btn ── */
-.add-row-row td{padding:4px 8px;border:1px solid #21262d}
-.add-row-btn{background:none;border:none;color:#4b5563;cursor:pointer;font-size:12px;
-             padding:4px 12px;width:100%;text-align:left}
+.add-row-btn{background:none;border:none;color:#4b5563;cursor:pointer;font-size:12px;padding:4px 12px;width:100%;text-align:left}
 .add-row-btn:hover{color:#f97316}
-
-/* ── Add carrier btn ── */
-.add-carrier-btn{background:none;border:2px dashed #374151;color:#6b7280;
-                 padding:10px 20px;border-radius:8px;cursor:pointer;font-size:13px;
-                 width:100%;margin-top:4px}
+.add-carrier-btn{background:none;border:2px dashed #374151;color:#6b7280;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:13px;width:100%;margin-top:4px}
 .add-carrier-btn:hover{border-color:#60a5fa;color:#60a5fa}
-
-/* ── Add sheet btn ── */
-.add-sheet-btn{background:none;border:2px dashed #374151;color:#6b7280;
-               padding:14px;border-radius:10px;cursor:pointer;font-size:14px;
-               width:100%;margin-top:8px}
-.add-sheet-btn:hover{border-color:#f97316;color:#f97316}
-
-/* ── Import banner ── */
-.import-banner{background:#1c2333;border:1px solid #30363d;border-radius:10px;
-               padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
-.import-banner p{color:#8b949e;font-size:13px;flex:1}
-#fileIn{display:none}
-
-/* ── Icon btns ── */
-.icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;
-          color:#6b7280;font-size:15px}
+.add-cpt-btn{background:#161b22;border:2px dashed #374151;color:#6b7280;padding:14px;border-radius:10px;cursor:pointer;font-size:14px;width:100%;margin-top:8px}
+.add-cpt-btn:hover{border-color:#f97316;color:#f97316}
+.icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;color:#6b7280;font-size:15px}
 .icon-btn:hover{color:#e6edf3;background:#21262d}
+#fileIn{display:none}
 </style>
 </head>
 <body>
-
-<!-- TOP BAR -->
 <div class="topbar">
-  <div>
-    <h1>&#128230; BRS1 CPT Admin</h1>
-    <div class="sub">Edit assignments &mdash; publish to all TV screens instantly</div>
-  </div>
+  <div><h1>&#128230; BRS1 CPT Admin</h1><div class="sub">Edit assignments &mdash; publish to all TV screens instantly</div></div>
   <div class="topbar-right">
     <button class="btn btn-blue" onclick="document.getElementById('fileIn').click()">&#128196; Import Excel</button>
     <input type="file" id="fileIn" accept=".xlsx,.xls,.csv">
@@ -122,313 +66,254 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;mi
   </div>
 </div>
 <div class="status" id="status"></div>
-
-<!-- TAB BAR -->
-<div class="tabs" id="tabBar">
-  <button class="tab-add" onclick="addSheet()" title="Add CPT window">+</button>
+<div id="tokenSetup" style="display:none;background:#1c2333;border:1px solid #f97316;
+     border-radius:8px;padding:16px 20px;margin:12px 20px;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="color:#f97316;font-weight:600;font-size:13px">&#128273; GitHub Token required to Publish</span>
+  <input id="tokenInput" type="password" placeholder="ghp_..." style="flex:1;min-width:260px;
+    background:#0d1117;border:1px solid #374151;border-radius:6px;color:#e6edf3;
+    font-size:13px;padding:8px 12px" />
+  <button onclick="saveToken()" style="background:#f97316;color:#fff;border:none;
+    padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer">Save Token</button>
+  <a href="https://github.com/settings/tokens/new?description=brs1-cpt&scopes=repo"
+     target="_blank" style="color:#60a5fa;font-size:12px">Get token &#8599;</a>
 </div>
 
-<!-- SHEETS -->
+<div class="tabs" id="tabBar"><button class="tab-add" onclick="addSheet()" title="Add CPT window">+</button></div>
 <div id="sheetsContainer"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-var BLOB_URL = 'https://jsonblob.com/api/jsonBlob/019f1048-c5f0-759a-a997-7d10111d135d';
-
-// ── Data model ─────────────────────────────────────────────────────────────
-// sheets = [ { name:'2030-2130', carriers:[ { name:'DPD', rows:[{lane,chute,sort,bay,owner},...] } ] } ]
+var GH_TOKEN = localStorage.getItem('gh_token') || '';
+var GH_USER   = 'santojef';
+var GH_REPO   = 'brs1-cpt';
+var DATA_RAW  = 'https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json';
+var DATA_API  = '/repos/santojef/brs1-cpt/contents/data.json';
 var sheets = [];
 var activeSheet = 0;
 
-// ── Render all ──────────────────────────────────────────────────────────────
-function render() {
-  renderTabs();
-  renderSheets();
-}
+function render(){renderTabs();renderSheets();}
 
-function renderTabs() {
-  var bar = document.getElementById('tabBar');
-  // Keep + button, replace rest
-  var addBtn = bar.querySelector('.tab-add');
-  bar.innerHTML = '';
-  sheets.forEach(function(sh, si) {
-    var t = document.createElement('div');
-    t.className = 'tab' + (si===activeSheet?' active':'');
-    t.textContent = sh.name || 'CPT '+(si+1);
-    t.onclick = function(){ activeSheet=si; render(); };
+function renderTabs(){
+  var bar=document.getElementById('tabBar');
+  var addBtn=bar.querySelector('.tab-add');
+  bar.innerHTML='';
+  sheets.forEach(function(sh,si){
+    var t=document.createElement('div');
+    t.className='tab'+(si===activeSheet?' active':'');
+    t.textContent=sh.name||'CPT '+(si+1);
+    t.onclick=function(){activeSheet=si;render();};
     bar.appendChild(t);
   });
   bar.appendChild(addBtn);
 }
 
-function renderSheets() {
-  var container = document.getElementById('sheetsContainer');
-  container.innerHTML = '';
-  sheets.forEach(function(sh, si) {
-    var div = document.createElement('div');
-    div.className = 'sheet' + (si===activeSheet?' active':'');
-    div.id = 'sheet-'+si;
-
-    // Sheet toolbar
-    div.innerHTML =
-      '<div class="sheet-toolbar">' +
-        '<input class="sheet-name-input" value="'+esc(sh.name)+'" placeholder="e.g. 2030-2130" ' +
-               'title="CPT window name" oninput="sheets['+si+'].name=this.value;renderTabs()">' +
-        '<button class="btn btn-blue" onclick="addCarrier('+si+')">+ Add Carrier</button>' +
-        '<button class="icon-btn" onclick="dupSheet('+si+')" title="Duplicate sheet">&#128386;</button>' +
-        (sheets.length>1?'<button class="icon-btn" onclick="delSheet('+si+')" title="Delete sheet" style="color:#f87171">&#128465;</button>':'')+
+function renderSheets(){
+  var container=document.getElementById('sheetsContainer');
+  container.innerHTML='';
+  sheets.forEach(function(sh,si){
+    var div=document.createElement('div');
+    div.className='sheet'+(si===activeSheet?' active':'');
+    div.innerHTML=
+      '<div class="sheet-toolbar">'+
+        '<input class="sheet-name-input" value="'+esc(sh.name)+'" placeholder="e.g. 2030-2130" '+
+               'oninput="sheets['+si+'].name=this.value;renderTabs()">'+
+        '<button class="btn btn-blue" onclick="addCarrier('+si+')">+ Add Carrier</button>'+
+        '<button class="icon-btn" onclick="dupSheet('+si+')" title="Duplicate">&#128386;</button>'+
+        (sheets.length>1?'<button class="icon-btn" onclick="delSheet('+si+')" title="Delete" style="color:#f87171">&#128465;</button>':'')+
       '</div>';
-
-    // Carriers
-    sh.carriers.forEach(function(car, ki) {
-      var rows_html = car.rows.map(function(row, ri) {
-        return '<tr>' +
-          '<td><input class="cell" value="'+esc(row.lane)+'" placeholder="Lane" ' +
-               'oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].lane=this.value"></td>' +
-          '<td><input class="cell" value="'+esc(row.chute)+'" placeholder="e.g. BOX-C-01A" ' +
-               'oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].chute=this.value"></td>' +
-          '<td><input class="cell sort" value="'+esc(row.sort)+'" placeholder="Sort code" ' +
-               'oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].sort=this.value"></td>' +
-          '<td><input class="cell bay" value="'+esc(row.bay)+'" placeholder="Bay" ' +
-               'oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].bay=this.value"></td>' +
-          '<td><input class="cell owner" value="'+esc(row.owner)+'" placeholder="Owner name" ' +
-               'oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].owner=this.value"></td>' +
-          '<td style="width:36px"><button class="del-row-btn" onclick="delRow('+si+','+ki+','+ri+')">&#215;</button></td>' +
+    sh.carriers.forEach(function(car,ki){
+      var rows_html=car.rows.map(function(row,ri){
+        return '<tr>'+
+          '<td><input class="cell" value="'+esc(row.lane)+'" placeholder="" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].lane=this.value"></td>'+
+          '<td><input class="cell" value="'+esc(row.chute)+'" placeholder="BOX-C-01A" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].chute=this.value"></td>'+
+          '<td><input class="cell sort" value="'+esc(row.sort)+'" placeholder="" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].sort=this.value"></td>'+
+          '<td><input class="cell bay" value="'+esc(row.bay)+'" placeholder="" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].bay=this.value"></td>'+
+          '<td><input class="cell owner" value="'+esc(row.owner)+'" placeholder="Name" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].owner=this.value"></td>'+
+          '<td style="width:36px"><button class="del-row-btn" onclick="delRow('+si+','+ki+','+ri+')">&#215;</button></td>'+
         '</tr>';
       }).join('');
-
-      var cb = document.createElement('div');
-      cb.className = 'carrier-block';
-      cb.innerHTML =
-        '<div class="carrier-head">' +
-          '<span style="color:#8b949e;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">CARRIER / ROUTE</span>' +
-          '<input class="carrier-name-input" value="'+esc(car.name)+'" placeholder="e.g. DPD, NORTHAMP, DME4-ND" ' +
-                 'oninput="sheets['+si+'].carriers['+ki+'].name=this.value">' +
-          '<div class="carrier-head-right">' +
-            '<button class="icon-btn" onclick="dupCarrier('+si+','+ki+')" title="Duplicate carrier">&#128386;</button>' +
-            '<button class="icon-btn" onclick="delCarrier('+si+','+ki+')" title="Remove carrier" style="color:#f87171">&#215;</button>' +
-          '</div>' +
-        '</div>' +
-        '<table class="cpt-table">' +
-          '<thead><tr><th>Lane</th><th>Stacking / Chute</th><th>Sort</th><th>Bay</th><th>Owner</th><th></th></tr></thead>' +
-          '<tbody>' + rows_html +
-            '<tr class="add-row-row"><td colspan="6">' +
-              '<button class="add-row-btn" onclick="addRow('+si+','+ki+')">+ Add row</button>' +
-            '</td></tr>' +
-          '</tbody>' +
-        '</table>';
+      var cb=document.createElement('div');
+      cb.className='carrier-block';
+      cb.innerHTML=
+        '<div class="carrier-head">'+
+          '<span style="color:#8b949e;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">CARRIER / ROUTE</span>'+
+          '<input class="carrier-name-input" value="'+esc(car.name)+'" placeholder="e.g. DPD, NORTHAMP" oninput="sheets['+si+'].carriers['+ki+'].name=this.value">'+
+          '<div class="carrier-head-right">'+
+            '<button class="icon-btn" onclick="dupCarrier('+si+','+ki+')" title="Duplicate">&#128386;</button>'+
+            '<button class="icon-btn" onclick="delCarrier('+si+','+ki+')" title="Remove" style="color:#f87171">&#215;</button>'+
+          '</div>'+
+        '</div>'+
+        '<table class="cpt-table"><thead><tr><th>Lane</th><th>Stacking / Chute</th><th>Sort</th><th>Bay</th><th>Owner</th><th></th></tr></thead>'+
+        '<tbody>'+rows_html+
+          '<tr><td colspan="6"><button class="add-row-btn" onclick="addRow('+si+','+ki+')">+ Add row</button></td></tr>'+
+        '</tbody></table>';
       div.appendChild(cb);
     });
-
-    // Add carrier button
-    var addCarBtn = document.createElement('button');
-    addCarBtn.className = 'add-carrier-btn';
-    addCarBtn.textContent = '+ Add Carrier / Route';
-    addCarBtn.onclick = (function(s){ return function(){ addCarrier(s); }; })(si);
-    div.appendChild(addCarBtn);
-
+    var acb=document.createElement('button');
+    acb.className='add-carrier-btn';acb.textContent='+ Add Carrier / Route';
+    acb.onclick=(function(s){return function(){addCarrier(s);};})(si);
+    div.appendChild(acb);
     container.appendChild(div);
   });
 }
 
-function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function addSheet(){sheets.push({name:'New CPT',carriers:[{name:'',rows:[{lane:'',chute:'',sort:'',bay:'',owner:''}]}]});activeSheet=sheets.length-1;render();}
+function delSheet(si){if(!confirm('Delete?'))return;sheets.splice(si,1);if(activeSheet>=sheets.length)activeSheet=sheets.length-1;render();}
+function dupSheet(si){var c=JSON.parse(JSON.stringify(sheets[si]));c.name+=' (copy)';sheets.splice(si+1,0,c);activeSheet=si+1;render();}
+function addCarrier(si){sheets[si].carriers.push({name:'',rows:[{lane:'',chute:'',sort:'',bay:'',owner:''}]});render();}
+function delCarrier(si,ki){sheets[si].carriers.splice(ki,1);render();}
+function dupCarrier(si,ki){var c=JSON.parse(JSON.stringify(sheets[si].carriers[ki]));c.name+=' (copy)';sheets[si].carriers.splice(ki+1,0,c);render();}
+function addRow(si,ki){sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});render();}
+function delRow(si,ki,ri){sheets[si].carriers[ki].rows.splice(ri,1);if(!sheets[si].carriers[ki].rows.length)sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});render();}
 
-// ── Mutations ────────────────────────────────────────────────────────────────
-function addSheet() {
-  sheets.push({name:'New CPT',carriers:[{name:'',rows:[{lane:'',chute:'',sort:'',bay:'',owner:''}]}]});
-  activeSheet = sheets.length-1; render();
-}
-function delSheet(si) {
-  if(!confirm('Delete this CPT window?')) return;
-  sheets.splice(si,1);
-  if(activeSheet>=sheets.length) activeSheet=sheets.length-1;
-  render();
-}
-function dupSheet(si) {
-  var copy = JSON.parse(JSON.stringify(sheets[si]));
-  copy.name = copy.name + ' (copy)';
-  sheets.splice(si+1,0,copy);
-  activeSheet=si+1; render();
-}
-function addCarrier(si) {
-  sheets[si].carriers.push({name:'',rows:[{lane:'',chute:'',sort:'',bay:'',owner:''}]});
-  render();
-}
-function delCarrier(si,ki) {
-  if(sheets[si].carriers.length===1&&!confirm('Remove last carrier?')) return;
-  sheets[si].carriers.splice(ki,1); render();
-}
-function dupCarrier(si,ki) {
-  var copy = JSON.parse(JSON.stringify(sheets[si].carriers[ki]));
-  copy.name = copy.name+' (copy)';
-  sheets[si].carriers.splice(ki+1,0,copy); render();
-}
-function addRow(si,ki) {
-  sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});
-  render();
-}
-function delRow(si,ki,ri) {
-  sheets[si].carriers[ki].rows.splice(ri,1);
-  if(!sheets[si].carriers[ki].rows.length)
-    sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});
-  render();
-}
-
-// ── Flatten to data array ────────────────────────────────────────────────────
-function flatten() {
+function flatten(){
   var out=[];
-  sheets.forEach(function(sh) {
-    sh.carriers.forEach(function(car) {
-      car.rows.forEach(function(row) {
-        if(!row.chute&&!row.owner&&!row.lane) return;
-        out.push({
-          sheet:   sh.name,
-          cpt:     extractCPT(sh.name),
-          carrier: row.lane||car.name,
-          chute:   row.chute,
-          sort:    row.sort,
-          bay:     row.bay,
-          owner:   row.owner
-        });
+  sheets.forEach(function(sh){
+    sh.carriers.forEach(function(car){
+      car.rows.forEach(function(row){
+        if(!row.chute&&!row.owner&&!row.lane)return;
+        var m=(sh.name||'').match(/(\d{3,4})/);
+        var t=m?m[1].padStart(4,'0'):'0000';
+        out.push({sheet:sh.name,cpt:t.slice(0,2)+':'+t.slice(2),carrier:row.lane||car.name,chute:row.chute,sort:row.sort,bay:row.bay,owner:row.owner});
       });
     });
   });
   return out;
 }
 
-function extractCPT(name) {
-  // "2030-2130" -> "20:30"
-  var m = (name||'').match(/(\d{3,4})/);
-  if(!m) return name;
-  var t = m[1].length===3?'0'+m[1]:m[1];
-  return t.slice(0,2)+':'+t.slice(2);
-}
-
-// ── Publish ──────────────────────────────────────────────────────────────────
-function publishAll() {
-  var data = flatten();
-  if(!data.length){showStatus('Nothing to publish — add some assignments first.','err');return;}
-  var btn = document.getElementById('publishBtn');
-  btn.disabled=true; btn.textContent='Publishing...';
+function publishAll(){
+  var data=flatten();
+  if(!data.length){showStatus('Nothing to publish.','err');return;}
+  var btn=document.getElementById('publishBtn');
+  btn.disabled=true;btn.textContent='Publishing...';
   showStatus('Publishing '+data.length+' assignments...','inf');
 
-  fetch(BLOB_URL,{
-    method:'PUT',
-    headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body: JSON.stringify({ts:new Date().toLocaleString('en-GB'),data:data,rosterMap:{}})
+  var payload=JSON.stringify({ts:new Date().toLocaleString('en-GB'),data:data,sheets:sheets,rosterMap:{}});
+
+  // Get current SHA then push
+  fetch('https://api.github.com'+DATA_API,{
+    headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','User-Agent':'brs1-cpt'}
   })
   .then(function(r){return r.json();})
   .then(function(d){
-    btn.disabled=false; btn.textContent='\u2705 Publish to TVs';
-    if(d.ts){showStatus('\u2713 Published '+data.length+' rows \u2014 TVs update within 15 seconds','ok');}
-    else{showStatus('Error: '+JSON.stringify(d).substring(0,120),'err');}
+    var sha=d.sha||null;
+    var encoded=btoa(unescape(encodeURIComponent(payload)));
+    var body={message:'Update CPT data',content:encoded,branch:'main'};
+    if(sha)body.sha=sha;
+    return fetch('https://api.github.com'+DATA_API,{
+      method:'PUT',
+      headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json',
+               'Content-Type':'application/json','User-Agent':'brs1-cpt'},
+      body:JSON.stringify(body)
+    });
   })
-  .catch(function(e){
-    btn.disabled=false; btn.textContent='\u2705 Publish to TVs';
-    showStatus('Error: '+e.message,'err');
-  });
+  .then(function(r){return r.json();})
+  .then(function(d){
+    btn.disabled=false;btn.textContent='✅ Publish to TVs';
+    if(d.content){
+      showStatus('✓ Published '+data.length+' rows — TVs update within 15 seconds','ok');
+    }else{
+      showStatus('Error: '+JSON.stringify(d).substring(0,120),'err');
+    }
+  })
+  .catch(function(e){btn.disabled=false;btn.textContent='✅ Publish to TVs';showStatus('Error: '+e.message,'err');});
 }
 
 function showStatus(msg,cls){
   var el=document.getElementById('status');
-  el.textContent=msg; el.className='status '+cls;
-  if(cls==='ok') setTimeout(function(){el.style.display='none';},6000);
+  el.textContent=msg;el.className='status '+cls;
+  if(cls==='ok')setTimeout(function(){el.style.display='none';},6000);
 }
 
-// ── Excel import ─────────────────────────────────────────────────────────────
+/* ── Import Excel ── */
 document.getElementById('fileIn').addEventListener('change',function(e){
-  if(!e.target.files[0]) return;
-  showStatus('Reading Excel file...','inf');
+  if(!e.target.files[0])return;
+  showStatus('Reading Excel...','inf');
   var reader=new FileReader();
   reader.onload=function(ev){
-    try{
-      var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
-      importWorkbook(wb);
-    }catch(err){showStatus('Read error: '+err.message,'err');}
+    try{var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});importWB(wb);}
+    catch(err){showStatus('Read error: '+err.message,'err');}
   };
   reader.readAsArrayBuffer(e.target.files[0]);
 });
 
-var SKIP=['roster','bags','bags sun'];
-function importWorkbook(wb){
-  var newSheets=[];
+var SKIP_SH=['roster','bags','bags sun'];
+function importWB(wb){
+  var ns=[];
   wb.SheetNames.forEach(function(sn){
-    if(SKIP.indexOf(sn.toLowerCase().trim())!==-1) return;
-    if(sn.trim()[0]===' ') return;
-    var carriers=parseSheet(wb.Sheets[sn]);
-    if(carriers.length) newSheets.push({name:sn,carriers:carriers});
+    if(SKIP_SH.indexOf(sn.toLowerCase().trim())!==-1)return;
+    if(sn.trim()[0]===' ')return;
+    var cars=parseSheet(wb.Sheets[sn]);
+    if(cars.length)ns.push({name:sn,carriers:cars});
   });
-  if(!newSheets.length){showStatus('No CPT data found in Excel file.','err');return;}
-  sheets=newSheets; activeSheet=0; render();
-  showStatus('Imported '+newSheets.length+' CPT windows from Excel. Review then click Publish.','inf');
+  if(!ns.length){showStatus('No CPT data found.','err');return;}
+  sheets=ns;activeSheet=0;render();
+  showStatus('Imported '+ns.length+' CPT windows. Review then Publish.','inf');
 }
 
 function parseSheet(ws){
   var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
-  var carriers=[]; var currentCar=null;
+  var carriers=[];var current=null;
+  var BAD=['Lane','Stacking','Sort','Bay','Owner',''];
   for(var ri=0;ri<rows.length;ri++){
     var row=rows[ri].map(function(c){return String(c||'').trim();});
     var a=row[0]||'';
-    // Skip CPT time header rows, instruction rows
-    if(a.match(/^\d{3,4}\s+CPT/i)||a.match(/^SP\s+CPT/i)||!row.some(function(c){return c!=='';})) continue;
-    if(row.some(function(c){return c.length>40;})) continue;
-    // Carrier header
-    var cm=a.match(/^\d{3,4}\s+BRS1\s*[-\u2013>]+\s*(.+)/i);
-    if(cm){currentCar={name:cm[1].trim(),rows:[]};carriers.push(currentCar);continue;}
-    // Column header row
-    if(row.some(function(c){return c.toLowerCase()==='lane';})) continue;
-    // Data rows — scan across in groups of 6
+    if(!row.some(function(c){return c!=='';}))continue;
+    if(row.some(function(c){return c.length>50;}))continue;
+    if(a.match(/^\d{3,4}\s*CPT/i)||a.match(/^SP\s+CPT/i))continue;
+    if(row.some(function(c){return c.toLowerCase()==='lane';}))continue;
+    var cm=a.match(/^\d{3,4}\s+BRS1\s*[-–>]+\s*(.+)/i);
+    if(cm){current={name:cm[1].trim(),rows:[]};carriers.push(current);continue;}
     for(var ci=0;ci<row.length;ci+=6){
       var lane=row[ci]||'',chute=row[ci+1]||'',sort=row[ci+2]||'',bay=row[ci+3]||'',owner=row[ci+4]||'';
-      if(!chute&&!lane) continue;
-      if(chute==='Stacking'||chute==='Sort'||chute==='Owner') continue;
-      bay=bay.replace(/\.0+$/,'');
-      // If lane looks like a carrier header, create new carrier group
-      if(lane&&lane!==((currentCar&&currentCar.name)||'')){
-        // Check if this lane is already a carrier name
-        var found=null;
-        carriers.forEach(function(c){if(c.name===lane)found=c;});
-        if(!found){currentCar={name:lane,rows:[]};carriers.push(currentCar);}
-        else{currentCar=found;}
+      if(!chute||BAD.indexOf(chute)!==-1)continue;
+      if(lane&&BAD.indexOf(lane)===-1){
+        var found=null;carriers.forEach(function(c){if(c.name===lane)found=c;});
+        if(found){current=found;}else{current={name:lane,rows:[]};carriers.push(current);}
       }
-      if(!currentCar){currentCar={name:lane||'Unknown',rows:[]};carriers.push(currentCar);}
-      currentCar.rows.push({lane:lane,chute:chute,sort:sort,bay:bay,owner:owner});
+      if(!current){current={name:lane||'Unknown',rows:[]};carriers.push(current);}
+      current.rows.push({
+        lane:  BAD.indexOf(lane)===-1?lane:'',
+        chute: chute,
+        sort:  BAD.indexOf(sort)===-1?sort:'',
+        bay:   BAD.indexOf(bay)===-1?bay:'',
+        owner: BAD.indexOf(owner)===-1?owner:''
+      });
     }
   }
-  // Remove empty carriers
   return carriers.filter(function(c){return c.rows.some(function(r){return r.chute||r.owner;});});
 }
 
-// ── Load existing from jsonblob ───────────────────────────────────────────────
+/* ── Load existing ── */
 function loadExisting(){
-  fetch(BLOB_URL+'?t='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}})
+  fetch(DATA_RAW+'?t='+Date.now(),{cache:'no-store'})
   .then(function(r){return r.json();})
   .then(function(d){
-    if(!d||!d.data||!d.data.length){addSheet();render();return;}
-    // Rebuild sheets from flat data
-    var sheetMap={},sheetOrder=[];
-    d.data.forEach(function(row){
-      var sk=row.sheet||row.cpt||'CPT';
-      if(!sheetMap[sk]){sheetMap[sk]={};sheetOrder.push(sk);}
-      var ck=row.carrier||'';
-      if(!sheetMap[sk][ck])sheetMap[sk][ck]=[];
-      sheetMap[sk][ck].push({lane:row.carrier||'',chute:row.chute||'',sort:row.sort||'',bay:row.bay||'',owner:row.owner||''});
-    });
-    sheets=sheetOrder.map(function(sk){
-      return{name:sk,carriers:Object.keys(sheetMap[sk]).map(function(k){
-        return{name:k,rows:sheetMap[sk][k]};
-      })};
-    });
-    render();
-    showStatus('Loaded existing data ('+d.data.length+' rows) \u2014 last saved: '+d.ts,'inf');
+    if(d&&d.sheets&&d.sheets.length){
+      sheets=d.sheets;activeSheet=0;render();
+      showStatus('Loaded: '+d.ts+' ('+d.data.length+' rows)','inf');
+    }else{addSheet();render();}
   })
   .catch(function(){addSheet();render();});
 }
 
+function saveToken(){
+  var t=document.getElementById('tokenInput').value.trim();
+  if(!t){alert('Please enter a token');return;}
+  localStorage.setItem('gh_token',t);
+  GH_TOKEN=t;
+  document.getElementById('tokenSetup').style.display='none';
+  showStatus('Token saved. Click Publish to TVs.','ok');
+}
+function checkToken(){
+  if(!localStorage.getItem('gh_token')){
+    document.getElementById('tokenSetup').style.display='flex';
+  }
+}
 
-// ── PRELOADED DATA ──
-var PRELOAD_SHEETS = [{"name": "2030-2130", "carriers": [{"name": "Emsa", "rows": [{"lane": "Emsa", "chute": "BG-KO2-01", "sort": "DBT3/4", "bay": "17", "owner": "KO1/KO2"}]}, {"name": "DEX2-ND", "rows": [{"lane": "DEX2-ND", "chute": "BOX-B-06A", "sort": "", "bay": "39", "owner": "Mo"}, {"lane": "", "chute": "BG-KO2-02", "sort": "DBT3/4", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-10C", "sort": "", "bay": "", "owner": "Haabdiru"}, {"lane": "DEX2-ND", "chute": "F-SP-03", "sort": "", "bay": "39", "owner": "Ali"}, {"lane": "", "chute": "F-C-18", "sort": "", "bay": "", "owner": "Kellen"}, {"lane": "", "chute": "F-SP-05", "sort": "", "bay": "", "owner": "Filimon"}]}, {"name": "DPD", "rows": [{"lane": "DPD", "chute": "BOX-C-01A", "sort": "", "bay": "19", "owner": "Alysaid"}, {"lane": "", "chute": "F-A-07", "sort": "", "bay": "", "owner": "Joanna"}]}, {"name": "NORTHAMP", "rows": [{"lane": "NORTHAMP", "chute": "BOX-B-25C", "sort": "", "bay": "18", "owner": "Sallam"}, {"lane": "", "chute": "F-A-06", "sort": "", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-C-17", "sort": "", "bay": "", "owner": "Kellen"}, {"lane": "", "chute": "F-C-19", "sort": "", "bay": "", "owner": "Williams"}]}, {"name": "DME4-ND", "rows": [{"lane": "DME4-ND", "chute": "BOX-B-07C", "sort": "", "bay": "46", "owner": "Ram"}, {"lane": "DME4-ND", "chute": "F-SP-04", "sort": "", "bay": "46", "owner": "Filimon"}, {"lane": "", "chute": "F-B-22", "sort": "", "bay": "", "owner": "Patricia"}]}, {"name": "LBA8", "rows": [{"lane": "LBA8", "chute": "BOX-A-05C", "sort": "mix", "bay": "41", "owner": "Adam"}]}, {"name": "SXW2", "rows": [{"lane": "SXW2", "chute": "BOX-A-01A", "sort": "DHA1", "bay": "31", "owner": "Adel"}, {"lane": "", "chute": "BOX-B-01C", "sort": "dxs1", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "BOX-A-02A", "sort": "DBN5", "bay": "", "owner": "Adel"}, {"lane": "", "chute": "BOX-B-02C", "sort": "DHU2", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "BOX-A-02B", "sort": "MIX", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "BOX-B-03C", "sort": "DXM3", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "BOX-B-19C", "sort": "DCR3", "bay": "", "owner": "Kellen"}, {"lane": "", "chute": "BOX-B-04C", "sort": "DLS4", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "BOX-B-23B", "sort": "DXM", "bay": "", "owner": "Josh"}, {"lane": "", "chute": "BOX-B-05B", "sort": "DLS2", "bay": "", "owner": "Ram"}, {"lane": "", "chute": "F-A-24", "sort": "DHA1", "bay": "", "owner": "Adel"}, {"lane": "", "chute": "BOX-B-06C", "sort": "DDN2", "bay": "", "owner": "Ram"}, {"lane": "", "chute": "F-A-25", "sort": "DCR3", "bay": "", "owner": "Adel"}, {"lane": "", "chute": "BOX-B-09C", "sort": "DLS2", "bay": "", "owner": "Nagaraju"}, {"lane": "", "chute": "F-A-26", "sort": "DBR2", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "F-A-32", "sort": "DLS2", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-27", "sort": "DXW3", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "F-A-33", "sort": "dHU2", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-28", "sort": "DRM4", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-A-34", "sort": "DNE2", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-74", "sort": "DSO2", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-A-35", "sort": "DXM3", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "FST-A-69", "sort": "DHA1", "bay": "", "owner": "Ronald"}, {"lane": "", "chute": "F-A-36", "sort": "DXS1", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "FST-A-70", "sort": "DCR3", "bay": "", "owner": "Ronald"}, {"lane": "", "chute": "F-A-37", "sort": "DDN1", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-B-09", "sort": "DLS2", "bay": "", "owner": "Patricia"}, {"lane": "SXW2", "chute": "F-SP-02", "sort": "DXW3", "bay": "31", "owner": "Ali E"}, {"lane": "", "chute": "F-B-10", "sort": "DNE2", "bay": "", "owner": "Patricia"}, {"lane": "", "chute": "F-B-12", "sort": "dxs1", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "F-B-20", "sort": "DLS4", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "FST-B-24", "sort": "MIX", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "FST-B-27", "sort": "DDN1", "bay": "", "owner": "Jordyn"}]}]}, {"name": "2145-2200", "carriers": [{"name": "STN8", "rows": [{"lane": "STN8", "chute": "BOX-A-01D", "sort": "", "bay": "29", "owner": "Adam"}, {"lane": "STN8", "chute": "F-SP-01", "sort": "", "bay": "29", "owner": "Ali E"}, {"lane": "", "chute": "BOX-B-14C", "sort": "", "bay": "", "owner": "Kellen"}, {"lane": "", "chute": "BOX-B-16C", "sort": "", "bay": "", "owner": "Kellen"}, {"lane": "", "chute": "BOX-B-17C", "sort": "", "bay": "", "owner": "Josh"}, {"lane": "", "chute": "BOX-B-18C", "sort": "", "bay": "", "owner": "Josh"}, {"lane": "", "chute": "BOX-B-22A", "sort": "", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "BOX-B-23D", "sort": "", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "BOX-B-24C", "sort": "", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-15", "sort": "", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-16", "sort": "", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-17", "sort": "", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-18", "sort": "", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-A-19", "sort": "", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-A-20", "sort": "", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "F-A-21", "sort": "", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "F-A-22", "sort": "", "bay": "", "owner": "Adel"}, {"lane": "", "chute": "F-A-23", "sort": "", "bay": "", "owner": "Adel"}]}, {"name": "BHX8", "rows": [{"lane": "BHX8", "chute": "BOX-B-11B", "sort": "", "bay": "41", "owner": "Ram"}]}, {"name": "SWANSEA", "rows": [{"lane": "SWANSEA", "chute": "BOX-C-04A", "sort": "", "bay": "15", "owner": "Filimon"}, {"lane": "", "chute": "BOX-B-12B", "sort": "MIX", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "F-A-05", "sort": "", "bay": "", "owner": "Arnold"}, {"lane": "", "chute": "F-A-56", "sort": "", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-C-21", "sort": "", "bay": "", "owner": "Filimon"}, {"lane": "", "chute": "FST-A-71", "sort": "", "bay": "", "owner": "Adel"}, {"lane": "", "chute": "BG-B-06", "sort": "", "bay": "", "owner": "Filimon"}, {"lane": "", "chute": "F-B-07", "sort": "", "bay": "", "owner": "Artur"}]}, {"name": "DSA1-ND", "rows": [{"lane": "", "chute": "BOX-B-18B", "sort": "", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-54", "sort": "", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-B-31", "sort": "", "bay": "", "owner": "Patricia"}]}]}, {"name": "2355-0045", "carriers": [{"name": "DSO2-ND", "rows": [{"lane": "DSO2-ND", "chute": "BOX-B-02A", "sort": "", "bay": "49", "owner": ""}, {"lane": "DSO2-ND", "chute": "F-SP-06", "sort": "", "bay": "49", "owner": ""}, {"lane": "", "chute": "F-C-22", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BG-B-07", "sort": "", "bay": "", "owner": ""}]}, {"name": "EXETER", "rows": [{"lane": "EXETER", "chute": "BOX-C-05B", "sort": "", "bay": "16", "owner": ""}, {"lane": "", "chute": "Bristol", "sort": "BOX-C-02A", "bay": "", "owner": "14"}, {"lane": "", "chute": "F-A-57", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-C-20", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-17", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BG-B-08", "sort": "", "bay": "", "owner": ""}]}, {"name": "PLYMOUTH", "rows": [{"lane": "PLYMOUTH", "chute": "BOX-C-03C", "sort": "", "bay": "16", "owner": ""}]}, {"name": "BHX8-DR2", "rows": [{"lane": "BHX8-DR2", "chute": "BOX-A-03B", "sort": "", "bay": "39", "owner": ""}, {"lane": "BHX8-DR2", "chute": "F-B-04", "sort": "", "bay": "39", "owner": ""}, {"lane": "", "chute": "BOX-B-07B", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-05", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-08B", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-06", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-10B", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-08", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-60", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-61", "sort": "", "bay": "", "owner": ""}]}, {"name": "DBH3", "rows": [{"lane": "DBH3", "chute": "BOX-B-04A", "sort": "", "bay": "42", "owner": ""}, {"lane": "DBH3", "chute": "F-SP-08", "sort": "", "bay": "42", "owner": ""}, {"lane": "", "chute": "F-SP-10", "sort": "", "bay": "", "owner": ""}]}, {"name": "DCF2-ND", "rows": [{"lane": "DCF2-ND", "chute": "BOX-B-16A", "sort": "", "bay": "34", "owner": ""}, {"lane": "", "chute": "BOX-B-08A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-17A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-11A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-66", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-51", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-37", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-64", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-35", "sort": "", "bay": "", "owner": ""}, {"lane": "DCF2-ND", "chute": "F-SP-11", "sort": "", "bay": "34", "owner": ""}, {"lane": "", "chute": "BOX-B-14A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "FST-SP-13", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-28", "sort": "", "bay": "", "owner": ""}]}, {"name": "DBS3-SD", "rows": [{"lane": "DBS3-SD", "chute": "BOX-B-13A", "sort": "", "bay": "36", "owner": ""}]}, {"name": "BHX8-DR3", "rows": [{"lane": "BHX8-DR3", "chute": "BOX-A-01C", "sort": "", "bay": "40", "owner": ""}]}, {"name": "DXW3-DRH1", "rows": [{"lane": "DXW3-DRH1", "chute": "BOX-A-04A", "sort": "", "bay": "leave the cart on staging area", "owner": ""}, {"lane": "", "chute": "BOX-A-04D", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-16B", "sort": "Priority", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-09B", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-62", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-15C", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-63", "sort": "Priority", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-22B", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-19", "sort": "Priority", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-72", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-42", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-73", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-01", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-03", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-13", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "FST-B-25", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-C-11", "sort": "", "bay": "", "owner": ""}]}]}, {"name": "0100-0145", "carriers": [{"name": "Bristol", "rows": [{"lane": "Bristol", "chute": "BOX-C-02A", "sort": "", "bay": "14", "owner": ""}]}, {"name": "Bristol-T48", "rows": [{"lane": "Bristol-T48", "chute": "BOX-B-23C", "sort": "", "bay": "19", "owner": ""}, {"lane": "", "chute": "BOX-C-04B", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-25A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-01", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-08", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-02", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-C-15", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-C-24", "sort": "", "bay": "", "owner": ""}]}, {"name": "DWR1-DBI5", "rows": [{"lane": "DWR1-DBI5", "chute": "BOX-B-14B", "sort": "", "bay": "leave the cart on staging area", "owner": ""}, {"lane": "", "chute": "BOX-B-21C", "sort": "Priority", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-53", "sort": "Priority", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-76", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-43", "sort": "", "bay": "", "owner": ""}]}, {"name": "DSA1-SD", "rows": [{"lane": "DSA1-SD", "chute": "BOX-B-01B", "sort": "", "bay": "51", "owner": ""}]}, {"name": "DXP1-SD", "rows": [{"lane": "DXP1-SD", "chute": "BOX-B-12A", "sort": "", "bay": "30", "owner": ""}, {"lane": "", "chute": "F-A-79", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-78", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-15", "sort": "", "bay": "", "owner": ""}, {"lane": "DXP1-SD", "chute": "F-SP-22", "sort": "", "bay": "30", "owner": ""}, {"lane": "", "chute": "F-C-B", "sort": "", "bay": "", "owner": ""}]}, {"name": "DEX2-SD", "rows": [{"lane": "DEX2-SD", "chute": "BOX-B-22D", "sort": "", "bay": "24", "owner": ""}, {"lane": "", "chute": "F-A-81", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-24A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-14", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-80", "sort": "", "bay": "", "owner": ""}, {"lane": "DEX2-SD", "chute": "F-SP-16", "sort": "", "bay": "24", "owner": ""}]}, {"name": "DWR2-SD", "rows": [{"lane": "DWR2-SD", "chute": "BOX-B-21B", "sort": "", "bay": "23", "owner": ""}, {"lane": "", "chute": "FST-SP-14", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-77", "sort": "", "bay": "", "owner": ""}, {"lane": "DWR2-SD", "chute": "F-SP-19", "sort": "", "bay": "23", "owner": ""}, {"lane": "", "chute": "F-B-34", "sort": "", "bay": "", "owner": ""}]}, {"name": "DRM2", "rows": [{"lane": "DRM2", "chute": "FST-SP-15", "sort": "", "bay": "45", "owner": ""}]}, {"name": "DXP1-ND", "rows": [{"lane": "DXP1-ND", "chute": "BOX-B-09A", "sort": "", "bay": "40", "owner": ""}]}, {"name": "DHA1", "rows": [{"lane": "DHA1", "chute": "BOX-B-02B", "sort": "", "bay": "45", "owner": ""}, {"lane": "DHA1", "chute": "F-SP-23", "sort": "", "bay": "45", "owner": ""}]}]}, {"name": "0300-0400", "carriers": [{"name": "DBR1", "rows": [{"lane": "DBR1", "chute": "BOX-B-03B", "sort": "", "bay": "49", "owner": ""}, {"lane": "DBR1", "chute": "F-SP-24", "sort": "", "bay": "49", "owner": ""}, {"lane": "", "chute": "F-B-39", "sort": "", "bay": "", "owner": ""}]}, {"name": "DPO1", "rows": [{"lane": "DPO1", "chute": "BOX-B-04B", "sort": "", "bay": "45", "owner": ""}, {"lane": "DPO1", "chute": "F-SP-25", "sort": "", "bay": "45", "owner": ""}]}, {"name": "DXM4", "rows": [{"lane": "DXM4", "chute": "BOX-B-06B", "sort": "", "bay": "46", "owner": ""}, {"lane": "", "chute": "BOX-B-08C", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-85", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-84", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-45", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-29", "sort": "", "bay": "", "owner": ""}]}, {"name": "DBI7", "rows": [{"lane": "DBI7", "chute": "BOX-A-05A", "sort": "", "bay": "35", "owner": ""}]}, {"name": "DCR2", "rows": [{"lane": "DCR2", "chute": "BOX-A-02C", "sort": "", "bay": "36", "owner": ""}, {"lane": "", "chute": "BOX-B-13B", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-87", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-88", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-41", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-89", "sort": "", "bay": "", "owner": ""}, {"lane": "DCR2", "chute": "F-SP-26", "sort": "", "bay": "36", "owner": ""}]}]}, {"name": "0430-0445", "carriers": [{"name": "DBS3-ND", "rows": [{"lane": "DBS3-ND", "chute": "BOX-A-03A", "sort": "", "bay": "33", "owner": ""}, {"lane": "DBS3-ND", "chute": "F-SP-28", "sort": "", "bay": "33", "owner": ""}, {"lane": "", "chute": "BOX-B-15A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-SP-30", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-18A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-90", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-36", "sort": "", "bay": "", "owner": ""}]}, {"name": "DRG3", "rows": [{"lane": "DRG3", "chute": "BOX-B-10A", "sort": "", "bay": "44", "owner": ""}, {"lane": "DRG3", "chute": "F-SP-32", "sort": "", "bay": "44", "owner": ""}]}, {"name": "DBI2", "rows": [{"lane": "DBI2", "chute": "BOX-B-11C", "sort": "", "bay": "37", "owner": ""}, {"lane": "", "chute": "F-A-92", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-95", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-30", "sort": "", "bay": "", "owner": ""}]}, {"name": "DRG2", "rows": [{"lane": "DRG2", "chute": "BOX-B-01A", "sort": "", "bay": "52", "owner": ""}, {"lane": "", "chute": "BOX-B-05A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-94", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-07A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-16", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-55", "sort": "", "bay": "", "owner": ""}]}, {"name": "DWR2", "rows": [{"lane": "DWR2", "chute": "BOX-B-19A", "sort": "", "bay": "32", "owner": ""}, {"lane": "", "chute": "F-B-38", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-20A", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-46", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-91", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-40", "sort": "", "bay": "", "owner": ""}]}, {"name": "DSN1-ND", "rows": [{"lane": "DSN1-ND", "chute": "BOX-B-21A", "sort": "", "bay": "30", "owner": ""}, {"lane": "", "chute": "F-SP-35", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-23A", "sort": "", "bay": "", "owner": ""}, {"lane": "DSN1-ND", "chute": "F-SP-29", "sort": "", "bay": "30", "owner": ""}, {"lane": "", "chute": "F-A-82", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-SP-31", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-33", "sort": "", "bay": "", "owner": ""}]}, {"name": "DBS2-ND", "rows": [{"lane": "DBS2-ND", "chute": "F-SP-34", "sort": "", "bay": "43", "owner": ""}, {"lane": "", "chute": "F-C-02", "sort": "", "bay": "", "owner": ""}, {"lane": "", "chute": "F-SP-36", "sort": "", "bay": "", "owner": ""}]}, {"name": "DXN1", "rows": [{"lane": "DXN1", "chute": "BOX-B-12C", "sort": "", "bay": "28", "owner": ""}, {"lane": "DXN1", "chute": "F-SP-37", "sort": "", "bay": "28", "owner": ""}, {"lane": "", "chute": "F-B-18", "sort": "", "bay": "", "owner": ""}]}]}, {"name": "2030-2130 sun", "carriers": [{"name": "Emsa", "rows": [{"lane": "Emsa", "chute": "BG-KO2-01", "sort": "DBT3/4", "bay": "17", "owner": "joanngla"}]}, {"name": "NORTHAMP", "rows": [{"lane": "NORTHAMP", "chute": "BOX-B-25C", "sort": "NORTHAMP", "bay": "18", "owner": "valervac"}, {"lane": "", "chute": "BG-KO2-02", "sort": "DBT3/4", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-06", "sort": "NORTHAMP", "bay": "", "owner": "anstasib"}]}, {"name": "DPD", "rows": [{"lane": "DPD", "chute": "BOX-C-01A", "sort": "DPD", "bay": "19", "owner": "Santojef"}, {"lane": "", "chute": "F-A-07", "sort": "DPD", "bay": "", "owner": "kammusta"}]}, {"name": "EXETER", "rows": [{"lane": "EXETER", "chute": "BOX-C-05B", "sort": "EXETER", "bay": "16", "owner": "Santojef"}, {"lane": "", "chute": "F-C-18", "sort": "DPD", "bay": "", "owner": "iobrinze"}, {"lane": "", "chute": "F-C-20", "sort": "EXETER", "bay": "", "owner": "dyrfu"}]}, {"name": "DEX2-ND", "rows": [{"lane": "DEX2-ND", "chute": "BOX-B-06A", "sort": "DEX2-ND", "bay": "39", "owner": "valervac"}, {"lane": "", "chute": "F-A-52", "sort": "DEX2-ND", "bay": "", "owner": "ismjama"}, {"lane": "DEX2-ND", "chute": "F-SP-03", "sort": "DEX2-ND", "bay": "39", "owner": "santojef"}, {"lane": "", "chute": "F-B-32", "sort": "DEX2-ND", "bay": "", "owner": "jokellen"}, {"lane": "", "chute": "F-SP-05", "sort": "DEX2-ND", "bay": "", "owner": "dyrfu"}]}, {"name": "Bristol", "rows": [{"lane": "Bristol", "chute": "BOX-C-02A", "sort": "BRIS4", "bay": "14", "owner": ""}]}, {"name": "DME4-ND", "rows": [{"lane": "DME4-ND", "chute": "BOX-B-07C", "sort": "DME4-ND", "bay": "46", "owner": ""}, {"lane": "", "chute": "BOX-C-04B", "sort": "BRIS5", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-29", "sort": "DME4-ND", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-01", "sort": "BRIS4", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-22", "sort": "DME4-ND", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-02", "sort": "BRIS5", "bay": "", "owner": ""}, {"lane": "", "chute": "F-C-24", "sort": "BRIS4", "bay": "", "owner": ""}, {"lane": "DME4-ND", "chute": "F-SP-04", "sort": "DME4-ND", "bay": "46", "owner": ""}]}, {"name": "LBA8", "rows": [{"lane": "LBA8", "chute": "BOX-A-05C", "sort": "mix", "bay": "41", "owner": ""}]}, {"name": "SXW2", "rows": [{"lane": "SXW2", "chute": "BOX-A-01A", "sort": "DHA1", "bay": "31", "owner": ""}, {"lane": "", "chute": "BOX-B-01C", "sort": "dxs1", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-A-02A", "sort": "DBN5", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-02C", "sort": "DHU2", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-A-02B", "sort": "MIX", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-03C", "sort": "DXM3", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-19C", "sort": "DCR3", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-04C", "sort": "DLS4", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-23B", "sort": "DXM", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-05B", "sort": "DLS2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-24", "sort": "DHA1", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-06C", "sort": "DDN2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-25", "sort": "DCR3", "bay": "", "owner": ""}, {"lane": "", "chute": "BOX-B-09C", "sort": "DLS2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-26", "sort": "DBR2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-32", "sort": "DLS2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-27", "sort": "DXW3", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-33", "sort": "dHU2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-28", "sort": "DRM4", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-34", "sort": "DNE2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-74", "sort": "DSO2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-35", "sort": "DXM3", "bay": "", "owner": ""}, {"lane": "", "chute": "FST-A-69", "sort": "DHA1", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-36", "sort": "DXS1", "bay": "", "owner": ""}, {"lane": "", "chute": "FST-A-70", "sort": "DCR3", "bay": "", "owner": ""}, {"lane": "", "chute": "F-A-37", "sort": "DDN1", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-09", "sort": "DLS2", "bay": "", "owner": ""}, {"lane": "SXW2", "chute": "F-SP-02", "sort": "DXW3", "bay": "31", "owner": ""}, {"lane": "", "chute": "F-B-10", "sort": "DNE2", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-12", "sort": "dxs1", "bay": "", "owner": ""}, {"lane": "", "chute": "F-B-20", "sort": "DLS4", "bay": "", "owner": ""}, {"lane": "", "chute": "FST-B-24", "sort": "MIX", "bay": "", "owner": ""}, {"lane": "", "chute": "FST-B-27", "sort": "DDN1", "bay": "", "owner": ""}]}]}, {"name": "2145-2200 sun", "carriers": [{"name": "STN8", "rows": [{"lane": "STN8", "chute": "BOX-A-01D", "sort": "STN8-MIX", "bay": "29", "owner": "Adam"}, {"lane": "STN8", "chute": "F-SP-01", "sort": "DME4", "bay": "29", "owner": "Ali E"}, {"lane": "", "chute": "BOX-B-14C", "sort": "DLU2", "bay": "", "owner": "Kellen"}, {"lane": "", "chute": "BOX-B-16C", "sort": "DME4", "bay": "", "owner": "Kellen"}, {"lane": "", "chute": "BOX-B-17C", "sort": "DXE1", "bay": "", "owner": "Josh"}, {"lane": "", "chute": "BOX-B-18C", "sort": "DIG1", "bay": "", "owner": "Josh"}, {"lane": "", "chute": "BOX-B-22A", "sort": "DHA2", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "BOX-B-23D", "sort": "DIP1", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "BOX-B-24C", "sort": "DNR1", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-15", "sort": "STN8-MIX", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-16", "sort": "DXE1", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-17", "sort": "DHA2", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-18", "sort": "DIP1", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-A-19", "sort": "DSS2", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-A-20", "sort": "DIG1", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "F-A-21", "sort": "DME4", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "F-A-22", "sort": "DNR1", "bay": "", "owner": "Adel"}, {"lane": "", "chute": "F-A-23", "sort": "DLU2", "bay": "", "owner": "Adel"}]}, {"name": "BHX8", "rows": [{"lane": "BHX8", "chute": "BOX-B-11B", "sort": "DNN1", "bay": "41", "owner": "Ram"}]}, {"name": "DSA1-ND", "rows": [{"lane": "DSA1-ND", "chute": "BOX-B-15B", "sort": "DSA1-ND", "bay": "35", "owner": "Alysaid"}, {"lane": "", "chute": "BOX-B-12B", "sort": "MIX", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "BOX-B-18B", "sort": "DSA1-ND", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-56", "sort": "DBI7", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-A-54", "sort": "DSA1-ND", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "FST-A-71", "sort": "BHX8-MIX", "bay": "", "owner": "Adel"}, {"lane": "", "chute": "F-B-31", "sort": "DSA1-ND", "bay": "", "owner": "Patricia"}, {"lane": "", "chute": "F-B-07", "sort": "DNN1", "bay": "", "owner": "Artur"}, {"lane": "DSA1-ND", "chute": "F-SP-07", "sort": "DSA1-ND", "bay": "35", "owner": "Ali E"}, {"lane": "", "chute": "F-SP-09", "sort": "DSA1-ND", "bay": "", "owner": "Filimon"}]}]}, {"name": "2355-0045 sun", "carriers": [{"name": "DSO2-ND", "rows": [{"lane": "DSO2-ND", "chute": "BOX-B-02A", "sort": "DSO2-ND", "bay": "49", "owner": "Haabdiru"}, {"lane": "", "chute": "F-B-17", "sort": "DSO2-ND", "bay": "", "owner": "Patricia"}]}, {"name": "BHX8-DR2", "rows": [{"lane": "BHX8-DR2", "chute": "BOX-A-03B", "sort": "DPE2", "bay": "39", "owner": "Adam"}, {"lane": "BHX8-DR2", "chute": "F-B-04", "sort": "DPE2", "bay": "39", "owner": "Patricia"}, {"lane": "", "chute": "BOX-B-07B", "sort": "DNG1", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "F-B-05", "sort": "DOX2", "bay": "", "owner": "Patricia"}, {"lane": "", "chute": "BOX-B-08B", "sort": "MIX", "bay": "", "owner": "Ram"}, {"lane": "", "chute": "F-B-06", "sort": "DNG1", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "BOX-B-10B", "sort": "DOX2", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "F-B-08", "sort": "MIX", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "F-A-60", "sort": "DOX2", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-A-61", "sort": "DNG1", "bay": "", "owner": "Iftin"}]}, {"name": "DBH3", "rows": [{"lane": "DBH3", "chute": "BOX-B-04A", "sort": "DBH3-ND", "bay": "42", "owner": "Haabdiru"}, {"lane": "DBH3", "chute": "F-SP-08", "sort": "DBH3-ND", "bay": "42", "owner": "Ali E"}, {"lane": "", "chute": "F-SP-10", "sort": "DBH3-ND", "bay": "", "owner": "Ali E"}]}, {"name": "DCF2-ND", "rows": [{"lane": "DCF2-ND", "chute": "BOX-B-16A", "sort": "DCF2-ND", "bay": "34", "owner": "Sallam"}, {"lane": "", "chute": "BOX-B-08A", "sort": "DBH3-ND", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "BOX-B-17A", "sort": "DCF2-ND", "bay": "", "owner": "Abhasawn"}, {"lane": "", "chute": "BOX-B-11A", "sort": "DBH3-ND", "bay": "", "owner": "Ram"}, {"lane": "", "chute": "F-A-66", "sort": "DCF2-ND", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-A-51", "sort": "DBH3-ND", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "F-B-37", "sort": "DCF2-ND", "bay": "", "owner": "Patricia"}, {"lane": "", "chute": "F-A-64", "sort": "DBH3-ND", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "F-B-35", "sort": "DBH3-ND", "bay": "", "owner": "Artur"}, {"lane": "DCF2-ND", "chute": "F-SP-11", "sort": "DCF2-ND", "bay": "34", "owner": "Filimon"}, {"lane": "", "chute": "BOX-B-14A", "sort": "DBS3-SD", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "FST-SP-13", "sort": "DCF2-ND", "bay": "", "owner": "Filimon"}, {"lane": "", "chute": "F-B-28", "sort": "DBS3-SD", "bay": "", "owner": "Artur"}]}, {"name": "DBS3-SD", "rows": [{"lane": "DBS3-SD", "chute": "BOX-B-13A", "sort": "DBS3-SD", "bay": "36", "owner": "Abhasawn"}]}, {"name": "BHX8-DR3", "rows": [{"lane": "BHX8-DR3", "chute": "BOX-A-01C", "sort": "DBI5", "bay": "40", "owner": "Adam"}]}, {"name": "DXW3-DRH1", "rows": [{"lane": "DXW3-DRH1", "chute": "BOX-A-04A", "sort": "DXW3-ND", "bay": "leave the cart on staging area", "owner": "Iftin"}, {"lane": "", "chute": "BOX-A-04D", "sort": "DWR1", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "BOX-B-16B", "sort": "Priority", "bay": "", "owner": "Abhasawn"}, {"lane": "", "chute": "BOX-B-09B", "sort": "DBI4", "bay": "", "owner": "Nagaraju"}, {"lane": "", "chute": "F-A-62", "sort": "DXW3-ND", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "BOX-B-15C", "sort": "DST1", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-63", "sort": "Priority", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "BOX-B-22B", "sort": "DNG2", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "F-B-19", "sort": "Priority", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "F-A-72", "sort": "DST1", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-B-42", "sort": "DXW3-ND", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "F-A-73", "sort": "DNG2", "bay": "", "owner": "Adrienn"}, {"lane": "", "chute": "F-B-01", "sort": "DST1", "bay": "", "owner": "Patricia"}, {"lane": "", "chute": "F-B-03", "sort": "DBI4", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "F-B-13", "sort": "DWR1", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "FST-B-25", "sort": "DBI5", "bay": "", "owner": "Ram"}, {"lane": "", "chute": "F-C-11", "sort": "MIX", "bay": "", "owner": "Williams"}]}]}, {"name": "0300-0400sun", "carriers": [{"name": "DBR1", "rows": [{"lane": "DBR1", "chute": "BOX-B-03B", "sort": "DBR1-ND", "bay": "49", "owner": "Ram"}, {"lane": "DBR1", "chute": "F-SP-24", "sort": "DBR1-ND", "bay": "49", "owner": "Filimon"}, {"lane": "", "chute": "F-B-39", "sort": "DBR1-ND", "bay": "", "owner": "Artur"}]}, {"name": "DPO1", "rows": [{"lane": "DPO1", "chute": "BOX-B-04B", "sort": "DPO1-ND", "bay": "45", "owner": "Sakiru"}, {"lane": "DPO1", "chute": "F-SP-25", "sort": "DPO1-ND", "bay": "45", "owner": "Daniela"}]}, {"name": "DXM4", "rows": [{"lane": "DXM4", "chute": "BOX-B-06B", "sort": "DXM4-ND", "bay": "46", "owner": "Nagaraju"}, {"lane": "", "chute": "BOX-B-08C", "sort": "DPO1-ND", "bay": "", "owner": "Haabdiru"}, {"lane": "", "chute": "F-A-85", "sort": "DXM4-ND", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-A-84", "sort": "DPO1-ND", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "F-B-45", "sort": "DXM4-ND", "bay": "", "owner": "Idriss"}, {"lane": "", "chute": "F-B-29", "sort": "DPO1-ND", "bay": "", "owner": "Artur"}]}, {"name": "DBI7", "rows": [{"lane": "DBI7", "chute": "BOX-A-05A", "sort": "DBI7-ND", "bay": "35", "owner": "Adam"}]}, {"name": "DCR2", "rows": [{"lane": "DCR2", "chute": "BOX-A-02C", "sort": "DCR2-ND", "bay": "36", "owner": "Adam"}, {"lane": "", "chute": "BOX-B-13B", "sort": "DBI7-ND", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "F-A-87", "sort": "DCR2-ND", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-A-88", "sort": "DBI7-ND", "bay": "", "owner": "Mo"}, {"lane": "", "chute": "F-B-41", "sort": "DCR2-ND", "bay": "", "owner": "Idriss"}, {"lane": "", "chute": "F-A-89", "sort": "DBI7-ND", "bay": "", "owner": "Mo"}]}, {"name": "DXN1", "rows": [{"lane": "DXN1", "chute": "BOX-B-12C", "sort": "DXN1-ND", "bay": "28", "owner": "Ram"}, {"lane": "", "chute": "F-B-18", "sort": "DXN1-ND", "bay": "", "owner": "Artur"}]}]}, {"name": "0100-0145 sun", "carriers": [{"name": "Bristol-T48", "rows": [{"lane": "Bristol-T48", "chute": "BOX-B-23C", "sort": "NORTHAMP", "bay": "19", "owner": "Abhasawn"}, {"lane": "", "chute": "BOX-B-25A", "sort": "NORTHAMP", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-08", "sort": "NORTHAMP", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-C-15", "sort": "NORTHAMP", "bay": "", "owner": "Williams"}]}, {"name": "DWR1-DBI5", "rows": [{"lane": "DWR1-DBI5", "chute": "BOX-B-14B", "sort": "DWR1-ND", "bay": "leave the cart on staging area", "owner": "Alysaid"}, {"lane": "", "chute": "BOX-B-21C", "sort": "Priority", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-53", "sort": "Priority", "bay": "", "owner": "Joanna"}, {"lane": "", "chute": "F-A-76", "sort": "DWR1-ND", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "F-B-43", "sort": "DWR1-ND", "bay": "", "owner": "Patricia"}]}, {"name": "DSA1-SD", "rows": [{"lane": "DSA1-SD", "chute": "BOX-B-01B", "sort": "DSA1-SD", "bay": "51", "owner": "Ram"}]}, {"name": "DXP1-SD", "rows": [{"lane": "DXP1-SD", "chute": "BOX-B-12A", "sort": "DXP1-SD", "bay": "30", "owner": "Haabdiru"}, {"lane": "", "chute": "F-A-79", "sort": "DSA1-SD", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-A-78", "sort": "DXP1-SD", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-B-15", "sort": "DSA1-SD", "bay": "", "owner": "Patricia"}, {"lane": "DXP1-SD", "chute": "F-SP-22", "sort": "DXP1-SD", "bay": "30", "owner": "WS"}, {"lane": "", "chute": "F-C-B", "sort": "DWR2-SD", "bay": "", "owner": "Williams"}]}, {"name": "DEX2-SD", "rows": [{"lane": "DEX2-SD", "chute": "BOX-B-22D", "sort": "DXM2", "bay": "24", "owner": "Alysaid"}, {"lane": "", "chute": "F-A-81", "sort": "DRM2-ND", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "BOX-B-24A", "sort": "DEX2-SD", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "F-B-14", "sort": "DRM2-ND", "bay": "", "owner": "Artur"}, {"lane": "", "chute": "F-A-80", "sort": "DEX2-SD", "bay": "", "owner": ""}, {"lane": "DEX2-SD", "chute": "F-SP-16", "sort": "DEX2-SD", "bay": "24", "owner": "WS"}]}, {"name": "DWR2-SD", "rows": [{"lane": "DWR2-SD", "chute": "BOX-B-21B", "sort": "DWR2-SD", "bay": "23", "owner": "Sallam"}, {"lane": "", "chute": "FST-SP-14", "sort": "DXP1-ND", "bay": "", "owner": "Ali E"}, {"lane": "", "chute": "F-A-77", "sort": "DWR2-SD", "bay": "", "owner": "Adel"}, {"lane": "DWR2-SD", "chute": "F-SP-19", "sort": "DWR2-SD", "bay": "23", "owner": "WS"}, {"lane": "", "chute": "F-B-34", "sort": "DXP1-ND", "bay": "", "owner": "Artur"}]}, {"name": "DRM2", "rows": [{"lane": "DRM2", "chute": "FST-SP-15", "sort": "DRM2-ND", "bay": "45", "owner": "Filimon"}]}, {"name": "DXP1-ND", "rows": [{"lane": "DXP1-ND", "chute": "BOX-B-09A", "sort": "DXP1-ND", "bay": "40", "owner": "Mo"}]}, {"name": "DHA1", "rows": [{"lane": "DHA1", "chute": "BOX-B-02B", "sort": "DHA1-ND", "bay": "45", "owner": "Mo"}, {"lane": "DHA1", "chute": "F-SP-23", "sort": "DHA1-ND", "bay": "45", "owner": "Filimon"}]}]}, {"name": "0430-0445 Sun", "carriers": [{"name": "DBS3-ND", "rows": [{"lane": "DBS3-ND", "chute": "BOX-A-03A", "sort": "DBS3-ND", "bay": "33", "owner": "Adam"}, {"lane": "DBS3-ND", "chute": "F-SP-28", "sort": "DBS3-ND", "bay": "33", "owner": "Daniela"}, {"lane": "", "chute": "BOX-B-15A", "sort": "DBS3-ND", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "F-SP-30", "sort": "DBS3-ND", "bay": "", "owner": "Filimon"}, {"lane": "", "chute": "BOX-B-18A", "sort": "DBS3-ND", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-A-90", "sort": "DBS3-ND", "bay": "", "owner": "Idriss"}, {"lane": "", "chute": "F-B-36", "sort": "DBS3-ND", "bay": "", "owner": "Artur"}]}, {"name": "DRG3", "rows": [{"lane": "DRG3", "chute": "BOX-B-10A", "sort": "DRG3-ND", "bay": "44", "owner": "Ram"}, {"lane": "DRG3", "chute": "F-SP-32", "sort": "DRG3-ND", "bay": "44", "owner": "Filimon"}]}, {"name": "DBI2", "rows": [{"lane": "DBI2", "chute": "BOX-B-11C", "sort": "DBI2-ND", "bay": "37", "owner": "Sakiru"}, {"lane": "", "chute": "F-A-92", "sort": "DRG3-ND", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "F-A-95", "sort": "DBI2-ND", "bay": "", "owner": "Adam"}, {"lane": "", "chute": "F-B-30", "sort": "DRG3-ND", "bay": "", "owner": "Idriss"}]}, {"name": "DRG2", "rows": [{"lane": "DRG2", "chute": "BOX-B-01A", "sort": "DRG2-ND", "bay": "52", "owner": "Ronald"}, {"lane": "", "chute": "BOX-B-05A", "sort": "DBS2-ND", "bay": "", "owner": "Nagaraju"}, {"lane": "", "chute": "F-A-94", "sort": "DRG2-ND", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "BOX-B-07A", "sort": "DBS2-ND", "bay": "", "owner": "Nagaraju"}, {"lane": "", "chute": "F-B-16", "sort": "DRG2-ND", "bay": "", "owner": "Idriss"}, {"lane": "", "chute": "BOX-B-09B", "sort": "DBI4", "bay": "", "owner": "Ram"}]}, {"name": "DWR2", "rows": [{"lane": "DWR2", "chute": "BOX-B-17C", "sort": "DXE1", "bay": "32", "owner": "Abhasawn"}, {"lane": "", "chute": "F-A-96", "sort": "DBS2-ND", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "BOX-B-19A", "sort": "DWR2-ND", "bay": "", "owner": "Abhasawn"}, {"lane": "", "chute": "F-B-38", "sort": "DBS2-ND", "bay": "", "owner": "Mo/Alisha"}, {"lane": "", "chute": "BOX-B-20A", "sort": "DWR2-ND", "bay": "", "owner": "Sallam"}, {"lane": "", "chute": "F-B-46", "sort": "DBS2-ND", "bay": "", "owner": "Mo/Alisha"}, {"lane": "", "chute": "F-A-91", "sort": "DWR2-ND", "bay": "", "owner": "Iftin"}, {"lane": "", "chute": "F-B-40", "sort": "DWR2-ND", "bay": "", "owner": "Haabdiru"}]}, {"name": "DSN1-ND", "rows": [{"lane": "DSN1-ND", "chute": "BOX-B-21A", "sort": "DSN1-ND", "bay": "30", "owner": "Sallam"}, {"lane": "", "chute": "F-SP-35", "sort": "DWR2-ND", "bay": "", "owner": "Daniela"}, {"lane": "", "chute": "BOX-B-23A", "sort": "DSN1-ND", "bay": "", "owner": "Williams"}, {"lane": "DSN1-ND", "chute": "F-SP-29", "sort": "DSN1-ND", "bay": "30", "owner": "Daniela"}, {"lane": "", "chute": "F-A-82", "sort": "DSN1-ND", "bay": "", "owner": "Alysaid"}, {"lane": "", "chute": "F-SP-31", "sort": "DSN1-ND", "bay": "", "owner": "Daniela"}, {"lane": "", "chute": "F-B-33", "sort": "DSN1-ND", "bay": "", "owner": "Haabdiru"}]}, {"name": "DBS2-ND", "rows": [{"lane": "DBS2-ND", "chute": "F-SP-34", "sort": "DBS2-ND", "bay": "43", "owner": "WS"}, {"lane": "", "chute": "F-C-02", "sort": "DXM2", "bay": "", "owner": "Williams"}, {"lane": "", "chute": "F-SP-36", "sort": "DBS2-ND", "bay": "", "owner": "WS"}, {"lane": "", "chute": "F-SP-38", "sort": "DBS2-ND", "bay": "", "owner": "WS"}, {"lane": "", "chute": "F-SP-39", "sort": "DBS2-ND", "bay": "", "owner": "WS"}]}]}];
 loadExisting();
+checkToken();
 </script>
 </body>
 </html>
