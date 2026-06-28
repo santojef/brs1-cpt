@@ -1574,42 +1574,87 @@ if (typeof IS_TV_MODE !== 'undefined' && IS_TV_MODE) {
 var BLOB_URL = 'https://jsonblob.com/api/jsonBlob/019f1048-c5f0-759a-a997-7d10111d135d';
 var _lastTs  = null;
 
+// Convert flat rows -> group structure renderBoard expects
+// Input:  [ {cpt, carrier, chute, sort, bay, owner, ...} ]
+// Output: [ {time, lane, isSpecialPick, hasCloseMove, chutes:[{stacking,sort,bay,owner}]} ]
+function flatToGroups(rows) {
+  var groupMap = {};
+  var order = [];
+  rows.forEach(function(row) {
+    var time    = row.cpt     || '';
+    var lane    = row.carrier || '';
+    var key     = time + '|' + lane.toLowerCase().trim();
+    if (!groupMap[key]) {
+      groupMap[key] = {
+        time:         time,
+        lane:         lane,
+        isSpecialPick: lane.toUpperCase().indexOf('SP') === 0,
+        hasCloseMove: false,
+        chutes:       []
+      };
+      order.push(key);
+    }
+    groupMap[key].chutes.push({
+      stacking: row.chute  || '',
+      sort:     row.sort   || '',
+      bay:      row.bay    || '',
+      owner:    row.owner  || ''
+    });
+  });
+  return order.map(function(k){ return groupMap[k]; });
+}
+
 function fetchData(cb) {
-  fetch(BLOB_URL+'?t='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}})
-  .then(function(r){return r.json();})
-  .then(function(d){cb(d&&d.ts?d:null);})
-  .catch(function(e){console.warn('[TV]',e.message);cb(null);});
+  fetch(BLOB_URL + '?t=' + Date.now(), {
+    cache: 'no-store', headers: { 'Accept': 'application/json' }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) { cb(d && d.ts ? d : null); })
+  .catch(function(e) { console.warn('[TV]', e.message); cb(null); });
 }
 
 function applyData(rec) {
-  if(!rec||!rec.ts||!rec.data||!rec.data.length) return;
-  if(rec.ts===_lastTs) return;
-  _lastTs=rec.ts;
-  document.getElementById('waiting').style.display='none';
-  document.getElementById('board').style.display='block';
-  allData=rec.data; rosterMap=rec.rosterMap||{};
-  if(typeof detectShiftMode==='function')  detectShiftMode(allData);
-  if(typeof renderBoard==='function')      renderBoard(Object.keys(rosterMap).length);
-  if(typeof startLiveUpdates==='function') startLiveUpdates();
-  if(typeof updateAdvancePill==='function')updateAdvancePill();
-  document.getElementById('lastUp').textContent='Updated: '+rec.ts;
+  if (!rec || !rec.ts || !rec.data || !rec.data.length) return;
+  if (rec.ts === _lastTs) return;
+  _lastTs = rec.ts;
+  console.log('[TV] Applying ts:', rec.ts, 'rows:', rec.data.length);
+
+  document.getElementById('waiting').style.display = 'none';
+  document.getElementById('board').style.display   = 'block';
+
+  // Transform flat data -> groups
+  allData   = flatToGroups(rec.data);
+  rosterMap = rec.rosterMap || {};
+
+  console.log('[TV] Groups:', allData.length, 'first:', allData[0]);
+
+  if (typeof detectShiftMode  === 'function') detectShiftMode(allData);
+  if (typeof renderBoard      === 'function') renderBoard(Object.keys(rosterMap).length);
+  if (typeof startLiveUpdates === 'function') startLiveUpdates();
+  if (typeof updateAdvancePill=== 'function') updateAdvancePill();
+
+  document.getElementById('lastUp').textContent = 'Updated: ' + rec.ts;
 }
 
-function poll(){
-  fetchData(function(rec){
-    if(rec){applyData(rec);}
-    else{document.getElementById('pollStatus').textContent='Last checked: '+new Date().toLocaleTimeString('en-GB');}
+function poll() {
+  fetchData(function(rec) {
+    if (rec) { applyData(rec); }
+    else {
+      document.getElementById('pollStatus').textContent =
+        'Last checked: ' + new Date().toLocaleTimeString('en-GB');
+    }
   });
 }
-poll(); setInterval(poll,15000);
+poll();
+setInterval(poll, 15000);
 
-function tick(){
-  var n=new Date();
-  document.getElementById('clock').textContent=n.toLocaleTimeString('en-GB');
-  document.getElementById('dateLbl').textContent=n.toLocaleDateString('en-GB',
-    {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+function tick() {
+  var n = new Date();
+  document.getElementById('clock').textContent = n.toLocaleTimeString('en-GB');
+  document.getElementById('dateLbl').textContent = n.toLocaleDateString('en-GB',
+    {weekday:'long', day:'numeric', month:'long', year:'numeric'});
 }
-setInterval(tick,1000); tick();
+setInterval(tick, 1000); tick();
 </script>
 </body>
 </html>
