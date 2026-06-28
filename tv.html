@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-store">
 <title>BRS1 CPT Board</title>
-<style>* { box-sizing: border-box; margin: 0; padding: 0; }
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
 
@@ -206,9 +207,13 @@
   .pill-resume-btn { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:3px 10px; border-radius:10px; font-size:11px; cursor:pointer; margin-left:4px; }
   .pill-resume-btn:hover { background:rgba(255,255,255,0.28); }
   body.tv-mode .advance-pill { font-size:15px; padding:8px 18px; }
-  body.tv-mode .pill-time    { font-size:24px; }</style>
+  body.tv-mode .pill-time    { font-size:24px; }
+.debug-bar{position:fixed;bottom:0;left:0;right:0;background:#1c2333;color:#93c5fd;
+           font-size:11px;padding:4px 12px;z-index:999;font-family:monospace}
+</style>
 </head>
 <body>
+
 <header class="header">
   <div class="header-left">
     <span class="amazon-logo">amazon</span>
@@ -224,14 +229,19 @@
     <div class="date-display" id="dateLbl"></div></div>
   </div>
 </header>
-<div id="waiting" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;color:#6b7280;padding-top:80px;">
+
+<div id="waiting" style="display:flex;flex-direction:column;align-items:center;
+     justify-content:center;min-height:70vh;color:#6b7280;padding-top:80px;">
   <div style="font-size:56px;margin-bottom:16px;">&#128225;</div>
   <div style="font-size:22px;font-weight:700;color:#9ca3af;margin-bottom:8px;">Waiting for CPT data</div>
   <div style="font-size:13px;">Publish assignments from the Admin page</div>
   <div style="font-size:12px;margin-top:12px;color:#4b5563;" id="pollStatus">Checking&hellip;</div>
 </div>
+
 <div style="height:160px"></div>
 <div class="board visible" id="board" style="display:none;padding-top:24px"></div>
+<div class="debug-bar" id="debugBar">Initialising&hellip;</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 
@@ -1563,56 +1573,125 @@ if (typeof IS_TV_MODE !== 'undefined' && IS_TV_MODE) {
   }
 }
 
+
 var DATA_RAW = 'https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json';
 var _lastTs  = null;
+var _pollCount = 0;
 
-function flatToGroups(rows){
-  var map={},order=[];
-  rows.forEach(function(row){
-    var time=row.cpt||'',lane=row.carrier||'';
-    var key=time+'|'+lane.toLowerCase().trim();
-    if(!map[key]){map[key]={time:time,lane:lane,isSpecialPick:lane.toUpperCase().indexOf('SP')===0,hasCloseMove:false,chutes:[]};order.push(key);}
-    map[key].chutes.push({stacking:row.chute||'',sort:row.sort||'',bay:row.bay||'',owner:row.owner||''});
+function dbg(msg) {
+  document.getElementById('debugBar').textContent = new Date().toLocaleTimeString('en-GB') + ' — ' + msg;
+  console.log('[TV]', msg);
+}
+
+function flatToGroups(rows) {
+  var map = {}, order = [];
+  rows.forEach(function(row) {
+    var time = row.cpt     || '';
+    var lane = row.carrier || '';
+    var key  = time + '|' + lane.toLowerCase().trim();
+    if (!map[key]) {
+      map[key] = {
+        time:          time,
+        lane:          lane,
+        isSpecialPick: lane.toUpperCase().indexOf('SP') === 0,
+        hasCloseMove:  false,
+        chutes:        []
+      };
+      order.push(key);
+    }
+    map[key].chutes.push({
+      stacking: row.chute || '',
+      sort:     row.sort  || '',
+      bay:      row.bay   || '',
+      owner:    row.owner || ''
+    });
   });
-  return order.map(function(k){return map[k];});
+  return order.map(function(k) { return map[k]; });
 }
 
-function fetchData(cb){
-  fetch(DATA_RAW+'?t='+Date.now(),{cache:'no-store'})
-  .then(function(r){return r.json();})
-  .then(function(d){cb(d&&d.ts?d:null);})
-  .catch(function(e){console.warn('[TV]',e.message);cb(null);});
+function fetchData(cb) {
+  _pollCount++;
+  dbg('Polling #' + _pollCount + '...');
+  // No Accept header — raw.githubusercontent.com serves plain text/JSON fine without it
+  fetch(DATA_RAW + '?t=' + Date.now(), { cache: 'no-store' })
+    .then(function(r) {
+      dbg('HTTP ' + r.status + ', ok=' + r.ok);
+      if (!r.ok) { cb(null); return; }
+      return r.text();
+    })
+    .then(function(text) {
+      if (!text) { cb(null); return; }
+      try {
+        var d = JSON.parse(text);
+        dbg('Parsed OK: ts=' + (d.ts||'?') + ' rows=' + (d.data||[]).length);
+        cb(d && d.ts ? d : null);
+      } catch(e) {
+        dbg('JSON parse error: ' + e.message);
+        cb(null);
+      }
+    })
+    .catch(function(e) {
+      dbg('Fetch error: ' + e.message);
+      cb(null);
+    });
 }
 
-function applyData(rec){
-  if(!rec||!rec.ts||!rec.data||!rec.data.length)return;
-  if(rec.ts===_lastTs)return;
-  _lastTs=rec.ts;
-  document.getElementById('waiting').style.display='none';
-  document.getElementById('board').style.display='block';
-  allData=flatToGroups(rec.data);
-  rosterMap=rec.rosterMap||{};
-  if(typeof detectShiftMode==='function')detectShiftMode(allData);
-  if(typeof renderBoard==='function')renderBoard(Object.keys(rosterMap).length);
-  if(typeof startLiveUpdates==='function')startLiveUpdates();
-  if(typeof updateAdvancePill==='function')updateAdvancePill();
-  document.getElementById('lastUp').textContent='Updated: '+rec.ts;
+function applyData(rec) {
+  if (!rec || !rec.ts || !rec.data || !rec.data.length) {
+    dbg('applyData: invalid rec');
+    return;
+  }
+  if (rec.ts === _lastTs) {
+    dbg('No change (ts=' + rec.ts + ')');
+    return;
+  }
+  _lastTs = rec.ts;
+  dbg('Applying ' + rec.data.length + ' rows...');
+
+  document.getElementById('waiting').style.display = 'none';
+  document.getElementById('board').style.display   = 'block';
+
+  allData   = flatToGroups(rec.data);
+  rosterMap = rec.rosterMap || {};
+
+  dbg('Groups: ' + allData.length + ', calling renderBoard...');
+
+  try {
+    if (typeof detectShiftMode  === 'function') detectShiftMode(allData);
+    if (typeof renderBoard      === 'function') renderBoard(Object.keys(rosterMap).length);
+    if (typeof startLiveUpdates === 'function') startLiveUpdates();
+    if (typeof updateAdvancePill=== 'function') updateAdvancePill();
+    dbg('Render complete. Groups: ' + allData.length);
+  } catch(e) {
+    dbg('Render ERROR: ' + e.message);
+    console.error(e);
+  }
+
+  document.getElementById('lastUp').textContent = 'Updated: ' + rec.ts;
 }
 
-function poll(){
-  fetchData(function(rec){
-    if(rec){applyData(rec);}
-    else{document.getElementById('pollStatus').textContent='Last checked: '+new Date().toLocaleTimeString('en-GB');}
+function poll() {
+  fetchData(function(rec) {
+    if (rec) {
+      applyData(rec);
+    } else {
+      document.getElementById('pollStatus').textContent =
+        'Last checked: ' + new Date().toLocaleTimeString('en-GB');
+      dbg('No data returned from fetch');
+    }
   });
 }
-poll();setInterval(poll,15000);
 
-function tick(){
-  var n=new Date();
-  document.getElementById('clock').textContent=n.toLocaleTimeString('en-GB');
-  document.getElementById('dateLbl').textContent=n.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+poll();
+setInterval(poll, 15000);
+
+function tick() {
+  var n = new Date();
+  document.getElementById('clock').textContent = n.toLocaleTimeString('en-GB');
+  document.getElementById('dateLbl').textContent = n.toLocaleDateString('en-GB',
+    {weekday:'long', day:'numeric', month:'long', year:'numeric'});
 }
-setInterval(tick,1000);tick();
+setInterval(tick, 1000); tick();
 </script>
 </body>
 </html>
