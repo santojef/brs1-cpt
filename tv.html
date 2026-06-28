@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store">
+<title>BRS1 CPT Board</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+
+  /* ── HEADER ─────────────────────────────────────────────────────── */
+  .header { background: linear-gradient(135deg, #1e3a5f, #1a2f50); border-bottom: 3px solid #f97316; padding: 12px 24px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; position: fixed; top: 0; left: 0; right: 0; z-index: 200; width: 100%; box-sizing: border-box; }
+  .header-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+  .amazon-logo { font-size: 28px; font-weight: 900; color: #f97316; letter-spacing: -1px; }
+  .header-title { font-size: 22px; font-weight: 700; color: #fff; }
+  .header-subtitle { font-size: 13px; color: #9ca3af; margin-top: 2px; }
+  .header-centre { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .header-right { display: flex; align-items: center; gap: 10px; justify-content: flex-end; min-width: 0; }
+  .clock { font-size: 26px; font-weight: 700; color: #f97316; font-variant-numeric: tabular-nums; }
+  .date-display { font-size: 13px; color: #9ca3af; text-align: right; }
+
+  /* TV MODE BUTTON */
+  .tv-btn { background: #1f2937; border: 1px solid #374151; color: #9ca3af; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; white-space: nowrap; }
+  .tv-btn:hover { border-color: #f97316; color: #f97316; }
+  .tv-btn.active { background: #f97316; border-color: #f97316; color: #fff; }
+
+  /* ── NEXT CPT BANNER ─────────────────────────────────────────────── */
+  .next-cpt-banner { display: none; position: fixed; top: 215px; left: 0; right: 0; z-index: 140; width: 100%; box-sizing: border-box;  grid-template-columns: 1fr auto 1fr; align-items: center; background: linear-gradient(135deg, #166534, #15803d); border: none; border-bottom: 3px solid #16a34a; border-radius: 0; margin: 0; padding: 10px 24px; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .next-cpt-banner.visible { display: grid !important; }
+  .next-cpt-banner.warn { background: linear-gradient(135deg, #854d0e, #a16207); border-bottom-color: #facc15; animation: warnFlash 1.2s ease-in-out infinite; }
+  .next-cpt-banner.imminent { background: linear-gradient(135deg, #7f1d1d, #991b1b); border-bottom-color: #ef4444; animation: urgentPulse 0.8s ease-in-out infinite; }
+  @keyframes warnFlash {
+    0%,100%{opacity:1;box-shadow:0 0 0 rgba(250,204,21,0);}
+    50%{opacity:0.85;box-shadow:0 0 18px rgba(250,204,21,0.7);}
+  }
+  @keyframes urgentPulse { 0%,100%{opacity:1;} 50%{opacity:0.75;} }
+  .next-label { font-size: 26px; color: #86efac; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+  .next-label.urgent { color: #fdba74; } .next-label.imminent { color: #fca5a5; }
+  .next-time { font-size: 52px; font-weight: 900; color: #fff; letter-spacing: 4px; line-height: 1; }
+  .next-countdown { font-size: 36px; font-weight: 800; color: #4ade80; font-variant-numeric: tabular-nums; }
+  .next-countdown.urgent { color: #fb923c; } .next-countdown.imminent { color: #f87171; }
+  .next-info { font-size: 15px; color: #86efac; margin-top: 2px; } .next-info.urgent { color: #fed7aa; }
+  .next-cpt-left { display: flex; flex-direction: column; justify-content: center; padding-left: 8px; }
+  .next-cpt-centre { display: flex; justify-content: center; align-items: center; }
+  .next-cpt-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 6px; padding-right: 8px; }
+  .scroll-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .scroll-btn:hover { background: rgba(255,255,255,0.25); }
+
+  /* ── UPLOAD ──────────────────────────────────────────────────────── */
+  .upload-zone { margin: 40px auto; max-width: 600px; border: 3px dashed #cbd5e1; border-radius: 16px; padding: 60px 40px; text-align: center; cursor: pointer; transition: all 0.3s; background: #ffffff; }
+  .upload-zone:hover, .upload-zone.dragover { border-color: #f97316; background: #1c2230; }
+  .upload-icon { font-size: 56px; margin-bottom: 16px; }
+  .upload-zone h2 { font-size: 20px; color: #1e293b; margin-bottom: 8px; }
+  .upload-zone p { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+  .upload-btn { background: #f97316; color: #fff; border: none; padding: 12px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .upload-btn:hover { background: #ea6a00; }
+  #fileInput { display: none; }
+
+  /* ── ROSTER STATUS ───────────────────────────────────────────────── */
+  .roster-bar { display: none; background: #f8fafc; border-bottom: 1px solid #21262d; padding: 8px 24px; font-size: 12px; color: #6b7280; gap: 12px; align-items: center; }
+  .roster-bar.visible { display: flex; }
+  .roster-badge { background: #14532d; color: #4ade80; border: 1px solid #16a34a; padding: 2px 10px; border-radius: 10px; font-weight: 600; font-size: 12px; }
+  .roster-badge.none { background: #292524; color: #a8a29e; border-color: #44403c; }
+
+  /* ── CONTROLS ────────────────────────────────────────────────────── */
+  .controls { display: none; background: #ffffff; border-bottom: 1px solid #21262d; padding: 14px 24px; gap: 16px; align-items: center; flex-wrap: wrap; position: fixed; top: 85px; left: 0; right: 0; width: 100%; box-sizing: border-box; z-index: 150; }
+  .controls.visible { display: flex; }
+  .search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 400px; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; color: #6b7280; }
+  .search-input { width: 100%; padding: 10px 36px 10px 38px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; color: #1e293b; font-size: 15px; outline: none; }
+  .search-input:focus { border-color: #f97316; }
+  .search-input::placeholder { color: #6b7280; }
+  .clear-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6b7280; cursor: pointer; font-size: 16px; display: none; }
+  .clear-btn.visible { display: block; }
+  .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tab-btn { padding: 7px 14px; border-radius: 20px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #475569; font-size: 13px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+  .tab-btn:hover { border-color: #f97316; color: #f97316; }
+  .tab-btn.active { background: #f97316; border-color: #f97316; color: #fff; font-weight: 600; }
+  .tab-btn.tab-upcoming { border-color: #16a34a; color: #4ade80; }
+  .tab-btn.tab-passed { border-color: #475569; color: #64748b; opacity: 0.6; }
+  .tab-btn.tab-warn { border-color: #f59e0b; color: #fbbf24; animation: tabPulse 1.2s ease-in-out infinite; }
+  .tab-btn.tab-urgent { border-color: #f97316; color: #fb923c; animation: tabPulse 1.5s ease-in-out infinite; }
+  .tab-btn.tab-imminent { border-color: #ef4444; color: #f87171; animation: tabPulse 0.8s ease-in-out infinite; }
+  @keyframes tabPulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+  .stats-bar { margin-left: auto; font-size: 13px; color: #64748b; white-space: nowrap; }
+  .stats-bar span { color: #f97316; font-weight: 600; }
+
+  /* ── BOARD ───────────────────────────────────────────────────────── */
+  .board { display: none; padding: 24px; max-width: 1600px; margin: 0 auto; background: #0d1117; }
+  .board.visible { display: block; }
+
+  /* ── SEARCH BANNER ───────────────────────────────────────────────── */
+  .search-banner { display: none; background: linear-gradient(135deg, #dbeafe, #eff6ff); border: 1px solid #2563eb; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; }
+  .search-banner.visible { display: block; }
+  .search-banner h3 { font-size: 16px; color: #1e40af; margin-bottom: 12px; font-weight: 600; }
+  .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .search-result-card { background: #ffffff; border: 1px solid #93c5fd; border-radius: 8px; padding: 12px 16px; }
+  .src-name { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
+  .src-login { font-size: 11px; color: #64748b; margin-bottom: 6px; font-family: monospace; }
+  .src-time { display: inline-block; background: #f97316; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+  .src-detail { font-size: 13px; color: #475569; line-height: 1.5; }
+  .src-detail strong { color: #1e293b; }
+  .src-close-alert { margin-top: 6px; font-size: 11px; background: #7c2d12; color: #fed7aa; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+
+  /* ── CPT SECTIONS ────────────────────────────────────────────────── */
+  .cpt-section { margin-bottom: 32px; transition: all 0.3s; }
+  .cpt-section.is-upcoming { border: 2px solid #16a34a; border-radius: 14px; padding: 16px; background: rgba(22,163,74,0.06); }
+  .cpt-section.is-warn { border: 2px solid #f59e0b; border-radius: 14px; padding: 16px; background: rgba(245,158,11,0.08); animation: warnPulse 1.2s ease-in-out infinite; }
+  .cpt-section.is-urgent { border: 2px solid #f97316; border-radius: 14px; padding: 16px; background: rgba(249,115,22,0.08); }
+  .cpt-section.is-imminent { border: 2px solid #ef4444; border-radius: 14px; padding: 16px; background: rgba(239,68,68,0.08); animation: sectionPulse 0.8s ease-in-out infinite; }
+  .cpt-section.is-passed { opacity: 0.4; }
+  @keyframes sectionPulse { 0%,100%{background:rgba(239,68,68,0.08);} 50%{background:rgba(239,68,68,0.15);} }
+  .cpt-section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; flex-wrap: wrap; }
+  .cpt-time-badge { background: #f97316; color: #fff; font-size: 20px; font-weight: 800; padding: 6px 20px; border-radius: 8px; letter-spacing: 1px; }
+  .cpt-upcoming-badge { background: #16a34a; } .cpt-urgent-badge { background: #ea580c; }
+  .cpt-imminent-badge { background: #dc2626; } .cpt-passed-badge { background: #374151; }
+  .cpt-bags-badge  { background: #0284c7; }
+  .cpt-section.is-bags { border: 2px solid #0284c7; border-radius: 14px; padding: 16px; background: rgba(2,132,199,0.05); }
+  .cpt-status { font-size: 13px; color: #475569; }
+  .cpt-status.green { color: #4ade80; font-weight: 600; } .cpt-status.orange { color: #fb923c; font-weight: 700; } .cpt-status.red { color: #f87171; font-weight: 700; }
+  .cpt-countdown { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cpt-countdown.amber { color: #f59e0b; font-weight: 700; }
+  .cpt-status.amber { color: #f59e0b; font-weight: 700; }
+  .cpt-countdown.green { color: #4ade80; } .cpt-countdown.orange { color: #fb923c; } .cpt-countdown.red { color: #f87171; }
+  .cpt-count { font-size: 13px; color: #64748b; margin-left: auto; }
+
+  /* ── LANE CARDS ──────────────────────────────────────────────────── */
+  /* LANE CARDS */
+  .lanes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+
+  .lane-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; transition: transform 0.15s, box-shadow 0.15s; }
+  .lane-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .lane-card.highlighted { border-color: #3b82f6; box-shadow: 0 0 0 2px #2563eb55; }
+  .lane-card.dimmed { opacity: 0.2; }
+  .lane-card.upcoming-card { border-color: #22c55e55; }
+  .lane-card.urgent-card   { border-color: #f9731655; }
+  .lane-card.imminent-card { border-color: #ef444455; }
+
+  .lane-header { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; background: #1e3a5f; border-bottom: 1px solid #e2e8f0; }
+  .lane-header.upcoming-header { background: #052e16; }
+  .lane-header.urgent-header   { background: #2c1403; }
+  .lane-header.imminent-header { background: #2a0505; }
+  .lane-name { font-size: 14px; font-weight: 800; letter-spacing: 0.5px; }
+  .lane-bay  { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 600; }
+
+  .lane-body { padding: 0 14px 10px; background: #ffffff; }
+
+  /* Grid columns: CHUTE | SORT | BAY | ASSOCIATE */
+  .col-headers {
+    display: grid;
+    grid-template-columns: 2fr 2fr 0.7fr 2.2fr;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+    color: #64748b; padding: 8px 4px 6px;
+    border-bottom: 1px solid #e2e8f0; text-transform: uppercase;
+  }
+  .chute-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 0.7fr 2.2fr;
+    align-items: center;
+    padding: 7px 4px; border-bottom: 1px solid #f1f5f9; gap: 4px;
+  }
+  .chute-row:last-child { border-bottom: none; }
+
+  .chute-location { font-size: 12px; font-weight: 700; color: #ffffff; font-family: 'Courier New', monospace; background: #0d111a; border: 1px solid #2d3748; padding: 3px 7px; border-radius: 5px; white-space: nowrap; display: inline-block; }
+  .chute-sort-tag { font-size: 11px; font-weight: 600; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chute-bay      { font-size: 12px; font-weight: 700; color: #fbbf24; text-align: center; }
+
+  .owner-cell { display: flex; flex-direction: column; min-width: 0; }
+  .owner-fullname { font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .owner-login { font-size: 9px; color: #94a3b8; font-family: monospace; white-space: nowrap; }
+  .owner-cell.highlighted-name .owner-fullname { background: #2563eb; color: #fff; padding: 2px 8px; border-radius: 6px; }
+  .owner-cell.no-roster .owner-fullname { color: #60a5fa; font-style: italic; }
+
+  .close-move-alert { background: #431407; border: 1px solid #c2410c; border-radius: 6px; padding: 6px 12px; font-size: 11px; color: #fed7aa; margin-top: 8px; text-align: center; font-weight: 600; }
+  .sp-badge { font-size: 10px; background: #7c3aed; color: #ede9fe; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+
+  /* TV overrides */
+  body.tv-mode .lanes-grid    { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 10px; }
+  body.tv-mode .lane-header   { padding: 12px 18px; }
+  body.tv-mode .lane-name     { font-size: 17px; }
+  body.tv-mode .lane-bay      { font-size: 12px; padding: 3px 10px; }
+  body.tv-mode .lane-body     { padding: 0 18px 12px; }
+  body.tv-mode .col-headers   { font-size: 11px; padding: 9px 4px 7px; }
+  body.tv-mode .chute-row     { padding: 9px 4px; }
+  body.tv-mode .chute-location{ font-size: 15px; }
+  body.tv-mode .chute-sort-tag{ font-size: 13px; }
+  body.tv-mode .chute-bay     { font-size: 14px; }
+  body.tv-mode .owner-fullname{ font-size: 15px; }
+  body.tv-mode .owner-login   { font-size: 11px; }
+  body.tv-mode .close-move-alert { font-size: 13px; padding: 8px 14px; }
+
+
+  /* ─── AUTO-ADVANCE COUNTDOWN PILL ─── */
+  .advance-pill { display:none; align-items:center; gap:8px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:20px; padding:6px 14px; font-size:13px; color:#e2e8f0; white-space:nowrap; transition:all 0.4s; }
+  .advance-pill.visible    { display:flex; }
+  .advance-pill.pill-ok      { border-color:rgba(74,222,128,0.45); background:rgba(74,222,128,0.13); }
+  .advance-pill.pill-soon    { border-color:rgba(251,146,60,0.55);  background:rgba(251,146,60,0.16); }
+  .advance-pill.pill-imminent{ border-color:rgba(248,113,113,0.65); background:rgba(248,113,113,0.2); animation:pillPulse 0.9s ease-in-out infinite; }
+  .advance-pill.pill-manual  { border-color:rgba(148,163,184,0.3);  background:rgba(148,163,184,0.08); opacity:0.75; }
+  @keyframes pillPulse { 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+  .pill-icon  { font-size:15px; }
+  .pill-label { font-size:10px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; opacity:0.7; line-height:1.2; }
+  .pill-time  { font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:1px; }
+  .pill-next  { font-size:12px; font-weight:600; opacity:0.85; line-height:1.4; }
+  .pill-resume-btn { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:3px 10px; border-radius:10px; font-size:11px; cursor:pointer; margin-left:4px; }
+  .pill-resume-btn:hover { background:rgba(255,255,255,0.28); }
+  body.tv-mode .advance-pill { font-size:15px; padding:8px 18px; }
+  body.tv-mode .pill-time    { font-size:24px; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <span class="amazon-logo">amazon</span>
+    <div>
+      <div class="header-title">&#128230; BRS1 CPT Assignment Board</div>
+      <div class="header-subtitle">FC Shipping &mdash; Avonmouth, Bristol &nbsp;&bull;&nbsp;
+        <span id="lastUp" style="color:#4ade80">Loading&hellip;</span></div>
+    </div>
+  </div>
+  <div class="header-centre"></div>
+  <div class="header-right">
+    <div><div class="clock" id="clock">--:--:--</div>
+    <div class="date-display" id="dateLbl"></div></div>
+  </div>
+</header>
+
+<div id="waiting" style="display:flex;flex-direction:column;align-items:center;
+     justify-content:center;min-height:70vh;color:#6b7280;padding-top:80px;">
+  <div style="font-size:56px;margin-bottom:16px;">&#128225;</div>
+  <div style="font-size:22px;font-weight:700;color:#9ca3af;margin-bottom:8px;">Waiting for CPT data</div>
+  <div style="font-size:13px;">Add assignments in the Admin page</div>
+  <div style="font-size:12px;margin-top:12px;color:#4b5563;" id="pollStatus">Checking&hellip;</div>
+</div>
+
+<div style="height:160px"></div>
+<div class="board visible" id="board" style="display:none;padding-top:24px"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+
+
+
+// ── Shared cross-device sync (window.harmony.api.preferences) ───────────
+// Uses the navbar's own injected preferences object — zero CORS issues.
+// window.harmony.api.preferences.setUserPreference(key, value) → Promise
+// window.harmony.api.preferences.getUserPreference(key)        → Promise
+// These call Harmony's API through the navbar's trusted context.
+const SEED_ALIAS = 'santojef';
+
+function _getMyAlias(){
+  try{
+    if(window.harmony && window.harmony.user && window.harmony.user.alias)
+      return window.harmony.user.alias;
+  }catch(e){}
+  return SEED_ALIAS;
+}
+
+// ── Shared cross-device sync (XHR chunked PUT/GET — no CORS preflight) ──────
+// Splits payload into 7KB chunks stored as cpt_schedule_0, _1, _2...
+// XHR PUT with text/plain = simple request = no preflight = works from any machine
+// XHR GET with credentials = reads any user's prefs = cross-device read
+
+
+function _getMyAlias(){
+  try{
+    var api = (typeof window.__harmonyApi==='function') ? window.__harmonyApi() : null;
+    if(api && api.user && api.user.alias) return api.user.alias;
+  }catch(e){}
+  return 'santojef';
+}
+
+// ── CPT Sync via Slack ───────────────────────────────────────────────────────
+// Save: POST JSON to Slack channel (open CORS, works from any domain)
+// Load: GET latest message from Slack channel
+
+var SLACK_TOKEN   = 'REVOKED_TOKEN_NOT_USED';
+var SLACK_CHANNEL = 'C08UB8XNUNB';
+
+var RELAY_URL = 'https://drive-render.corp.amazon.com/view/santojef%40/BRS1-CPT/slack-relay.html';
+
+function sharedSave(payload) {
+  var slim = payload;
+  try { var p = JSON.parse(payload); slim = JSON.stringify({ts:p.ts, data:p.data, rosterMap:{}}); } catch(e) {}
+  console.log('[CPT] Saving: ' + slim.length + ' bytes');
+
+  // 1. Always save to localStorage for same-machine fallback
+  try { localStorage.setItem('cpt_data', slim); } catch(e) {}
+
+  // 2. Try sendBeacon to Slack (bypasses CSP in most browsers)
+  var slackUrl = 'https://slack.com/api/chat.postMessage';
+  var body = JSON.stringify({channel:'C08UB8XNUNB', text:slim, unfurl_links:false, unfurl_media:false});
+  var blob = new Blob([body], {type:'application/json'});
+
+  // sendBeacon doesn't support custom headers — use fetch with keepalive instead
+  fetch(slackUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Authorization': 'Bearer REVOKED_TOKEN_NOT_USED'
+    },
+    body: body,
+    keepalive: true
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.ok) {
+      console.log('[CPT] Saved to Slack OK ts:', JSON.parse(slim).ts);
+    } else {
+      console.warn('[CPT] Slack blocked by CSP — data in localStorage only. Error:', d.error);
+      // Last resort: open relay page in a popup
+      _triggerRelayPopup(slim);
+    }
+  })
+  .catch(function(e){
+    console.warn('[CPT] Slack fetch blocked:', e.message, '— using popup relay');
+    _triggerRelayPopup(slim);
+  });
+}
+
+function _triggerRelayPopup(slim) {
+  // Open relay as a small popup window (not iframe) — popups are NOT subject to parent CSP
+  var popup = window.open(
+    'https://drive-render.corp.amazon.com/view/santojef%40/BRS1-CPT/slack-relay.html',
+    'cpt_relay',
+    'width=1,height=1,left=-100,top=-100'
+  );
+  if (!popup) { console.warn('[CPT] Popup blocked — data saved to localStorage only'); return; }
+  var sent = false;
+  var timer = setInterval(function() {
+    try {
+      if (popup.closed) { clearInterval(timer); return; }
+      popup.postMessage({type:'cpt-slack-save', payload: slim}, '*');
+      if (!sent) { sent = true; console.log('[CPT] Sent to popup relay'); }
+      setTimeout(function(){ if(!popup.closed) popup.close(); }, 3000);
+      clearInterval(timer);
+    } catch(e) { /* cross-origin not ready yet */ }
+  }, 200);
+}
+
+
+function slackLoad(cb) {
+  fetch('https://slack.com/api/conversations.history?channel=C08UB8XNUNB&limit=5', {
+    keepalive: true,
+    headers: {'Authorization': 'Bearer REVOKED_TOKEN_NOT_USED'}
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (!d.ok) throw new Error('Slack error: ' + d.error);
+    var msgs = d.messages || [];
+    for (var i = 0; i < msgs.length; i++) {
+      var txt = msgs[i].text || '';
+      // Find JSON by scanning for opening brace — no regex /s flag needed
+      var start = txt.indexOf('{"ts"');
+      if (start === -1) start = txt.indexOf('{"ts"');
+      if (start === -1) continue;
+      var depth = 0, end = -1;
+      for (var j = start; j < txt.length; j++) {
+        if (txt[j] === '{') depth++;
+        else if (txt[j] === '}') { depth--; if (depth === 0) { end = j; break; } }
+      }
+      if (end === -1) continue;
+      try {
+        var parsed = JSON.parse(txt.substring(start, end + 1));
+        if (parsed.ts && parsed.data && parsed.data.length > 0) {
+          console.log('[CPT] Loaded from Slack ts:', parsed.ts);
+          cb(txt.substring(start, end + 1));
+          return;
+        }
+      } catch(e) { console.warn('[CPT] JSON parse error:', e.message); }
+    }
+    console.warn('[CPT] No valid CPT data in Slack — trying localStorage');
+    try { cb(localStorage.getItem('cpt_data') || null); } catch(e) { cb(null); }
+  })
+  .catch(function(e){
+    console.warn('[CPT] Slack load failed:', e.message);
+    try { cb(localStorage.getItem('cpt_data') || null); } catch(ex) { cb(null); }
+  });
+}
+
+function sharedLoad(cb) {
+  slackLoad(cb);
+}
+
+// ── Clock ──────────────────────────────────────────────────────────────
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('en-GB');
+  document.getElementById('dateDisplay').textContent=n.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+updateClock(); setInterval(updateClock,1000);
+
+// ── Shift Mode Detection ────────────────────────────────────────────────────
+// 'night' : shift runs 20:00 → 04:50  (default, original behaviour)
+// 'day'   : shift runs 06:00 → 19:59  (Days file — all CPTs before 20:00)
+// Auto-detected from loaded data; can be overridden by calling setShiftMode()
+let _shiftMode = 'night';  // default until data loads
+
+function detectShiftMode(dataGroups){
+  // If the majority of CPT times are between 06:00 and 19:59, it's a day shift
+  if(!dataGroups||!dataGroups.length)return;
+  const times=dataGroups.map(g=>g.time).filter(t=>t&&t!=='BAGS'&&t!=='all');
+  if(!times.length)return;
+  const dayCount=times.filter(t=>{
+    const[h]=t.split(':').map(Number);
+    return h>=6&&h<20;
+  }).length;
+  _shiftMode = (dayCount/times.length > 0.5) ? 'day' : 'night';
+}
+
+// ── Time Helpers ─────────────────────────────────────────────────────────────
+function timeToMins(t){const[hh,mm]=t.split(':').map(Number);return hh*60+mm;}
+
+function shiftMins(t){
+  if(!t||t==='all')return -1;
+  if(t==='BAGS')return 99999;  // always sort last
+  const [h,m]=t.split(':').map(Number);
+  const total=h*60+m;
+  if(_shiftMode==='day'){
+    // Day shift: 06:00–19:59 all in order, no wrapping needed
+    return total;
+  }
+  // Night shift: 20:00 is start, anything <20:00 is next-calendar-day
+  return total>=20*60 ? total : total+24*60;
+}
+
+function nowShiftMins(){
+  const n=new Date(), m=n.getHours()*60+n.getMinutes();
+  if(_shiftMode==='day') return m;  // wall clock is fine for day shift
+  return m<20*60 ? m+1440 : m;     // night: post-midnight wraps forward
+}
+
+function nowShiftSecs(){
+  const n=new Date(), s=n.getHours()*3600+n.getMinutes()*60+n.getSeconds();
+  if(_shiftMode==='day') return s;
+  return s<20*3600 ? s+86400 : s;
+}
+
+function secsUntil(t){
+  const n=new Date();
+  const nm=n.getHours()*60+n.getMinutes();
+  if(_shiftMode==='day'){
+    // Day shift: simple wall-clock difference in seconds
+    return (shiftMins(t)-nm)*60-n.getSeconds();
+  }
+  // Night shift original logic
+  const SHIFT_START=20*60, SHIFT_RESET=4*60+50;
+  const inPreShift=(nm>=SHIFT_RESET&&nm<SHIFT_START);
+  if(inPreShift){const tm=shiftMins(t);if(tm===99999||tm===-1)return 999999;return (tm-nm)*60-n.getSeconds();}
+  return (shiftMins(t)-nowShiftMins())*60-n.getSeconds();
+}
+
+function minsUntil(t){
+  const nm=new Date().getHours()*60+new Date().getMinutes();
+  if(_shiftMode==='day'){
+    // Day shift: simple wall-clock minutes difference
+    return shiftMins(t)-nm;
+  }
+  // Night shift original logic
+  const SHIFT_START=20*60, SHIFT_RESET=4*60+50;
+  const inPreShift=(nm>=SHIFT_RESET&&nm<SHIFT_START);
+  if(inPreShift){const tm=shiftMins(t);if(tm===99999||tm===-1)return 9999;return tm-nm;}
+  return shiftMins(t)-nowShiftMins();
+}
+function fmtCountdown(m){if(m<=0)return'NOW';const h=Math.floor(m/60),mm=m%60;return h>0?h+'h '+mm.toString().padStart(2,'0')+'m':mm+'m';}
+function fmtCountdownSecs(s){if(s<=0)return'NOW';const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return h>0?h+'h '+m.toString().padStart(2,'0')+'m':m.toString().padStart(2,'0')+':'+ss.toString().padStart(2,'0');}
+
+// ── State ──────────────────────────────────────────────────────────────
+let allData=[], activeTime='all', searchQ='', lastAdvancedTime=null;
+let rosterMap={};
+let liveTimer=null;
+
+// ── TV MODE ────────────────────────────────────────────────────────────
+let tvMode=false;
+let tvScrollTimer=null;
+let tvScrollSections=[];
+let tvScrollIndex=0;
+let tvScrollDirection=1;  // 1=going down, -1=going back up
+const TV_SCROLL_INTERVAL=20000; // 20 seconds per section
+
+function toggleTV(){
+  tvMode=!tvMode;
+  document.body.classList.toggle('tv-mode',tvMode);
+  const btn=document.getElementById('tvBtn');
+  btn.classList.toggle('active',tvMode);
+  btn.textContent=tvMode?'✕ Exit TV':'📺 TV Mode';
+
+  if(tvMode){
+    // Request actual fullscreen
+    const el=document.documentElement;
+    if(el.requestFullscreen) el.requestFullscreen();
+    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    startTVScroll();
+    scrollToNext();
+  } else {
+    stopTVScroll();
+    if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
+}
+
+// Exit TV when F key pressed or fullscreen exits
+document.addEventListener('keydown',e=>{if((e.key==='f'||e.key==='F'||e.key==='Escape')&&tvMode)toggleTV();});
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&tvMode)toggleTV();});
+document.addEventListener('webkitfullscreenchange',()=>{if(!document.webkitFullscreenElement&&tvMode)toggleTV();});
+
+function buildTVScrollSections(){
+  // Get all non-passed CPT sections in order
+  tvScrollSections=Array.from(document.querySelectorAll('.cpt-section:not(.is-passed)'));
+  // Sort: imminent first, then urgent, then upcoming, then future
+  const order={imminent:0,urgent:1,upcoming:2,active:0,future:3};
+  tvScrollSections.sort((a,b)=>{
+    const ta=a.getAttribute('data-cpt-time'),tb=b.getAttribute('data-cpt-time');
+    return shiftMins(ta)-shiftMins(tb);
+  });
+}
+
+function startTVScroll(){
+  stopTVScroll();
+  buildTVScrollSections();
+  if(!tvScrollSections.length)return;
+  tvScrollIndex=0;
+  tvScrollDirection=1;
+  tvScrollToSection(tvScrollIndex);
+  animateProgress();
+  tvScrollTimer=setInterval(()=>{
+    buildTVScrollSections();
+    if(!tvScrollSections.length)return;
+    const last=tvScrollSections.length-1;
+    if(tvScrollDirection===1){
+      // Going down through sections
+      if(tvScrollIndex>=last){
+        // Hit the bottom — scroll back to top
+        tvScrollDirection=-1;
+        slowScrollTo(0, 1800);
+        animateProgress();
+      } else {
+        tvScrollIndex++;
+        tvScrollToSection(tvScrollIndex);
+        animateProgress();
+      }
+    } else {
+      // Just scrolled back to top — start going down again
+      tvScrollDirection=1;
+      tvScrollIndex=0;
+      tvScrollToSection(tvScrollIndex);
+      animateProgress();
+    }
+  },TV_SCROLL_INTERVAL);
+}
+
+function stopTVScroll(){
+  if(tvScrollTimer){clearInterval(tvScrollTimer);tvScrollTimer=null;}
+  const fill=document.getElementById('tvProgressFill');
+  if(fill){fill.style.transition='none';fill.style.width='0%';}
+}
+
+// Slow smooth scroll to an absolute Y position over `duration` ms
+function slowScrollTo(targetY, duration){
+  const startY = window.scrollY;
+  const dist   = targetY - startY;
+  if(Math.abs(dist) < 2) return;
+  const startTime = performance.now();
+  function ease(t){ return t<0.5 ? 2*t*t : -1+(4-2*t)*t; } // easeInOut
+  function step(now){
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, startY + dist * ease(progress));
+    if(progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function tvScrollToSection(idx){
+  buildTVScrollSections();
+  if(!tvScrollSections.length)return;
+  idx=Math.max(0,Math.min(idx,tvScrollSections.length-1));
+  const el=tvScrollSections[idx];
+  // Get element's top relative to the page, offset by fixed header height
+  const hdr=document.querySelector('.header');
+  const hdrH=hdr?hdr.offsetHeight:80;
+  const rect=el.getBoundingClientRect();
+  const targetY=window.scrollY + rect.top - hdrH - 12;
+  slowScrollTo(targetY, 1800); // 1.8 second glide
+}
+
+function animateProgress(){
+  const fill=document.getElementById('tvProgressFill');
+  if(!fill)return;
+  fill.style.transition='none';fill.style.width='0%';
+  setTimeout(()=>{
+    fill.style.transition=`width ${TV_SCROLL_INTERVAL}ms linear`;
+    fill.style.width='100%';
+  },50);
+}
+
+// ── Roster Parser ──────────────────────────────────────────────────────
+function buildRosterMap(wb){
+  rosterMap={};
+  if(!wb.SheetNames.includes('Roster'))return 0;
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets['Roster'],{header:1,defval:null});
+  let count=0;
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i];
+    const login=str(r[1]).toLowerCase().trim();
+    const rawName=str(r[2]).trim();
+    if(!login||!rawName)continue;
+    const parts=rawName.split(',',2);
+    let display;
+    if(parts.length===2){
+      const surname=parts[0].trim(),firstnames=parts[1].trim();
+      display=(firstnames+' '+surname).replace(/\b\w/g,c=>c.toUpperCase());
+    } else {
+      display=rawName.replace(/\b\w/g,c=>c.toUpperCase());
+    }
+    rosterMap[login]={fullName:display,login};
+    count++;
+  }
+  return count;
+}
+
+function str(v){return v===null||v===undefined?'':String(v);}
+
+function resolveOwner(raw){
+  if(!raw)return{fullName:'',login:'',matched:false};
+  const key=raw.toLowerCase().trim();
+  if(rosterMap[key])return{fullName:rosterMap[key].fullName,login:raw,matched:true};
+  return{fullName:raw,login:'',matched:false};
+}
+
+// ── File Handling ──────────────────────────────────────────────────────
+const uz=document.getElementById('uploadZone');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dragover');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('dragover'));
+uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('dragover');if(e.dataTransfer.files[0])processFile(e.dataTransfer.files[0]);});
+function handleFile(e){if(e.target.files[0])processFile(e.target.files[0]);}
+
+function processFile(file){
+  uz.style.display='none';
+  document.getElementById('loading').classList.add('visible');
+  const isCSV=/\.(csv|tsv)$/i.test(file.name);
+  const r=new FileReader();
+  r.onload=function(ev){
+    try{
+      let wb;
+      if(isCSV){
+        wb=XLSX.read(ev.target.result,{type:'string',raw:false});
+      }else{
+        wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+      }
+      const rCount=buildRosterMap(wb);
+      allData=parseWorkbook(wb);
+      const _dbgTimes=[...new Set(allData.map(g=>g.time))].join(', ');
+      const _dbg0445=allData.filter(g=>g.time==='04:45');
+      console.log('%c[CPT v2.1] allData times: '+_dbgTimes,'color:lime;font-weight:bold');
+      console.log('%c[CPT v2.1] 04:45 groups ('+_dbg0445.length+'):'+JSON.stringify(_dbg0445.map(g=>g.lane)),'color:cyan;font-weight:bold');
+      console.log('%c[CPT v2.1] all groups:'+allData.length+' total','color:yellow');
+      detectShiftMode(allData);
+      renderBoard(rCount);
+      updateAdvancePill();
+      const _ts = new Date().toLocaleString('en-GB');
+      document.getElementById('lastUpdated').textContent=_ts;
+      startLiveUpdates();
+      // Save full payload to localStorage (instant, same device)
+      const _payload = JSON.stringify({ts:_ts, data:allData, rosterMap:rosterMap});
+      try{localStorage.setItem('cpt_data', _payload);}catch(e){}
+      // Sync stripped payload to Harmony prefs — no rosterMap (saves 68KB)
+      const _syncPayload = JSON.stringify({ts:_ts, data:allData, rosterMap:{}});
+      sharedSave(_syncPayload);
+    }catch(err){
+      document.getElementById('loading').classList.remove('visible');
+      uz.style.display='';
+      alert('Error reading file: '+err.message);
+    }
+  };
+  r.onerror=function(){
+    document.getElementById('loading').classList.remove('visible');
+    uz.style.display='';
+    alert('Could not read file.');
+  };
+  if(isCSV){r.readAsText(file);}else{r.readAsArrayBuffer(file);}
+}
+
+// ── Live Updates ───────────────────────────────────────────────────────
+function applyFixedOffsets(){
+  const hdr=document.querySelector(".header");
+  const ctrl=document.querySelector(".controls");
+  const banner=document.getElementById("nextBanner");
+  const board=document.getElementById("board");
+  if(!hdr)return;
+  const hh=hdr.offsetHeight;
+  // Controls sits right below header
+  if(ctrl){ctrl.style.top=hh+"px";}
+  const ch=ctrl&&ctrl.classList.contains("visible")?ctrl.offsetHeight:0;
+  // Banner sits right below controls
+  if(banner){banner.style.top=(hh+ch)+"px";}
+  const bnh=banner&&banner.classList.contains("visible")?banner.offsetHeight:0;
+  // Board gets padding-top = total fixed height + small gap
+  if(board){board.style.paddingTop=(hh+ch+bnh+2)+"px";}
+}
+window.addEventListener("resize",applyFixedOffsets);
+
+function startLiveUpdates(){
+  if(liveTimer)clearInterval(liveTimer);
+  liveTimer=setInterval(()=>{updateNextBanner();updateLiveCountdowns();updateAdvancePill();},1000);
+  setInterval(()=>{if(allData.length>0){renderSections();if(tvMode){buildTVScrollSections();}}},60000);
+}
+
+function updateNextBanner(){
+  if(!allData.length)return;
+  const banner=document.getElementById('nextBanner');
+  const times=[...new Set(allData.map(g=>g.time))];
+  const upcoming=times.filter(t=>t!=='BAGS'&&minsUntil(t)>=0).sort((a,b)=>shiftMins(a)-shiftMins(b));
+  if(!upcoming.length){banner.classList.remove('visible');return;}
+  const next=upcoming[0],mLeft=minsUntil(next),status=getStatus(next);
+  const groups=allData.filter(g=>g.time===next);
+  const owners=new Set(groups.flatMap(g=>g.chutes.map(c=>c.owner)).filter(o=>o));
+  // Flash states: imminent=<=10min (red), warn=<=15min (yellow), urgent=<=30min (orange)
+  const flashCls=mLeft<=10?'imminent':mLeft<=15?'warn':'';
+  banner.className='next-cpt-banner visible'+(flashCls?' '+flashCls:'');
+  const lbl=document.getElementById('nextLabel'),cd=document.getElementById('nextCountdown');
+  lbl.className='next-label'+(flashCls?' '+flashCls:'');
+  cd.className='next-countdown'+(flashCls?' '+flashCls:'');
+  lbl.textContent=mLeft<=10?'⚠️ CPT IMMINENT':mLeft<=15?'🟡 CPT IN 15 MIN':'NEXT CPT';
+  document.getElementById('nextTime').textContent=next;
+  document.getElementById('nextInfo').textContent=groups.length+' groups • '+owners.size+' associates';
+  cd.textContent=fmtCountdownSecs(mLeft*60);
+  applyFixedOffsets();
+}
+
+function updateLiveCountdowns(){
+  document.querySelectorAll('[data-cpt-time]').forEach(el=>{
+    const t=el.getAttribute('data-cpt-time'),mLeft=minsUntil(t),status=getStatus(t);
+    if(status==='future')return;
+    // Update section card class live (passed/warn/imminent)
+    const sec=el.closest ? el : el;
+    if(status==='passed'){
+      el.classList.remove('is-imminent','is-warn','is-upcoming','is-urgent');
+      el.classList.add('is-passed');
+      const st=el.querySelector('.cpt-status');
+      const cd=el.querySelector('.cpt-countdown');
+      if(st)st.innerHTML='✓ Completed';
+      if(cd)cd.textContent='';
+      return;
+    }
+    // Live class updates for non-passed sections
+    el.classList.remove('is-passed','is-imminent','is-warn','is-upcoming','is-urgent');
+    if(mLeft<=10)el.classList.add('is-imminent');
+    else if(mLeft<=15)el.classList.add('is-warn');
+    else el.classList.add('is-upcoming');
+    const cd=el.querySelector('.cpt-countdown');
+    if(cd){cd.textContent=status==='active'?'Active now':fmtCountdownSecs(mLeft*60);cd.className='cpt-countdown '+(mLeft<=10?'red':mLeft<=15?'amber':'green');}
+    const st=el.querySelector('.cpt-status');
+    if(st&&status!=='active'){
+      if(mLeft<=10)st.innerHTML='🔴 IMMINENT';
+      else if(mLeft<=15)st.innerHTML='🟡 CPT in 15 min';
+      else st.innerHTML='🟢 Upcoming';
+    }
+  });
+  // Live tab button colour updates
+  document.querySelectorAll('[data-tab-time]').forEach(btn=>{
+    const t=btn.getAttribute('data-tab-time'),ml=minsUntil(t),st=getStatus(t);
+    const isActive=btn.classList.contains('active');
+    // st==='passed' OR ml<-5 (definitely past) = gray
+    const isPast=st==='passed'||ml<-5;
+    const tabCls=isPast?'tab-passed':ml<=10?'tab-imminent':ml<=15?'tab-warn':'tab-upcoming';
+    const dot=isPast?'⚪ ':ml<=10?'🔴 ':ml<=15?'🟡 ':'🟢 ';
+    btn.className='tab-btn'+(tabCls?' '+tabCls:'')+(isActive&&!isPast?' active':'');
+    btn.textContent=dot+t;
+  });
+  // Auto-advance: ONE-WAY only, never jump back
+  // Use secsUntil for precision — tab switches the exact second the CPT time arrives
+  const allTabsAdv=[...document.querySelectorAll('[data-tab-time]')];
+  const upcomingTabs=allTabsAdv.filter(b=>secsUntil(b.getAttribute('data-tab-time'))>=0);
+  upcomingTabs.sort((a,b)=>secsUntil(a.getAttribute('data-tab-time'))-secsUntil(b.getAttribute('data-tab-time')));
+  const nextTab=upcomingTabs[0]||null;
+  const nextTime=nextTab?nextTab.getAttribute('data-tab-time'):null;
+  if(nextTime&&nextTime!==activeTime){
+    const curPast=activeTime==='all'||activeTime===null||
+      getStatus(activeTime)==='passed'||secsUntil(activeTime)<=0;
+    // Never go backward: nextTime must be >= lastAdvancedTime in shift order
+    const goingBack=lastAdvancedTime&&shiftMins(nextTime)<shiftMins(lastAdvancedTime);
+    if(curPast&&!goingBack){
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      nextTab.classList.add('active');
+      activeTime=nextTime;
+      lastAdvancedTime=nextTime;
+      renderSections();
+      updateStats();
+    }
+  }
+}
+
+function scrollToNext(){
+  const el=document.querySelector('.cpt-section.is-imminent,.cpt-section.is-urgent,.cpt-section.is-upcoming');
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── Parser ─────────────────────────────────────────────────────────────
+function isTimeSheet(n){return /^\d{4}[-\s]\d{4}/.test(n.trim());}
+
+function extractDaysCptTime(cellVal){
+  if(!cellVal)return null;
+  const s=String(cellVal).trim();
+  let m=s.match(/(\d{1,2}:\d{2})\s*CPT/i);
+  if(m){const p=m[1].split(':');return p[0].padStart(2,'0')+':'+p[1].padStart(2,'0');}
+  m=s.match(/^(\d{1,2}:\d{2})\s*CPT/i);
+  if(m){const p=m[1].split(':');return p[0].padStart(2,'0')+':'+p[1].padStart(2,'0');}
+  return null;
+}
+
+function isDaysFormat(rows){
+  // Days format has MULTIPLE CPT-time headers spread across columns in the first 10 rows.
+  // A time-range sheet (e.g. 0430-0445) has only ONE CPT-time header in col 0.
+  // Require at least 2 distinct CPT times to avoid false positives.
+  const found=new Set();
+  for(let r=0;r<Math.min(10,rows.length);r++){
+    const row=rows[r];if(!row)continue;
+    for(let c=0;c<row.length;c++){
+      const t=extractDaysCptTime(row[c]);
+      if(t)found.add(t);
+    }
+  }
+  return found.size>=2;
+}
+
+function fmtTime(t){const s=t.toString().padStart(4,'0');return s.slice(0,2)+':'+s.slice(2);}
+
+function detectGroupHeaders(row,cptTime){
+  const groups=[];
+  if(!row)return groups;
+  for(let c=0;c<row.length;c++){
+    const v=str(row[c]).trim();
+    if(!v)continue;
+    const bm=v.match(/^\d{4}\s+BRS1[-\s>]+(.*)/i);
+    if(bm){groups.push({col:c,time:cptTime,lane:bm[1].trim(),isSP:false});continue;}
+    const sm=v.match(/^SP CPT\s*(\d{4})/i);
+    if(sm){groups.push({col:c,time:fmtTime(sm[1]),lane:'',isSP:true});continue;}
+  }
+  return groups;
+}
+
+function getCPTSheets(sheetNames){
+  const all=sheetNames.filter(n=>isTimeSheet(n));
+  const daysExtra=sheetNames.filter(n=>{
+    const t=n.trim();
+    if(isTimeSheet(t))return false;
+    return /^\d{3,4}(\s*[-\u2013(]|$)/.test(t)&&!/bags|notes|containers|close/i.test(t);
+  });
+  const bagsSun=sheetNames.find(s=>/^bags.?sun/i.test(s.trim()));
+  const bagsSat=sheetNames.find(s=>/^\s*bags\s*$/i.test(s.trim()));
+  const bagsSheet=bagsSun||bagsSat;
+  return [...all,...daysExtra,...(bagsSheet?[bagsSheet]:[])];
+}
+
+function parseWorkbook(wb){
+  let results=[];
+  getCPTSheets(wb.SheetNames).forEach(sn=>{
+    const isSat=/saturday/i.test(sn);
+    const isSun=!isSat&&(/sun/i.test(sn)||/^bags.?sun/i.test(sn.trim()));
+    const isDaysSheet=!isTimeSheet(sn.trim())&&/^\d{3,4}/.test(sn.trim());
+    const priority=isSun||(isDaysSheet&&!isSat);
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:null});
+    try{parseSheet(rows,sn).forEach(g=>results.push({...g,_sun:priority}));}
+    catch(e){console.warn('Sheet parse error "'+sn+'"',e.message);}
+  });
+  const merged=new Map();
+  results.forEach(g=>{
+    const key=g.time+'|'+(g.lane||'').trim().toLowerCase();
+    const ex=merged.get(key);
+    if(!ex||(g._sun&&!ex._sun))merged.set(key,g);
+  });
+  return [...merged.values()].sort((a,b)=>shiftMins(a.time)-shiftMins(b.time));
+}
+
+function parseBagsSheet(rows){
+  const groups=[];let i=0;
+  if(rows[0]&&str(rows[0][0]).toLowerCase()==='lane')i=1;
+  while(i<rows.length){
+    const r=rows[i];if(!r){i++;continue;}
+    const c0=str(r[0]).trim();if(!c0){i++;continue;}
+    const lane=c0,chutes=[];
+    const c1=str(r[1]||'').trim();
+    if(c1&&c1!=='Stacking')chutes.push({stacking:c1,sort:str(r[2]||'').trim()||lane,bay:r[3]?str(r[3]).trim():'',owner:str(r[4]||'').trim()});
+    i++;
+    while(i<rows.length){
+      const rr=rows[i];if(!rr){i++;break;}
+      const cc0=str(rr[0]||'').trim();
+      if(cc0&&cc0!==lane)break;
+      const cc1=str(rr[1]||'').trim();
+      if(cc1&&cc1!=='Stacking')chutes.push({stacking:cc1,sort:str(rr[2]||'').trim()||lane,bay:rr[3]?str(rr[3]).trim():'',owner:str(rr[4]||'').trim()});
+      i++;
+    }
+    if(chutes.length)groups.push({time:'BAGS',lane,isSpecialPick:false,isBags:true,hasCloseMove:false,chutes});
+  }
+  return groups;
+}
+
+function parseSheet(rows,sheetName){
+  if(isDaysFormat(rows))return parseDaysSheet(rows);
+  if(/^\s*bags/i.test((sheetName||'').trim())){
+    let start=0;
+    for(let i=0;i<rows.length;i++){if(rows[i]&&/^\s*\d{4}\s*CPT/i.test(str(rows[i][0]).trim())){start=i+1;break;}}
+    return parseBagsSheet(rows.slice(start));
+  }
+  const groups=[];
+  let i=0;
+  while(i<rows.length){
+    const r=rows[i];
+    if(!r||r.every(v=>v===null||v===undefined)){i++;continue;}
+    const c0=str(r[0]).trim();
+    let cptTime=null;
+    let m=c0.match(/^(\d{4})\s*CPT/i);
+    if(m){cptTime=fmtTime(m[1]);}
+    else{const m2=c0.match(/^(\d{1,2}):(\d{2})\s*CPT/i);if(m2)cptTime=m2[1].padStart(2,'0')+':'+m2[2];}
+    if(!cptTime){i++;continue;}
+    i++;
+    while(i<rows.length){
+      const rr=rows[i];
+      if(!rr||rr.every(v=>v===null||v===undefined)){i++;continue;}
+      const cc0=str(rr[0]).trim();
+      if(/^\d{4}\s*CPT/i.test(cc0)||/^\d{1,2}:\d{2}\s*CPT/i.test(cc0))break;
+      const headers=detectGroupHeaders(rr,cptTime);
+      if(!headers.length){i++;continue;}
+      headers.sort((a,b)=>a.col-b.col);
+      const gd=headers.map(h=>({col:h.col,time:h.time,lane:h.lane,isSP:h.isSP,chutes:[],hasCloseMove:false,_lastBay:'',laneName:h.lane||''}));
+      i++;
+      // Skip Lane/Stacking header row
+      if(i<rows.length){
+        const hr=rows[i];
+        if(hr){const v=str(hr[headers[0].col]||'').trim();if(v==='Lane'||v==='Stacking')i++;}
+      }
+      while(i<rows.length){
+        const dr=rows[i];
+        if(!dr||dr.every(v=>v===null||v===undefined)){i++;break;}
+        const dc0=str(dr[0]).trim();
+        if(/^\d{4}\s*CPT/i.test(dc0)||/^\d{1,2}:\d{2}\s*CPT/i.test(dc0))break;
+        if(detectGroupHeaders(dr,cptTime).length>0)break;
+        gd.forEach(g=>{
+          const b=g.col;
+          const v0=str(dr[b]  ||'').trim();
+          const v1=str(dr[b+1]||'').trim();
+          const v2=str(dr[b+2]||'').trim();
+          const v3=str(dr[b+3]||'').trim();
+          const v4=str(dr[b+4]||'').trim();
+          if(/CLOSE THE CHUTE/i.test(v0)||/CLOSE THE CHUTE/i.test(v1))g.hasCloseMove=true;
+          if(v0&&v0!=='Lane'&&v0!=='Stacking'&&!v1&&!g.laneName)g.laneName=v0;
+          if(v1&&v1!=='Stacking'&&v1!=='Sort'&&v1!=='Lane'&&v1!=='Bay'){
+            if(v3&&v3!=='Bay')g._lastBay=v3;
+            g.chutes.push({stacking:v1,sort:v2||g.laneName||'',bay:g._lastBay,owner:v4||''});
+          }
+        });
+        i++;
+      }
+      gd.forEach(g=>{
+        if(g.chutes.length)groups.push({time:g.time,lane:g.laneName||(g.isSP?'SP-'+g.time:g.time),isSpecialPick:g.isSP,hasCloseMove:g.hasCloseMove,chutes:g.chutes});
+      });
+    }
+  }
+  return groups;
+}
+
+function parseDaysSheet(rows){
+  const groups=[];let i=0;
+  while(i<rows.length){
+    const r=rows[i];if(!r){i++;continue;}
+    const headerTimes=[];
+    for(let c=0;c<r.length;c++){const t=extractDaysCptTime(r[c]);if(t)headerTimes.push({col:c,time:t});}
+    if(!headerTimes.length){i++;continue;}
+    const blockRow=i;
+    const colBases=[];
+    headerTimes.forEach(ht=>{const base=ht.col<=4?0:6;if(!colBases.find(b=>b.base===base))colBases.push({base,time:ht.time});});
+    i++;
+    const blockData=colBases.map(cb=>{const cr=rows[blockRow+1];return{base:cb.base,time:cb.time,carrier:cr?str(cr[cb.base]).trim():''};});
+    i++;
+    if(rows[i]&&str(rows[i][0]).trim()==='Lane')i++;
+    const chutesByBlock={};
+    colBases.forEach(cb=>chutesByBlock[cb.base]={lane:'',chutes:[],lastBay:''});
+    while(i<rows.length){
+      const dr=rows[i];if(!dr){i++;break;}
+      let newHeader=false;
+      for(let c=0;c<dr.length;c++){if(extractDaysCptTime(dr[c])){newHeader=true;break;}}
+      if(newHeader)break;
+      if(dr.every(v=>v===null||v===undefined||String(v).trim()==='')){i++;break;}
+      colBases.forEach(cb=>{
+        const b=cb.base,bd=chutesByBlock[b];
+        const c0=str(dr[b]||'').trim(),c1=str(dr[b+1]||'').trim(),c2=str(dr[b+2]||'').trim(),c3=str(dr[b+3]||'').trim(),c4=str(dr[b+4]||'').trim();
+        if(c0&&c0!=='Lane'&&c0!=='Stacking'&&!c1){if(!bd.lane)bd.lane=c0;if(c3&&c3!=='Bay')bd.lastBay=c3;}
+        if(c1&&c1!=='Stacking'&&c1!=='Bay'){if(c3&&c3!=='Bay')bd.lastBay=c3;if(c0&&c0!=='Lane'&&!bd.lane)bd.lane=c0;bd.chutes.push({stacking:c1,sort:c2||bd.lane||'',bay:bd.lastBay,owner:c4||''});}
+      });
+      i++;
+    }
+    colBases.forEach(cb=>{
+      const bd=chutesByBlock[cb.base];
+      if(bd.chutes.length){const carrier=blockData.find(x=>x.base===cb.base);const lane=bd.lane||(carrier?carrier.carrier:'')||cb.time;groups.push({time:cb.time,lane,isSpecialPick:false,hasCloseMove:false,chutes:bd.chutes});}
+    });
+    i--;i++;
+  }
+  return groups;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────
+function renderBoard(rosterCount){
+  document.getElementById('loading').classList.remove('visible');
+  const rb=document.getElementById('rosterBar'),badge=document.getElementById('rosterBadge'),info=document.getElementById('rosterInfo');
+  rb.classList.add('visible');
+  if(rosterCount>0){badge.className='roster-badge';badge.textContent='✅ Roster loaded';info.textContent=rosterCount+' associates — login IDs in the Owner column will show full names automatically';}
+  else{badge.className='roster-badge none';badge.textContent='⚠️ No Roster sheet found';info.textContent='Add a "Roster" sheet to enable login ID → full name lookup';}
+  document.getElementById('controls').classList.add('visible');
+  document.getElementById('board').classList.add('visible');
+  document.getElementById('footer').classList.add('visible');
+  buildTabs();renderSections();updateStats();updateNextBanner();
+}
+
+function buildTabs(){
+  const times=[...new Set(allData.map(g=>g.time))].filter(t=>t!=='BAGS').sort((a,b)=>shiftMins(a)-shiftMins(b));
+  const el=document.getElementById('filterTabs');
+  el.innerHTML='<button class="tab-btn active" onclick="filterByTime(\'all\',this)">All CPTs</button>';
+  times.forEach(t=>{
+    const ml=minsUntil(t),st=getStatus(t),b=document.createElement('button');
+    const isPast=st==='passed'||ml<-5;
+    const tabCls=isPast?'tab-passed':ml<=10?'tab-imminent':ml<=15?'tab-warn':'tab-upcoming';
+    const dot=isPast?'⚪ ':ml<=10?'🔴 ':ml<=15?'🟡 ':'🟢 ';
+    b.className='tab-btn'+(tabCls?' '+tabCls:'');
+    b.textContent=dot+t;
+    b.setAttribute('data-time',t);
+    b.setAttribute('data-tab-time',t);
+    b.onclick=function(){filterByTime(t,this);};
+    el.appendChild(b);
+  });
+  const allTabsInit=[...el.querySelectorAll('[data-tab-time]')];
+  const nextTabInit=allTabsInit.find(b=>minsUntil(b.getAttribute('data-tab-time'))>=0);
+  if(nextTabInit){
+    const allBtn=el.querySelector('.tab-btn:not([data-tab-time])');
+    if(allBtn)allBtn.classList.remove('active');
+    nextTabInit.classList.add('active');
+    activeTime=nextTabInit.getAttribute('data-tab-time');
+    setTimeout(()=>filterByTime(activeTime,nextTabInit),0);
+  }
+}
+
+function filterByTime(t,btn){
+  activeTime=t;
+  if(t&&t!=='all'&&(!lastAdvancedTime||shiftMins(t)>=shiftMins(lastAdvancedTime))){
+    lastAdvancedTime=t;
+  }
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.remove('active');
+    // Re-apply passed class if needed after active removal
+    const tt=b.getAttribute('data-tab-time');
+    if(tt){const ml=minsUntil(tt),st=getStatus(tt);if(st==='passed'||ml<-5)b.classList.add('tab-passed');}
+  });
+  btn.classList.add('active');
+  renderSections();updateStats();
+}
+
+function handleSearch(v){
+  searchQ=v.trim().toLowerCase();
+  document.getElementById('clearBtn').classList.toggle('visible',searchQ.length>0);
+  renderSections();updateStats();
+}
+
+function clearSearch(){
+  document.getElementById('searchInput').value='';searchQ='';
+  document.getElementById('clearBtn').classList.remove('visible');
+  renderSections();updateStats();
+}
+
+function updateStats(){
+  const vis=allData.filter(g=>activeTime==='all'||g.time===activeTime);
+  const tot=vis.reduce((s,g)=>s+g.chutes.length,0);
+  const owners=new Set(vis.flatMap(g=>g.chutes.map(c=>c.owner)).filter(o=>o));
+  document.getElementById('statsBar').innerHTML=`<span>${vis.length}</span> groups &nbsp;•&nbsp; <span>${tot}</span> chutes &nbsp;•&nbsp; <span>${owners.size}</span> associates`;
+}
+
+function ownerMatchesSearch(raw){
+  if(!searchQ||!raw)return false;
+  if(raw.toLowerCase().includes(searchQ))return true;
+  return resolveOwner(raw).fullName.toLowerCase().includes(searchQ);
+}
+
+
+// ── Zone Classification ───────────────────────────────────────────────
+const ZONE_ORDER = ['Inner Flat','SP Flat','West Flat','Inner Box','South Flat','West Box','South Box','Bags','Other'];
+const ZONE_COLORS = {
+  'Inner Flat':'#0ea5e9','SP Flat':'#8b5cf6','West Flat':'#10b981',
+  'Inner Box':'#f59e0b','South Flat':'#ec4899','West Box':'#14b8a6',
+  'South Box':'#f97316','Bags':'#0ea5e9','Other':'#6b7280'
+};
+
+function getZone(chute){
+  if(!chute)return'Other';
+  const c=chute.toUpperCase().trim();
+  const n=s=>{const m=s.match(/(\d+)/);return m?parseInt(m[1]):0;};
+  if(/^F-SP-/i.test(c)||/^FST-SP-/i.test(c))return'SP Flat';
+  if(/^FST-A-/i.test(c))return'Inner Flat';
+  if(/^FST-B-/i.test(c))return'West Flat';
+  if(/^F-A-/i.test(c)){const v=n(c.replace(/^F-A-/i,''));return v>=72?'Inner Box':'Inner Flat';}
+  if(/^F-B-/i.test(c))return'West Flat';
+  if(/^F-C-/i.test(c))return'South Flat';
+  if(/^BOX-A-/i.test(c))return'Inner Box';
+  if(/^BOX-B-/i.test(c)){const v=n(c.replace(/^BOX-B-/i,''));return v<=12?'West Box':'South Box';}
+  if(/^BOX-C-/i.test(c))return'South Flat';
+  if(/^BG-B-/i.test(c)||/^BG-KO/i.test(c))return'Bags';
+  return'Other';
+}
+
+// ── Add chute-bay and chute-sort-tag CSS if not present ───────────────
+function renderSections(){
+  const sec=document.getElementById('cptSections'),banner=document.getElementById('searchBanner'),noRes=document.getElementById('noResults');
+
+  // Check if ALL CPTs are passed (e.g. old file, or end of shift)
+  const allPassed = allData.filter(g=>g.time!=='BAGS').every(g=>getStatus(g.time)==='passed');
+
+  const filtered=allData.filter(g=>{
+    if(g.time==='BAGS')return false;
+    if(activeTime!=='all')return g.time===activeTime;
+    // 'all' view: skip passed CPTs UNLESS everything is passed (show all rather than blank)
+    const st=getStatus(g.time);
+    return allPassed || st!=='passed';
+  });
+  const byTime={};
+  filtered.forEach(g=>{if(!byTime[g.time])byTime[g.time]=[];byTime[g.time].push(g);});
+
+  // Search banner
+  if(searchQ){
+    const matches=[];
+    filtered.forEach(g=>g.chutes.forEach(c=>{if(ownerMatchesSearch(c.owner))matches.push({group:g,chute:c});}));
+    banner.classList.toggle('visible',matches.length>0);
+    noRes.classList.toggle('visible',matches.length===0);
+    document.getElementById('searchBannerTitle').textContent='🔍 Found '+matches.length+' assignment(s) for "'+document.getElementById('searchInput').value+'"';
+    const grid=document.getElementById('searchResultsGrid');grid.innerHTML='';
+    matches.forEach(({group:g,chute:c})=>{
+      const resolved=resolveOwner(c.owner),card=document.createElement('div');
+      card.className='search-result-card';
+      const zone=getZone(c.stacking),zcolor=ZONE_COLORS[zone]||'#6b7280';
+      card.innerHTML='<div class="src-name">👤 '+resolved.fullName+'</div>'
+        +(resolved.matched?'<div class="src-login">Login: '+resolved.login+'</div>':'')
+        +'<span class="src-time">CPT '+g.time+'</span> '
+        +'<span style="background:'+zcolor+';color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:4px">'+zone+'</span>'
+        +'<div class="src-detail" style="margin-top:6px">'
+        +'<strong>Sort:</strong> '+(c.sort||'—')
+        +' &nbsp; <strong>Chute:</strong> '+c.stacking
+        +(c.bay?' &nbsp; <strong>Bay:</strong> '+c.bay:'')
+        +'</div>'
+        +(g.hasCloseMove?'<span class="src-close-alert">⚠️ Close 10 min before CPT</span>':'');
+      grid.appendChild(card);
+    });
+  } else {banner.classList.remove('visible');noRes.classList.remove('visible');}
+
+  sec.innerHTML='';
+  Object.keys(byTime).sort((a,b)=>shiftMins(a)-shiftMins(b)).forEach(time=>{
+    const groups=byTime[time],status=getStatus(time),mLeft=minsUntil(time);
+
+    // Flatten ALL chutes from all groups at this CPT time
+    const allChutes=[];
+    let hasCloseMove=false;
+    groups.forEach(g=>{
+      g.chutes.forEach(c=>allChutes.push(Object.assign({},c,{lane:g.lane,isSpecialPick:g.isSpecialPick})));
+      if(g.hasCloseMove)hasCloseMove=true;
+    });
+
+    // Group by zone
+    const byZone={};
+    allChutes.forEach(c=>{
+      const z=getZone(c.stacking);
+      if(!byZone[z])byZone[z]=[];
+      byZone[z].push(c);
+    });
+
+    // Sort chutes within zone numerically
+    Object.values(byZone).forEach(arr=>{
+      arr.sort((a,b)=>{
+        const na=a.stacking.toUpperCase(),nb=b.stacking.toUpperCase();
+        const ma=na.match(/\d+/g),mb=nb.match(/\d+/g);
+        if(ma&&mb){const d=parseInt(ma[0])-parseInt(mb[0]);if(d!==0)return d;return parseInt(ma[1]||0)-parseInt(mb[1]||0);}
+        return na.localeCompare(nb);
+      });
+    });
+
+    const tot=allChutes.length;
+    const zonesPresent=ZONE_ORDER.filter(z=>byZone[z]&&byZone[z].length>0);
+    const badgeCls=status==='bags'?'cpt-bags-badge':status==='imminent'?'cpt-imminent-badge':status==='urgent'?'cpt-urgent-badge':status==='upcoming'||status==='active'?'cpt-upcoming-badge':status==='passed'?'cpt-passed-badge':'';
+    let statusHtml='';
+    if(status==='passed')statusHtml='<div class="cpt-status">✓ Completed</div>';
+    else if(status==='active')statusHtml='<div class="cpt-status green">✅ Active now</div>';
+    else if(status==='imminent')statusHtml='<div class="cpt-status red">🔴 IMMINENT</div><div class="cpt-countdown red">'+fmtCountdown(mLeft)+'</div>';
+    else if(mLeft<=10)statusHtml='<div class="cpt-status red">🔴 IMMINENT</div><div class="cpt-countdown red">'+fmtCountdown(mLeft)+'</div>';
+    else if(mLeft<=15)statusHtml='<div class="cpt-status amber">🟡 CPT in 15 min</div><div class="cpt-countdown amber">'+fmtCountdown(mLeft)+'</div>';
+    else if(status==='urgent'||status==='upcoming')statusHtml='<div class="cpt-status green">🟢 Upcoming</div><div class="cpt-countdown green">'+fmtCountdown(mLeft)+'</div>';
+    else if(status==='upcoming')statusHtml='<div class="cpt-status green">🟢 Upcoming</div><div class="cpt-countdown green">'+fmtCountdown(mLeft)+'</div>';
+    else if(status==='bags')statusHtml='<div class="cpt-status" style="color:#0ea5e9;font-weight:700;">🛍 Bag Chutes</div>';
+
+    const div=document.createElement('div');
+    div.className='cpt-section'+(status==='bags'?' is-bags':mLeft<=10?' is-imminent':mLeft<=15?' is-warn':status==='urgent'||status==='upcoming'||status==='active'?' is-upcoming':status==='passed'?' is-passed':'');
+    div.setAttribute('data-cpt-time',time);
+    div.id='section-'+time.replace(':','');
+    div.innerHTML='<div class="cpt-section-header"><div class="cpt-time-badge '+badgeCls+'">'+(time==='BAGS'?'🛍 Bags':time)+'</div>'+statusHtml+'<div class="cpt-count">'+zonesPresent.length+' zones &nbsp;•&nbsp; '+tot+' chutes</div></div><div class="lanes-grid"></div>';
+    sec.appendChild(div);
+
+    const grid=div.querySelector('.lanes-grid');
+    const cardCls=status==='imminent'?'imminent-card':status==='urgent'?'urgent-card':status==='upcoming'||status==='active'?'upcoming-card':'';
+    const hdrCls=status==='imminent'?'imminent-header':status==='urgent'?'urgent-header':status==='upcoming'||status==='active'?'upcoming-header':'';
+
+    zonesPresent.forEach(zone=>{
+      const chutes=byZone[zone];
+      const hasMatch=searchQ&&chutes.some(c=>ownerMatchesSearch(c.owner));
+      const card=document.createElement('div');
+      card.className='lane-card '+cardCls+(searchQ&&hasMatch?' highlighted':searchQ&&!hasMatch?' dimmed':'');
+      const zcolor=ZONE_COLORS[zone]||'#6b7280';
+
+      const chuteRows=chutes.map(c=>{
+        const resolved=resolveOwner(c.owner);
+        const om=searchQ&&ownerMatchesSearch(c.owner);
+        const ownerCls=om?'highlighted-name':resolved.matched?'':'no-roster';
+        return '<div class="chute-row">'
+          +'<span class="chute-location">'+(c.stacking||'—')+'</span>'
+          +'<span class="chute-sort-tag">'+(c.sort||'—')+'</span>'
+          +'<span class="chute-bay">'+(c.bay||'—')+'</span>'
+          +'<div class="owner-cell '+ownerCls+'">'
+            +'<span class="owner-fullname">'+(resolved.fullName||'—')+'</span>'
+            +(resolved.matched?'<span class="owner-login">'+resolved.login+'</span>':'')
+          +'</div>'
+          +'</div>';
+      }).join('');
+
+      card.innerHTML=
+        '<div class="lane-header '+hdrCls+'" style="border-left:4px solid '+zcolor+'">'
+          +'<span class="lane-name" style="color:'+zcolor+'">'+zone+'</span>'
+          +'<span class="lane-bay" style="background:'+zcolor+'22;color:'+zcolor+';border:1px solid '+zcolor+'55">'+chutes.length+' chutes</span>'
+        +'</div>'
+        +'<div class="lane-body">'
+          +'<div class="col-headers"><span>CHUTE</span><span>SORT</span><span>BAY</span><span>ASSOCIATE</span></div>'
+          +chuteRows
+          +(hasCloseMove?'<div class="close-move-alert">⚠️ Close chute 10 min before CPT '+time+'</div>':'')
+        +'</div>';
+      grid.appendChild(card);
+    });
+  });
+}
+
+
+function resetApp(){
+  allData=[];searchQ='';activeTime='all';rosterMap={};
+  if(liveTimer){clearInterval(liveTimer);liveTimer=null;}
+  if(tvMode)toggleTV();
+  uz.style.display='';
+  ['nextBanner','controls','board','footer'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  document.getElementById('rosterBar').classList.remove('visible');
+  document.getElementById('fileInput').value='';
+  document.getElementById('searchInput').value='';
+}
+
+
+// ─── ADVANCE COUNTDOWN PILL ────────────────────────────────────────────
+function updateAdvancePill(){
+  const pill=document.getElementById('advancePill');
+  if(!pill||!allData||!allData.length)return;
+
+  const times=[...new Set(allData.map(g=>g.time))]
+    .filter(t=>t&&t!=='BAGS')
+    .sort((a,b)=>shiftMins(a)-shiftMins(b));
+  if(!times.length){pill.classList.remove('visible');return;}
+
+  // Find NEXT CPT (first one still in the future)
+  const nowN=nowShiftMins();
+  let nextTime=null;
+  for(const t of times){
+    if(shiftMins(t)>nowN){nextTime=t;break;}
+  }
+
+  if(!nextTime){
+    // Past last CPT — shift complete
+    pill.className='advance-pill visible pill-manual';
+    pill.innerHTML='<span class="pill-icon">✅</span>'
+      +'<div><div class="pill-label">Shift</div>'
+      +'<div class="pill-next" style="font-size:13px;">Complete</div></div>';
+    return;
+  }
+
+  const secsLeft=minsUntil(nextTime)*60;
+  // Use seconds-precise countdown
+  const nowSecs=nowShiftSecs();
+  const targetSecs=shiftMins(nextTime)*60;
+  const secsPrecise=Math.max(0,targetSecs-nowSecs);
+  const mm=Math.floor(secsPrecise/60);
+  const ss=secsPrecise%60;
+  const timeStr=(mm>0?mm+'m ':'')+String(ss).padStart(2,'0')+'s';
+
+  // Colour state
+  let cls='pill-ok';
+  let icon='🔄';
+  if(mm<2){cls='pill-imminent';icon='⚠️';}
+  else if(mm<10){cls='pill-soon';icon='⏱';}
+
+  if(!_autoAdvanceEnabled){
+    pill.className='advance-pill visible pill-manual';
+    pill.innerHTML='<span class="pill-icon">⏸</span>'
+      +'<div>'
+      +'<div class="pill-label">Auto-advance paused</div>'
+      +'<div class="pill-next">Next: '+nextTime+'</div>'
+      +'</div>'
+      +'<button class="pill-resume-btn" onclick="resumeAutoAdvance()">Resume</button>';
+    return;
+  }
+
+  pill.className='advance-pill visible '+cls;
+  pill.innerHTML='<span class="pill-icon">'+icon+'</span>'
+    +'<div>'
+    +'<div class="pill-label">Next CPT</div>'
+    +'<div class="pill-next">'+nextTime+'</div>'
+    +'</div>'
+    +'<div class="pill-time">'+timeStr+'</div>';
+}
+
+function resumeAutoAdvance(){
+  _autoAdvanceEnabled=true;
+  clearTimeout(_manualTabTimer);
+  autoAdvanceCPT();
+  updateAdvancePill();
+}
+
+// ─── AUTO PAGE ADVANCE ───────────────────────────────────────────────
+// When the current CPT time passes, auto-scroll to the next one
+let _autoAdvanceEnabled = true;  // turns off if user manually selects a tab
+let _lastAutoTime = null;
+
+function autoAdvanceCPT(){
+  if(!allData||!allData.length||!_autoAdvanceEnabled)return;
+
+  // Use nowShiftMins() — same function used by shiftMins/getStatus everywhere
+  const nowN=nowShiftMins();
+
+  // Get sorted unique CPT times (exclude BAGS)
+  const times=[...new Set(allData.map(g=>g.time))]
+    .filter(t=>t&&t!=='BAGS')
+    .sort((a,b)=>shiftMins(a)-shiftMins(b));
+  if(!times.length)return;
+
+  // Find the CURRENT CPT: last one whose shiftMins <= nowN
+  // i.e. the CPT that is currently active or most recently passed
+  let targetTime=times[0];
+  for(const t of times){
+    if(shiftMins(t)<=nowN){targetTime=t;}
+    else break;
+  }
+
+  // Don't re-trigger if already on this tab
+  if(targetTime===_lastAutoTime)return;
+  _lastAutoTime=targetTime;
+
+  // Find and activate the matching tab
+  const tabs=document.querySelectorAll('#filterTabs .tab-btn[data-time]');
+  tabs.forEach(btn=>{
+    if(btn.getAttribute('data-time')===targetTime){
+      filterByTime(targetTime,btn);
+      // Smooth scroll to top of board
+      const board=document.getElementById('board');
+      if(board)board.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+}
+
+// Re-enable auto-advance after manual tab click — but only after 5 minutes of inactivity
+let _manualTabTimer=null;
+const _origFilterByTime=typeof filterByTime==='function'?filterByTime:null;
+
+// Hook into filterByTime to detect manual clicks (done via wrapper below)
+function filterByTimeAuto(t,btn,manual){
+  filterByTime(t,btn);
+  if(manual){
+    _autoAdvanceEnabled=false;
+    clearTimeout(_manualTabTimer);
+    // Re-enable auto-advance after 5 minutes
+    _manualTabTimer=setTimeout(()=>{_autoAdvanceEnabled=true;},5*60*1000);
+  }
+}
+
+// Run auto-advance check every 60 seconds
+setInterval(autoAdvanceCPT,60000);
+// Initial run 3 seconds after file loads
+setTimeout(autoAdvanceCPT,3000);
+
+
+function getStatus(time){
+  if(!time||time==='all')return'';
+  if(time==='BAGS')return'bags';
+  const now=new Date(), nm=now.getHours()*60+now.getMinutes();
+
+  if(_shiftMode==='day'){
+    // Day shift: plain wall-clock comparison, no pre-shift dead zone
+    const tm=shiftMins(time);
+    if(tm<nm-5)return'passed';
+    if(tm<=nm+10)return'imminent';
+    if(tm<=nm+30)return'urgent';
+    if(tm<=nm+60)return'upcoming';
+    return'future';
+  }
+
+  // Night shift: 20:00->04:50
+  // Pre-shift window (04:50-19:59): show upcoming CPTs rather than blank
+  const SHIFT_START=20*60;
+  const SHIFT_RESET=4*60+50;
+  const inPreShift=(nm>=SHIFT_RESET&&nm<SHIFT_START);
+  if(inPreShift){
+    const tm=shiftMins(time);
+    if(tm===99999)return'bags';
+    if(tm-nm<=60)return'upcoming';
+    return'future';
+  }
+  const nowN=nm>=SHIFT_START?nm:nm+24*60;
+  const tm=shiftMins(time);
+  if(tm<nowN-5)return'passed';
+  if(tm<=nowN+10)return'imminent';
+  if(tm<=nowN+30)return'urgent';
+  if(tm<=nowN+60)return'upcoming';
+  return'future';
+}
+// Auto-load disabled on Harmony
+function autoLoadFromServer(){ return; }
+window.addEventListener('load',function(){
+  setTimeout(applyFixedOffsets,200);
+});
+
+// ── Mode detection (?tv = TV board, default = upload page) ────────────
+// Check own URL AND parent URL (Harmony runs our app in an iframe,
+// so ?tv is on the parent URL, not our own window.location)
+var IS_TV_MODE = (function(){
+  var ownUrl   = window.location.search + window.location.hash;
+  var parentUrl = '';
+  try { parentUrl = window.parent.location.search + window.parent.location.hash; } catch(e){}
+  return ownUrl.indexOf('tv') !== -1 || parentUrl.indexOf('tv') !== -1;
+})();
+
+// ── TV board: load from localStorage, poll every 10s ──────────────────
+var _tvLastTs = null;
+function _applyTVData(raw){
+  try{
+    if(!raw) return;
+    var payload = JSON.parse(raw);
+    if(!payload.ts || !payload.data || !payload.data.length) return;
+    if(payload.ts === _tvLastTs){
+      console.log('[CPT TV] Same ts, skipping:', payload.ts);
+      return;
+    }
+    _tvLastTs = payload.ts;
+    console.log('[CPT TV] Applying new data ts:', payload.ts);
+    // Remove waiting screen from DOM entirely
+    var w = document.getElementById('tvWaiting');
+    if(w && w.parentNode) w.parentNode.removeChild(w);
+    // Hide loading spinner
+    var loading = document.getElementById('loading');
+    if(loading) loading.classList.remove('visible');
+    allData   = payload.data    || [];
+    rosterMap = payload.rosterMap || {};
+    detectShiftMode(allData);
+    renderBoard(Object.keys(rosterMap).length);
+    startLiveUpdates();
+    updateAdvancePill();
+    var tsEl = document.getElementById('tvLastUpdated');
+    if(tsEl) tsEl.textContent = 'Updated: ' + payload.ts;
+    var luEl = document.getElementById('lastUpdated');
+    if(luEl) luEl.textContent = payload.ts;
+  } catch(e){ console.warn('[CPT TV] Apply error:', e.message); }
+}
+
+
+function tvLoadFromStorage(){
+  slackLoad(function(raw){
+    if(raw){
+      _applyTVData(raw);
+    } else {
+      console.warn('[CPT TV] No data from Slack or localStorage');
+    }
+  });
+}
+
+
+// ── CSP-safe event wiring ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  var tvBtn       = document.getElementById('tvBtn');
+  var uploadZone  = document.getElementById('uploadZone');
+  var fileInput   = document.getElementById('fileInput');
+  var uploadBtn   = document.querySelector('.upload-btn');
+  var scrollBtn   = document.querySelector('.scroll-btn');
+  var clearBtn    = document.getElementById('clearBtn');
+  var searchInput = document.getElementById('searchInput');
+  var allTabBtn   = document.querySelector('#filterTabs .tab-btn:not([data-tab-time])');
+  var resetLink   = document.querySelector('.footer a');
+
+  // Always-active buttons
+  if(tvBtn)       tvBtn.addEventListener('click',  function(){ toggleTV(); });
+  if(scrollBtn)   scrollBtn.addEventListener('click',  function(){ scrollToNext(); });
+  if(clearBtn)    clearBtn.addEventListener('click',   function(){ clearSearch(); });
+  if(searchInput) searchInput.addEventListener('input',function(){ handleSearch(this.value); });
+  if(allTabBtn)   allTabBtn.addEventListener('click',  function(){ filterByTime('all',this); });
+  if(resetLink)   resetLink.addEventListener('click',  function(e){ e.preventDefault(); resetApp(); });
+
+  if(IS_TV_MODE){
+    // TV BOARD MODE
+    // Hide upload UI
+    if(uploadZone) uploadZone.style.display='none';
+    if(uploadBtn)  uploadBtn.style.display='none';
+    if(fileInput)  fileInput.style.display='none';
+    // Wire TV file input
+    var tvFileInput = document.getElementById('tvFileInput');
+    if(tvFileInput) tvFileInput.addEventListener('change', function(e){
+      if(e.target.files[0]){
+        var _w=document.getElementById('tvWaiting'); if(_w&&_w.parentNode)_w.parentNode.removeChild(_w);
+        processFile(e.target.files[0]);
+      }
+    });
+
+    // Show waiting banner
+    var w=document.getElementById('tvWaiting');
+    // tvWaiting stays visible until data loads
+
+    // Update header subtitle to show live timestamp
+    var sub=document.querySelector('.header-subtitle');
+    if(sub) sub.innerHTML='FC Shipping — Avonmouth, Bristol &nbsp;•&nbsp; <span id="tvLastUpdated" style="color:#4ade80">Waiting for data…</span>';
+
+    // Add back-to-upload link
+    var hdr=document.querySelector('.header-right');
+    if(hdr){
+      var back=document.createElement('a');
+      back.href='/'; back.className='tv-btn'; back.style.textDecoration='none';
+      back.textContent='← Upload';
+      hdr.insertBefore(back, hdr.firstChild);
+    }
+
+    // Load immediately then poll every 10s
+    tvLoadFromStorage();
+    setInterval(tvLoadFromStorage, 30000);
+
+  } else {
+    // UPLOAD MODE
+    if(fileInput) fileInput.addEventListener('change', function(e){ handleFile(e); });
+    if(uploadBtn) uploadBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(fileInput) fileInput.click();
+    });
+    if(uploadZone) uploadZone.addEventListener('click', function(e){
+      if(uploadBtn&&(e.target===uploadBtn||uploadBtn.contains(e.target)))return;
+      if(fileInput) fileInput.click();
+    });
+  }
+});
+
+
+
+
+// ── TV MODE AUTO-START (runs after all JS parsed) ─────────────────────
+// DOMContentLoaded may have already fired in Harmony iframe context.
+// This ensures tvLoadFromStorage runs regardless of timing.
+if (typeof IS_TV_MODE !== 'undefined' && IS_TV_MODE) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      tvLoadFromStorage();
+      setInterval(tvLoadFromStorage, 15000);
+    });
+  } else {
+    // DOM already ready — call immediately
+    setTimeout(function() {
+      tvLoadFromStorage();
+      setInterval(tvLoadFromStorage, 15000);
+    }, 0);
+  }
+}
+
+
+var BLOB_URL = 'https://jsonblob.com/api/jsonBlob/019f1048-c5f0-759a-a997-7d10111d135d';
+var _lastTs  = null;
+
+function fetchData(cb) {
+  fetch(BLOB_URL + '?t=' + Date.now(), {cache:'no-store',headers:{'Accept':'application/json'}})
+  .then(function(r){return r.json();})
+  .then(function(d){cb(d&&d.ts?d:null);})
+  .catch(function(e){console.warn('[TV]',e.message);cb(null);});
+}
+
+function applyData(rec) {
+  if (!rec||!rec.ts||!rec.data||!rec.data.length) return;
+  if (rec.ts===_lastTs) return;
+  _lastTs = rec.ts;
+  document.getElementById('waiting').style.display='none';
+  document.getElementById('board').style.display='block';
+  allData=rec.data; rosterMap=rec.rosterMap||{};
+  if(typeof detectShiftMode==='function')  detectShiftMode(allData);
+  if(typeof renderBoard==='function')      renderBoard(Object.keys(rosterMap).length);
+  if(typeof startLiveUpdates==='function') startLiveUpdates();
+  if(typeof updateAdvancePill==='function')updateAdvancePill();
+  document.getElementById('lastUp').textContent='Updated: '+rec.ts;
+}
+
+function poll() {
+  fetchData(function(rec){
+    if(rec){applyData(rec);}
+    else{document.getElementById('pollStatus').textContent='Last checked: '+new Date().toLocaleTimeString('en-GB');}
+  });
+}
+poll(); setInterval(poll,15000);
+
+function tick() {
+  var n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('en-GB');
+  document.getElementById('dateLbl').textContent=n.toLocaleDateString('en-GB',
+    {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+setInterval(tick,1000); tick();
+</script>
+</body>
+</html>
