@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRS1 CPT Admin</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+
+.topbar { background: #161b22; border-bottom: 2px solid #f97316; padding: 16px 24px;
+          display: flex; align-items: center; justify-content: space-between;
+          position: sticky; top: 0; z-index: 100; }
+.topbar-left h1 { color: #f97316; font-size: 20px; font-weight: 700; }
+.topbar-left .sub { color: #8b949e; font-size: 12px; margin-top: 3px; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.tv-btn { background: #1c2333; color: #60a5fa; border: 1px solid #374151;
+          padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+          cursor: pointer; text-decoration: none; }
+.tv-btn:hover { border-color: #60a5fa; }
+.save-btn { background: #f97316; color: #fff; border: none; padding: 10px 28px;
+            border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+.save-btn:hover { background: #ea6a00; }
+.save-btn:disabled { background: #374151; color: #6b7280; cursor: default; }
+
+.status-bar { padding: 10px 24px; font-size: 13px; font-weight: 500; display: none; }
+.status-bar.ok   { background: #052e16; color: #4ade80; display: block; }
+.status-bar.err  { background: #2a0505; color: #f87171; display: block; }
+.status-bar.info { background: #1e3a5f; color: #93c5fd; display: block; }
+
+.main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+.cpt-block { background: #161b22; border: 1px solid #30363d; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+.cpt-header { background: #1c2333; padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #30363d; }
+.cpt-time-input { background: #0d1117; border: 1px solid #374151; border-radius: 6px;
+                  color: #f97316; font-size: 20px; font-weight: 700; padding: 6px 14px; width: 100px; text-align: center; }
+.cpt-time-input:focus { outline: none; border-color: #f97316; }
+.cpt-label { color: #8b949e; font-size: 13px; }
+.del-cpt-btn { margin-left: auto; background: none; border: 1px solid #374151; color: #6b7280;
+               padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.del-cpt-btn:hover { border-color: #dc2626; color: #f87171; }
+
+.carrier-block { border-bottom: 1px solid #1f2937; padding: 14px 20px; }
+.carrier-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.carrier-input { background: #0d1117; border: 1px solid #374151; border-radius: 6px;
+                 color: #60a5fa; font-size: 14px; font-weight: 600; padding: 6px 12px; width: 220px; }
+.carrier-input:focus { outline: none; border-color: #60a5fa; }
+.del-carrier-btn { background: none; border: none; color: #4b5563; cursor: pointer; font-size: 20px; line-height: 1; }
+.del-carrier-btn:hover { color: #f87171; }
+
+.rows-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+.rows-table th { text-align: left; color: #6b7280; font-size: 11px; font-weight: 600;
+                 padding: 4px 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.rows-table td { padding: 3px 6px; }
+.row-input { background: #0d1117; border: 1px solid #374151; border-radius: 6px;
+             color: #e6edf3; font-size: 13px; padding: 7px 10px; width: 100%; }
+.row-input:focus { outline: none; border-color: #f97316; }
+.del-row-btn { background: none; border: none; color: #4b5563; cursor: pointer; font-size: 18px; padding: 4px; }
+.del-row-btn:hover { color: #f87171; }
+
+.add-row-btn { background: none; border: 1px dashed #374151; color: #6b7280;
+               padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.add-row-btn:hover { border-color: #f97316; color: #f97316; }
+.add-carrier-btn { background: none; border: 1px dashed #374151; color: #6b7280;
+                   padding: 9px 20px; border-radius: 8px; cursor: pointer; font-size: 13px;
+                   margin: 10px 20px 16px; display: block; }
+.add-carrier-btn:hover { border-color: #60a5fa; color: #60a5fa; }
+.add-cpt-btn { background: #161b22; border: 2px dashed #374151; color: #6b7280;
+               padding: 16px; border-radius: 12px; cursor: pointer; font-size: 14px;
+               width: 100%; margin-bottom: 24px; }
+.add-cpt-btn:hover { border-color: #f97316; color: #f97316; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <h1>&#128230; BRS1 CPT Admin</h1>
+    <div class="sub">Type assignments &mdash; saves to all TV screens within 15 seconds</div>
+  </div>
+  <div class="topbar-right">
+    <a class="tv-btn" href="tv.html" target="_blank">&#128television; Open TV Board</a>
+    <button class="save-btn" id="saveBtn" onclick="saveAll()">&#128190; Save &amp; Publish</button>
+  </div>
+</div>
+
+<div class="status-bar" id="statusBar"></div>
+
+<div class="main">
+  <div id="cptBlocks"></div>
+  <button class="add-cpt-btn" onclick="addCPT()">+ Add CPT Time</button>
+</div>
+
+<script>
+var BLOB_URL = 'https://jsonblob.com/api/jsonBlob/019f1048-c5f0-759a-a997-7d10111d135d';
+var cpts = [];
+
+function render() {
+  var c = document.getElementById('cptBlocks');
+  c.innerHTML = '';
+  cpts.forEach(function(cpt, ci) {
+    var block = document.createElement('div');
+    block.className = 'cpt-block';
+    block.innerHTML =
+      '<div class="cpt-header">' +
+        '<span class="cpt-label">CPT TIME</span>' +
+        '<input class="cpt-time-input" value="' + esc(cpt.time) + '" placeholder="20:30" ' +
+               'oninput="cpts[' + ci + '].time=this.value">' +
+        '<button class="del-cpt-btn" onclick="delCPT(' + ci + ')">&#10005; Remove CPT</button>' +
+      '</div>' +
+      '<div id="cb-' + ci + '"></div>' +
+      '<button class="add-carrier-btn" onclick="addCarrier(' + ci + ')">+ Add Carrier / Route</button>';
+    c.appendChild(block);
+
+    var cbDiv = document.getElementById('cb-' + ci);
+    cpt.carriers.forEach(function(car, ki) {
+      var cb = document.createElement('div');
+      cb.className = 'carrier-block';
+      var rowsHtml = car.rows.map(function(row, ri) {
+        return '<tr>' +
+          '<td style="width:45%"><input class="row-input" value="' + esc(row.chute) + '" placeholder="Chute e.g. BOX-C-01A" ' +
+            'oninput="cpts[' + ci + '].carriers[' + ki + '].rows[' + ri + '].chute=this.value"></td>' +
+          '<td style="width:45%"><input class="row-input" value="' + esc(row.owner) + '" placeholder="Owner name" ' +
+            'oninput="cpts[' + ci + '].carriers[' + ki + '].rows[' + ri + '].owner=this.value"></td>' +
+          '<td><button class="del-row-btn" onclick="delRow(' + ci + ',' + ki + ',' + ri + ')">&#215;</button></td>' +
+        '</tr>';
+      }).join('');
+      cb.innerHTML =
+        '<div class="carrier-header">' +
+          '<input class="carrier-input" value="' + esc(car.name) + '" placeholder="Carrier / Route name" ' +
+            'oninput="cpts[' + ci + '].carriers[' + ki + '].name=this.value">' +
+          '<button class="del-carrier-btn" onclick="delCarrier(' + ci + ',' + ki + ')" title="Remove">&#215;</button>' +
+        '</div>' +
+        '<table class="rows-table"><tr><th>Chute / Stacking</th><th>Owner</th><th></th></tr>' +
+        rowsHtml + '</table>' +
+        '<button class="add-row-btn" onclick="addRow(' + ci + ',' + ki + ')">+ Add row</button>';
+      cbDiv.appendChild(cb);
+    });
+  });
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+function addCPT() { cpts.push({time:'',carriers:[{name:'',rows:[{chute:'',owner:''}]}]}); render(); }
+function delCPT(ci) { if(confirm('Remove this CPT block?')){cpts.splice(ci,1);render();} }
+function addCarrier(ci) { cpts[ci].carriers.push({name:'',rows:[{chute:'',owner:''}]}); render(); }
+function delCarrier(ci,ki) { cpts[ci].carriers.splice(ki,1); render(); }
+function addRow(ci,ki) { cpts[ci].carriers[ki].rows.push({chute:'',owner:''}); render(); }
+function delRow(ci,ki,ri) { cpts[ci].carriers[ki].rows.splice(ri,1); render(); }
+
+function flatten() {
+  var out = [];
+  cpts.forEach(function(cpt) {
+    cpt.carriers.forEach(function(car) {
+      car.rows.forEach(function(row) {
+        if (!row.chute && !row.owner) return;
+        out.push({ cpt:cpt.time, carrier:car.name, chute:row.chute, owner:row.owner, sort:'', bay:'' });
+      });
+    });
+  });
+  return out;
+}
+
+function saveAll() {
+  var data = flatten();
+  if (!data.length) { showStatus('Nothing to save — add some assignments first.','err'); return; }
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  showStatus('Publishing ' + data.length + ' assignments...','info');
+  fetch(BLOB_URL, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body: JSON.stringify({ts:new Date().toLocaleString('en-GB'), data:data, rosterMap:{}})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    btn.disabled=false; btn.textContent='\u{1F4BE} Save & Publish';
+    if(d.ts){ showStatus('\u2713 Published ' + data.length + ' assignments \u2014 TVs update within 15 seconds','ok'); }
+    else { showStatus('Error: '+JSON.stringify(d).substring(0,120),'err'); }
+  })
+  .catch(function(e){ btn.disabled=false; btn.textContent='\u{1F4BE} Save & Publish'; showStatus('Error: '+e.message,'err'); });
+}
+
+function showStatus(msg,cls) {
+  var el = document.getElementById('statusBar');
+  el.textContent=msg; el.className='status-bar '+cls;
+  if(cls==='ok') setTimeout(function(){el.style.display='none';},6000);
+}
+
+function loadExisting() {
+  fetch(BLOB_URL+'?t='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d||!d.data||!d.data.length){addCPT();render();return;}
+    var cptMap={}, cptOrder=[];
+    d.data.forEach(function(row){
+      var ck=row.cpt||'';
+      if(!cptMap[ck]){cptMap[ck]={};cptOrder.push(ck);}
+      var kk=row.carrier||'';
+      if(!cptMap[ck][kk])cptMap[ck][kk]=[];
+      cptMap[ck][kk].push({chute:row.chute||'',owner:row.owner||''});
+    });
+    cpts=cptOrder.map(function(ck){
+      return {time:ck, carriers:Object.keys(cptMap[ck]).map(function(k){
+        return {name:k, rows:cptMap[ck][k]};
+      })};
+    });
+    render();
+    showStatus('Loaded existing data (' + d.data.length + ' rows) — last saved: ' + d.ts,'info');
+  })
+  .catch(function(){addCPT();render();});
+}
+
+loadExisting();
+</script>
+</body>
+</html>
