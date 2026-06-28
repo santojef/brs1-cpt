@@ -232,7 +232,7 @@
      justify-content:center;min-height:70vh;color:#6b7280;padding-top:80px;">
   <div style="font-size:56px;margin-bottom:16px;">&#128225;</div>
   <div style="font-size:22px;font-weight:700;color:#9ca3af;margin-bottom:8px;">Waiting for CPT data</div>
-  <div style="font-size:13px;">Add assignments in the Admin page</div>
+  <div style="font-size:13px;">Publish assignments from the Admin page</div>
   <div style="font-size:12px;margin-top:12px;color:#4b5563;" id="pollStatus">Checking&hellip;</div>
 </div>
 
@@ -1575,16 +1575,16 @@ var BLOB_URL = 'https://jsonblob.com/api/jsonBlob/019f1048-c5f0-759a-a997-7d1011
 var _lastTs  = null;
 
 function fetchData(cb) {
-  fetch(BLOB_URL + '?t=' + Date.now(), {cache:'no-store',headers:{'Accept':'application/json'}})
+  fetch(BLOB_URL+'?t='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}})
   .then(function(r){return r.json();})
   .then(function(d){cb(d&&d.ts?d:null);})
   .catch(function(e){console.warn('[TV]',e.message);cb(null);});
 }
 
 function applyData(rec) {
-  if (!rec||!rec.ts||!rec.data||!rec.data.length) return;
-  if (rec.ts===_lastTs) return;
-  _lastTs = rec.ts;
+  if(!rec||!rec.ts||!rec.data||!rec.data.length) return;
+  if(rec.ts===_lastTs) return;
+  _lastTs=rec.ts;
   document.getElementById('waiting').style.display='none';
   document.getElementById('board').style.display='block';
   allData=rec.data; rosterMap=rec.rosterMap||{};
@@ -1595,7 +1595,7 @@ function applyData(rec) {
   document.getElementById('lastUp').textContent='Updated: '+rec.ts;
 }
 
-function poll() {
+function poll(){
   fetchData(function(rec){
     if(rec){applyData(rec);}
     else{document.getElementById('pollStatus').textContent='Last checked: '+new Date().toLocaleTimeString('en-GB');}
@@ -1603,7 +1603,7 @@ function poll() {
 }
 poll(); setInterval(poll,15000);
 
-function tick() {
+function tick(){
   var n=new Date();
   document.getElementById('clock').textContent=n.toLocaleTimeString('en-GB');
   document.getElementById('dateLbl').textContent=n.toLocaleDateString('en-GB',
