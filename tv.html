@@ -447,13 +447,16 @@ function autoAdvanceCPT(){
   var nowN=nowShiftMins();
 
   // Pick the correct tab:
-  // - Find first CPT whose shiftMins >= nowN-1 (i.e. not yet passed by >1 min)
-  // - If all have passed, show last
-  var targetTime=null;
+  // Show the LAST CPT that has already passed (i.e. shiftMins <= nowN).
+  // This means a CPT is shown for its entire window, right up until the
+  // moment the NEXT CPT time arrives. Switches within 1 minute of each CPT.
+  // If no CPT has passed yet, show the first one (pre-shift).
+  var targetTime=times[0];
   for(var i=0;i<times.length;i++){
-    if(shiftMins(times[i])>=nowN-1){targetTime=times[i];break;}
+    if(shiftMins(times[i])<=nowN){
+      targetTime=times[i]; // keep updating - last one that passed wins
+    }
   }
-  if(!targetTime)targetTime=times[times.length-1];
 
   // Only switch if target has actually changed
   if(targetTime===_lastAdvancedTime)return;
