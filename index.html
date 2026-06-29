@@ -398,6 +398,7 @@ function parseSheet(ws){
     }
 
     var car = {name:blk.name, cptTime:blk.cpt, rows:[]};
+    var inhBay='', inhSort='', inhLane='';
     for(var ri=ds; ri<nextRi; ri++){
       var row=rows[ri];
       while(row.length<=bc+4) row.push('');
@@ -408,12 +409,15 @@ function parseSheet(ws){
       if(!/^[A-Z0-9][A-Z0-9\-]+$/i.test(chute)||chute.length<3) continue;
       var owner=isBad(row[bc+4])?'':row[bc+4];
       if(owner.toUpperCase()==='OFF') owner='';
+      if(!isBad(row[bc+3])) inhBay  = row[bc+3];
+      if(!isBad(row[bc+2])) inhSort = row[bc+2];
+      if(!isBad(row[bc]))   inhLane = row[bc];
       car.rows.push({
         cptTime: blk.cpt,
-        lane:    isBad(row[bc])   ? '' : row[bc],
+        lane:    inhLane,
         chute:   chute,
-        sort:    isBad(row[bc+2]) ? '' : row[bc+2],
-        bay:     isBad(row[bc+3]) ? '' : row[bc+3],
+        sort:    inhSort,
+        bay:     inhBay,
         owner:   owner
       });
     }
