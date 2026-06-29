@@ -439,55 +439,82 @@ function publishAll(){
 
   var btn = document.getElementById('publishBtn');
   btn.disabled = true; btn.textContent = 'Publishing...';
+
   var times = [...new Set(data.map(function(r){return r.cpt;}))].sort();
-  showStatus('Publishing ' + data.length + ' rows...','inf');
-
-  // Detect shift type: night shift has at least one CPT >= 20:00
   var hasNightTime = times.some(function(t){ return parseInt(t.split(':')[0]) >= 20; });
-  var shiftType = 'WEEKDAY';
-  if(!hasNightTime) {
-    shiftType = 'DAYS';
-  } else if(sheets.some(function(sh){ return /sun/i.test(sh.name); })) {
-    shiftType = 'SUNDAY';
-  }
+  var shiftType = !hasNightTime ? 'DAYS' :
+                  sheets.some(function(sh){ return /sun/i.test(sh.name); }) ? 'SUNDAY' : 'WEEKDAY';
 
-  var payload = JSON.stringify({ts:new Date().toLocaleString('en-GB'), shiftType:shiftType, data:data, sheets:[], rosterMap:{}});
   var GH_API = 'https://api.github.com/repos/santojef/brs1-cpt/contents/data.json';
   var GH_HDR = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','User-Agent':'brs1-cpt'};
 
   function done(ok, msg){
     btn.disabled=false; btn.textContent='✅ Publish to TVs';
     showStatus(msg, ok ? 'ok' : 'err');
+    console.log('[PUBLISH]', ok ? 'OK' : 'FAIL', msg);
   }
 
-  function doPut(sha, isRetry){
-    var body = {message:'Publish '+shiftType+' '+data.length+' rows — '+times.join(', '),
-                content:btoa(unescape(encodeURIComponent(payload))), branch:'main'};
+  // Build payload fresh each attempt (timestamp updates too)
+  function buildPayload(){
+    return JSON.stringify({
+      ts: new Date().toLocaleString('en-GB'),
+      shiftType: shiftType,
+      data: data,
+      sheets: [],
+      rosterMap: {}
+    });
+  }
+
+  // Safe base64 encode that works for all unicode content
+  function safeB64(str){
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+      function(m,p){ return String.fromCharCode('0x'+p); }));
+  }
+
+  function doPut(sha, attempt){
+    if(attempt > 3){ done(false, 'Failed after 3 attempts — please try again'); return; }
+    var payload = buildPayload();
+    var body = {
+      message: 'Publish '+shiftType+' '+data.length+' rows',
+      content: safeB64(payload),
+      branch: 'main'
+    };
     if(sha) body.sha = sha;
-    fetch(GH_API,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},GH_HDR),body:JSON.stringify(body)})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d.content){
-          done(true, '✓ Published '+shiftType+' — '+data.length+' rows — CPTs: '+times.join(', ')+' — TVs update in ~15s');
-        } else if(!isRetry && d.message && d.message.indexOf('does not match')!==-1){
-          // SHA stale — fetch fresh and retry exactly once
-          showStatus('Retrying...','inf');
-          fetch(GH_API,{headers:GH_HDR})
-            .then(function(r2){ return r2.json(); })
-            .then(function(d2){ doPut(d2.sha, true); })
-            .catch(function(e){ done(false,'Error on retry: '+e.message); });
-        } else {
-          done(false,'Error: '+(d.message||JSON.stringify(d).substring(0,120)));
-        }
-      })
-      .catch(function(e){ done(false,'Error: '+e.message); });
+    console.log('[PUBLISH] attempt', attempt, 'sha', sha ? sha.substring(0,8) : 'none');
+
+    fetch(GH_API, {
+      method: 'PUT',
+      headers: Object.assign({'Content-Type':'application/json'}, GH_HDR),
+      body: JSON.stringify(body)
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.content){
+        done(true, '✓ Published '+shiftType+' — '+data.length+' rows — CPTs: '+times.join(', ')+' — TVs update in ~15s');
+      } else if(d.message && d.message.indexOf('does not match') !== -1){
+        // SHA changed between our GET and PUT — fetch fresh and retry
+        console.log('[PUBLISH] SHA conflict on attempt', attempt, '— retrying');
+        showStatus('Retrying (attempt '+(attempt+1)+')...', 'inf');
+        fetch(GH_API, {headers: GH_HDR})
+          .then(function(r2){ return r2.json(); })
+          .then(function(d2){ doPut(d2.sha, attempt+1); })
+          .catch(function(e){ done(false, 'Network error: '+e.message); });
+      } else {
+        done(false, 'Error: '+(d.message || JSON.stringify(d).substring(0,120)));
+      }
+    })
+    .catch(function(e){ done(false, 'Network error: '+e.message); });
   }
 
-  // Fetch fresh SHA then publish
-  fetch(GH_API,{headers:GH_HDR})
+  // Always start with a fresh SHA fetch
+  showStatus('Publishing '+data.length+' rows ('+shiftType+')...', 'inf');
+  fetch(GH_API, {headers: GH_HDR})
     .then(function(r){ return r.json(); })
-    .then(function(d){ doPut(d.sha||null, false); })
-    .catch(function(e){ done(false,'Error: '+e.message); });
+    .then(function(d){
+      console.log('[PUBLISH] fresh SHA', d.sha ? d.sha.substring(0,8) : 'none');
+      doPut(d.sha || null, 1);
+    })
+    .catch(function(e){ done(false, 'Network error: '+e.message); });
 }
 
 function showStatus(msg, cls){
