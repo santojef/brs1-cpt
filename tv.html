@@ -705,7 +705,7 @@ updateClock(); setInterval(updateClock,1000);
 /* ── LIVE UPDATES every 1s ── */
 function startLiveUpdates(){
   if(_liveTimer)clearInterval(_liveTimer);
-  _liveTimer=setInterval(function(){updateNextBanner();updateLiveCountdowns();},1000);
+  _liveTimer=setInterval(function(){updateNextBanner();updateLiveCountdowns();autoAdvanceCPT();},1000);
   // Full re-render every 60s (catches new data, status changes)
   setInterval(function(){if(_allData.length){buildTabs(flatToGroups(_allData));renderSections();}},60000);
 }
