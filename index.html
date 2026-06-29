@@ -291,25 +291,88 @@ function importWB(wb){
 function parseSheet(ws){
   var raw = XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
   var rows = raw.map(function(r){ return r.map(function(c){ return String(c||'').trim(); }); });
-  var BAD = ['Lane','Stacking','Sort','Bay','Owner','None',''];
+  var BAD = ['Lane','Stacking','Sort','Bay','Owner','None','','ContainerType','Container Type'];
 
-  function isBad(s){ return !s || BAD.indexOf(s)!==-1 || s.length>80; }
+  function isBad(s){ return !s || BAD.map(function(b){return b.toLowerCase();}).indexOf(s.toLowerCase())!==-1 || s.length>80; }
+  function isCptHdr(s){ return /CPT|start\s*@/i.test(s) && /\d{1,2}:\d{2}/.test(s); }
+  function isCarHdr(s){ return /^BRS1/i.test(s.trim()); }
+  function parseCptTime(s){
+    var m=s.match(/(\d{1,2}:\d{2})\s*CPT/i); if(m) return m[1].replace(/^(\d):/, '0$1:');
+    m=s.match(/(\d{1,2}:\d{2})\s*PT\b/i);    if(m) return m[1].replace(/^(\d):/, '0$1:');
+    var ts=s.match(/\d{1,2}:\d{2}/g);
+    if(ts){ var t=ts[ts.length-1]; return t.replace(/^(\d):/,'0$1:'); }
+    return null;
+  }
+  function parseCarName(s){ var m=s.match(/^BRS1[->\s]+(.+)/i); return m?m[1].trim().replace(/^-/,'').trim():s.trim(); }
 
-  // Find all carrier/SP blocks with their row, col, CPT time
+  // ── Detect shift type from content ──────────────────────────────────────
+  // Night shift: cells like "2030 BRS1->CARRIER"
+  // Day shift:   cells like "Start @ 09:45 - 10:00 CPT" / "BRS1-CARRIER-SAME-DAY"
+  var isNight = false;
+  for(var ri=0; ri<rows.length && !isNight; ri++){
+    for(var ci=0; ci<rows[ri].length && !isNight; ci++){
+      if(/^\d{3,4}\s+BRS1/i.test(rows[ri][ci])) isNight=true;
+    }
+  }
+
   var blocks = [];
-  for(var ri=0; ri<rows.length; ri++){
-    var row = rows[ri];
-    for(var ci=0; ci<row.length; ci++){
-      var cell = row[ci];
-      if(!cell) continue;
-      // Standalone CPT header (not a carrier) - skip
-      if(/^\d{3,4}\s*CPT\s*$/i.test(cell)) continue;
-      // SP CPT block
-      var spM = cell.match(/^SP\s+CPT\s+(\d{3,4})\s*$/i);
-      if(spM){ blocks.push({ri:ri,ci:ci,name:'SP',cpt:fmtT(spM[1])}); continue; }
-      // Carrier block: '2030 BRS1->X', '2030 BRS1- X', '2030 BRS1 X'
-      var carM = cell.match(/^(\d{3,4})\s+BRS1\s*[-\u2013>]*\s*(.+)/i);
-      if(carM){ blocks.push({ri:ri,ci:ci,name:carM[2].trim(),cpt:fmtT(carM[1])}); }
+  var seenBlk = {};
+
+  if(isNight){
+    // ── Night shift parser (existing logic) ────────────────────────────────
+    for(var ri=0; ri<rows.length; ri++){
+      var row=rows[ri];
+      for(var ci=0; ci<row.length; ci++){
+        var cell=row[ci]; if(!cell) continue;
+        if(/^\d{3,4}\s*CPT\s*$/i.test(cell)) continue;
+        var spM=cell.match(/^SP\s+CPT\s+(\d{3,4})\s*$/i);
+        if(spM){ blocks.push({ri:ri,ci:ci,name:'SP',cpt:fmtT(spM[1])}); continue; }
+        var carM=cell.match(/^(\d{3,4})\s+BRS1\s*[-\u2013>]*\s*(.+)/i);
+        if(carM){ blocks.push({ri:ri,ci:ci,name:carM[2].trim(),cpt:fmtT(carM[1])}); }
+      }
+    }
+  } else {
+    // ── Day shift parser ───────────────────────────────────────────────────
+    for(var ri=0; ri<rows.length; ri++){
+      var row=rows[ri];
+      for(var ci_=0; ci_<row.length; ci_++){
+        var ci=ci_; // keep in scope
+        if([0,6,12,18].indexOf(ci)===-1) continue;
+        var cell=row[ci]; if(!cell) continue;
+        var key=ri+','+ci;
+        if(seenBlk[key]) continue;
+        if(isCptHdr(cell)){
+          var cpt=parseCptTime(cell); if(!cpt) continue;
+          var carrier='';
+          if(ri+1<rows.length && ci<rows[ri+1].length){
+            var cr=rows[ri+1][ci];
+            if(cr && isCarHdr(cr)) carrier=parseCarName(cr);
+          }
+          var ds=ri+2;
+          if(ds<rows.length){
+            var hv=rows[ds].map(function(v){return v.toLowerCase();});
+            if(hv.indexOf('lane')!==-1||hv.indexOf('stacking')!==-1) ds++;
+          }
+          seenBlk[key]=true;
+          blocks.push({ri:ri,ci:ci,cpt:cpt,name:carrier,ds:ds});
+        } else if(isCarHdr(cell)){
+          var lastCpt=null;
+          for(var pr=ri-1; pr>=Math.max(ri-6,0); pr--){
+            if(ci<rows[pr].length && rows[pr][ci]){
+              var ct=parseCptTime(rows[pr][ci]); if(ct){lastCpt=ct;break;}
+            }
+          }
+          if(lastCpt){
+            var carrier2=parseCarName(cell); var ds2=ri+1;
+            if(ds2<rows.length){
+              var hv2=rows[ds2].map(function(v){return v.toLowerCase();});
+              if(hv2.indexOf('lane')!==-1||hv2.indexOf('stacking')!==-1) ds2++;
+            }
+            seenBlk[key]=true;
+            blocks.push({ri:ri,ci:ci,cpt:lastCpt,name:carrier2,ds:ds2});
+          }
+        }
+      }
     }
   }
 
@@ -317,37 +380,41 @@ function parseSheet(ws){
 
   var carriers = [];
   blocks.forEach(function(blk, bi){
-    // Next block on same column (within ±3) that comes after this row
     var nextRi = rows.length;
     for(var j=0; j<blocks.length; j++){
       if(j===bi) continue;
-      if(blocks[j].ri > blk.ri && Math.abs(blocks[j].ci - blk.ci) <= 3){
+      if(blocks[j].ri > blk.ri && Math.abs(blocks[j].ci - blk.ci) <= 3)
         nextRi = Math.min(nextRi, blocks[j].ri);
-      }
     }
 
-    var bc = blk.ci;
-    var ds = blk.ri + 1;
-    // Skip Lane/Stacking header row
-    if(ds < rows.length){
-      var hv = rows[ds].map(function(v){ return v.toLowerCase(); });
-      if(hv.indexOf('lane')!==-1 || hv.indexOf('stacking')!==-1) ds++;
+    var bc  = blk.ci;
+    var ds  = blk.ds !== undefined ? blk.ds : blk.ri + 1;
+    if(blk.ds === undefined){
+      // Night shift: skip Lane/Stacking header row
+      if(ds < rows.length){
+        var hv=rows[ds].map(function(v){return v.toLowerCase();});
+        if(hv.indexOf('lane')!==-1||hv.indexOf('stacking')!==-1) ds++;
+      }
     }
 
     var car = {name:blk.name, cptTime:blk.cpt, rows:[]};
     for(var ri=ds; ri<nextRi; ri++){
-      var row = rows[ri];
-      while(row.length <= bc+4) row.push('');
-      var chute = row[bc+1];
-      if(!chute || isBad(chute)) continue;
-      if(!/^[A-Z0-9][A-Z0-9\-]+$/i.test(chute)) continue;
+      var row=rows[ri];
+      while(row.length<=bc+4) row.push('');
+      // Day shift: stop if we hit another CPT header or carrier header
+      if(!isNight && row[bc] && (isCptHdr(row[bc])||isCarHdr(row[bc])||row[bc].toLowerCase()==='lane'||row[bc].toLowerCase()==='stacking')) break;
+      var chute=row[bc+1];
+      if(!chute||isBad(chute)) continue;
+      if(!/^[A-Z0-9][A-Z0-9\-]+$/i.test(chute)||chute.length<3) continue;
+      var owner=isBad(row[bc+4])?'':row[bc+4];
+      if(owner.toUpperCase()==='OFF') owner='';
       car.rows.push({
         cptTime: blk.cpt,
         lane:    isBad(row[bc])   ? '' : row[bc],
         chute:   chute,
         sort:    isBad(row[bc+2]) ? '' : row[bc+2],
         bay:     isBad(row[bc+3]) ? '' : row[bc+3],
-        owner:   isBad(row[bc+4]) ? '' : row[bc+4]
+        owner:   owner
       });
     }
     if(car.rows.length) carriers.push(car);
