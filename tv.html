@@ -222,6 +222,7 @@ var _allData = [];
 var _lastTs = null;
 var _activeTime = "all";
 var _lastAdvancedTime = null;
+var _shiftType = "WEEKDAY"; // set by applyData from data.json
 var _autoAdvanceEnabled = true;
 var _tvScrollTimer = null;
 var _tvScrollSections = [];
@@ -238,11 +239,16 @@ function shiftMins(t){
   if(!t||t==="all")return -1;
   var parts=t.split(":"); var h=parseInt(parts[0]),m=parseInt(parts[1]);
   var total=h*60+m;
-  // Night shift: 20:00 = start, anything <20:00 = next calendar day
+  // Day shift: times 06:00-19:59 stay as-is (no wraparound)
+  if(_shiftType==="DAYS") return total;
+  // Night shift: 20:00+ stays as-is; <20:00 = next calendar day
   return total>=20*60 ? total : total+24*60;
 }
 function nowShiftMins(){
   var n=new Date(), m=n.getHours()*60+n.getMinutes();
+  // Day shift: no wraparound needed
+  if(_shiftType==="DAYS") return m;
+  // Night shift: before 20:00 means next calendar day
   return m<20*60 ? m+1440 : m;
 }
 function nowShiftSecs(){
@@ -440,28 +446,19 @@ function autoAdvanceCPT(){
   if(!times.length)return;
   var nowN=nowShiftMins();
 
+  // Pick the correct tab:
+  // - Find first CPT whose shiftMins >= nowN-1 (i.e. not yet passed by >1 min)
+  // - If all have passed, show last
   var targetTime=null;
-
-  // 1. Is any CPT within ±30 seconds of right now? Show it (it's active).
   for(var i=0;i<times.length;i++){
-    var diff=shiftMins(times[i])-nowN; // negative = passed
-    if(diff>=-1&&diff<=1){targetTime=times[i];break;}
+    if(shiftMins(times[i])>=nowN-1){targetTime=times[i];break;}
   }
-
-  // 2. Otherwise: first CPT that hasn't passed by more than 0.5 min yet
-  if(!targetTime){
-    for(var i=0;i<times.length;i++){
-      var sm=shiftMins(times[i]);
-      // Show if upcoming OR passed by less than 30 seconds (0.5 min)
-      if(sm>=nowN-1){targetTime=times[i];break;}
-    }
-  }
-
-  // 3. All passed -> show last
   if(!targetTime)targetTime=times[times.length-1];
 
+  // Only switch if target has actually changed
   if(targetTime===_lastAdvancedTime)return;
-  // Never go backward
+
+  // Never go backward (prevents flicker)
   if(_lastAdvancedTime&&shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
 
   _lastAdvancedTime=targetTime;
@@ -469,7 +466,7 @@ function autoAdvanceCPT(){
   tabs.forEach(function(btn){
     if(btn.getAttribute("data-time")===targetTime){
       filterByTime(targetTime,btn);
-      dbg("Auto-advanced to "+targetTime);
+      dbg("Auto-advanced to "+targetTime+" (shiftType="+_shiftType+")");
     }
   });
 }
