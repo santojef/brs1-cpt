@@ -717,6 +717,7 @@ function fetchData(cb){
 }
 
 function applyData(rec){
+  _shiftType=(arguments[0]&&arguments[0].shiftType)?arguments[0].shiftType:"WEEKDAY";
   if(!rec||!rec.ts||!rec.data||!rec.data.length)return;
   if(rec.ts===_lastTs){dbg("no change");return;}
   _lastTs=rec.ts;
