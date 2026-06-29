@@ -430,23 +430,41 @@ function updateLiveCountdowns(){
 }
 
 /* ── AUTO ADVANCE ── */
+// Rule: show the NEXT upcoming CPT (first one still in the future).
+// Once a CPT passes by >30 seconds, move on to the next one.
+// If we are within 30s of a CPT time (just passed), keep showing it briefly.
 function autoAdvanceCPT(){
   if(!_allData.length||!_autoAdvanceEnabled)return;
   var groups=flatToGroups(_allData);
   var times=getCPTTimes(groups);
   if(!times.length)return;
   var nowN=nowShiftMins();
-  // Current CPT = last one whose shiftMins <= nowN
-  var targetTime=times[0];
+
+  var targetTime=null;
+
+  // 1. Is any CPT within ±30 seconds of right now? Show it (it's active).
   for(var i=0;i<times.length;i++){
-    if(shiftMins(times[i])<=nowN)targetTime=times[i];
-    else break;
+    var diff=shiftMins(times[i])-nowN; // negative = passed
+    if(diff>=-1&&diff<=1){targetTime=times[i];break;}
   }
+
+  // 2. Otherwise: first CPT that hasn't passed by more than 0.5 min yet
+  if(!targetTime){
+    for(var i=0;i<times.length;i++){
+      var sm=shiftMins(times[i]);
+      // Show if upcoming OR passed by less than 30 seconds (0.5 min)
+      if(sm>=nowN-1){targetTime=times[i];break;}
+    }
+  }
+
+  // 3. All passed -> show last
+  if(!targetTime)targetTime=times[times.length-1];
+
   if(targetTime===_lastAdvancedTime)return;
-  // Don't go backward
+  // Never go backward
   if(_lastAdvancedTime&&shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
+
   _lastAdvancedTime=targetTime;
-  // Find and click the right tab
   var tabs=document.querySelectorAll("#filterTabs .tab-btn[data-time]");
   tabs.forEach(function(btn){
     if(btn.getAttribute("data-time")===targetTime){
@@ -710,12 +728,17 @@ function applyData(rec){
   document.getElementById("boardWrap").style.display="block";
   var groups=flatToGroups(_allData);
   buildTabs(groups);
-  // Auto-select current CPT on first load
+  // Auto-select current CPT on first load — same logic as autoAdvanceCPT
   if(_activeTime==="all"){
     var times=getCPTTimes(groups);
     var nowN=nowShiftMins();
-    var target=times[0];
-    for(var i=0;i<times.length;i++){if(shiftMins(times[i])<=nowN)target=times[i];else break;}
+    var target=null;
+    // Pick first CPT not yet passed by more than 30s (0.5 min)
+    for(var i=0;i<times.length;i++){
+      if(shiftMins(times[i])>=nowN-1){target=times[i];break;}
+    }
+    // All passed -> last one
+    if(!target&&times.length)target=times[times.length-1];
     if(target){
       _activeTime=target;
       _lastAdvancedTime=target;
