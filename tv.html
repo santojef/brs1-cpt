@@ -751,6 +751,11 @@ function poll(){
 poll();
 setInterval(poll,15000);
 
+// Hard refresh every 60s — picks up new tv.html deploys automatically
+setTimeout(function hardRefresh(){
+  location.reload(true);
+}, 60000);
+
 dbg("TV v5 ready");
 </script>
 </body>
