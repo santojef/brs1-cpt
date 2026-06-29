@@ -12,7 +12,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;mi
 .topbar .sub{color:#8b949e;font-size:11px;margin-top:2px}
 .topbar-right{display:flex;align-items:center;gap:10px}
 .btn{padding:8px 18px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none}
-.btn-orange{background:#f97316;color:#fff}.btn-orange:hover{background:#ea6a00}
 .btn-blue{background:#1c2333;color:#60a5fa;border:1px solid #374151}.btn-blue:hover{border-color:#60a5fa}
 .btn-green{background:#065f46;color:#4ade80;border:1px solid #16a34a}.btn-green:hover{background:#047857}
 .btn:disabled{background:#374151;color:#6b7280;cursor:default}
@@ -48,8 +47,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;mi
 .add-row-btn:hover{color:#f97316}
 .add-carrier-btn{background:none;border:2px dashed #374151;color:#6b7280;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:13px;width:100%;margin-top:4px}
 .add-carrier-btn:hover{border-color:#60a5fa;color:#60a5fa}
-.add-cpt-btn{background:#161b22;border:2px dashed #374151;color:#6b7280;padding:14px;border-radius:10px;cursor:pointer;font-size:14px;width:100%;margin-top:8px}
-.add-cpt-btn:hover{border-color:#f97316;color:#f97316}
 .icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;color:#6b7280;font-size:15px}
 .icon-btn:hover{color:#e6edf3;background:#21262d}
 #fileIn{display:none}
@@ -59,10 +56,10 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;mi
 <div class="topbar">
   <div><h1>&#128230; BRS1 CPT Admin</h1><div class="sub">Edit assignments &mdash; publish to all TV screens instantly</div></div>
   <div class="topbar-right">
-    <button class="btn btn-blue" onclick="document.getElementById('fileIn').click()">&#128196; Import Excel</button>
+    <button class="btn btn-blue" id="importBtn">&#128196; Import Excel</button>
     <input type="file" id="fileIn" accept=".xlsx,.xls,.csv">
     <a class="btn btn-blue" href="tv.html" target="_blank">&#128250; TV Preview</a>
-    <button class="btn btn-green" id="publishBtn" onclick="publishAll()">&#9989; Publish to TVs</button>
+    <button class="btn btn-green" id="publishBtn">&#9989; Publish to TVs</button>
   </div>
 </div>
 <div class="status" id="status"></div>
@@ -70,106 +67,173 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;mi
      border-radius:8px;padding:16px 20px;margin:12px 20px;align-items:center;gap:12px;flex-wrap:wrap">
   <span style="color:#f97316;font-weight:600;font-size:13px">&#128273; GitHub Token required to Publish</span>
   <input id="tokenInput" type="password" placeholder="ghp_..." style="flex:1;min-width:260px;
-    background:#0d1117;border:1px solid #374151;border-radius:6px;color:#e6edf3;
-    font-size:13px;padding:8px 12px" />
-  <button onclick="saveToken()" style="background:#f97316;color:#fff;border:none;
-    padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer">Save Token</button>
-  <a href="https://github.com/settings/tokens/new?description=brs1-cpt&scopes=repo"
-     target="_blank" style="color:#60a5fa;font-size:12px">Get token &#8599;</a>
+    background:#0d1117;border:1px solid #374151;border-radius:6px;color:#e6edf3;font-size:13px;padding:8px 12px"/>
+  <button id="saveTokenBtn" style="background:#f97316;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer">Save Token</button>
+  <a href="https://github.com/settings/tokens/new?description=brs1-cpt&scopes=repo" target="_blank" style="color:#60a5fa;font-size:12px">Get token &#8599;</a>
 </div>
-
-<div class="tabs" id="tabBar"><button class="tab-add" onclick="addSheet()" title="Add CPT window">+</button></div>
+<div class="tabs" id="tabBar"><button class="tab-add" id="addSheetBtn" title="Add CPT window">+</button></div>
 <div id="sheetsContainer"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 var GH_TOKEN = localStorage.getItem('gh_token') || '';
-var GH_USER   = 'santojef';
-var GH_REPO   = 'brs1-cpt';
-var DATA_RAW  = 'https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json';
-var DATA_API  = '/repos/santojef/brs1-cpt/contents/data.json';
+var DATA_RAW = 'https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json';
+var DATA_API = '/repos/santojef/brs1-cpt/contents/data.json';
 var sheets = [];
 var activeSheet = 0;
 
-function render(){renderTabs();renderSheets();}
+/* ── Wire up buttons (no inline onclick) ── */
+document.getElementById('importBtn').addEventListener('click', function(){ document.getElementById('fileIn').click(); });
+document.getElementById('fileIn').addEventListener('change', function(e){ if(e.target.files[0]) handleFile(e.target.files[0]); });
+document.getElementById('publishBtn').addEventListener('click', publishAll);
+document.getElementById('addSheetBtn').addEventListener('click', addSheet);
+document.getElementById('saveTokenBtn').addEventListener('click', saveToken);
+
+/* ── Render ── */
+function render(){ renderTabs(); renderSheets(); }
 
 function renderTabs(){
-  var bar=document.getElementById('tabBar');
-  var addBtn=bar.querySelector('.tab-add');
-  bar.innerHTML='';
-  sheets.forEach(function(sh,si){
-    var t=document.createElement('div');
-    t.className='tab'+(si===activeSheet?' active':'');
-    t.textContent=sh.name||'CPT '+(si+1);
-    t.onclick=function(){activeSheet=si;render();};
+  var bar = document.getElementById('tabBar');
+  var addBtn = document.getElementById('addSheetBtn');
+  bar.innerHTML = '';
+  sheets.forEach(function(sh, si){
+    var t = document.createElement('div');
+    t.className = 'tab' + (si === activeSheet ? ' active' : '');
+    t.textContent = sh.name || ('CPT ' + (si+1));
+    t.addEventListener('click', (function(i){ return function(){ activeSheet=i; render(); }; })(si));
     bar.appendChild(t);
   });
   bar.appendChild(addBtn);
 }
 
 function renderSheets(){
-  var container=document.getElementById('sheetsContainer');
-  container.innerHTML='';
-  sheets.forEach(function(sh,si){
-    var div=document.createElement('div');
-    div.className='sheet'+(si===activeSheet?' active':'');
-    div.innerHTML=
-      '<div class="sheet-toolbar">'+
-        '<input class="sheet-name-input" value="'+esc(sh.name)+'" placeholder="e.g. 2030-2130" '+
-               'oninput="sheets['+si+'].name=this.value;renderTabs()">'+
-        '<button class="btn btn-blue" onclick="addCarrier('+si+')">+ Add Carrier</button>'+
-        '<button class="icon-btn" onclick="dupSheet('+si+')" title="Duplicate">&#128386;</button>'+
-        (sheets.length>1?'<button class="icon-btn" onclick="delSheet('+si+')" title="Delete" style="color:#f87171">&#128465;</button>':'')+
-      '</div>';
-    sh.carriers.forEach(function(car,ki){
-      var rows_html=car.rows.map(function(row,ri){
-        return '<tr>'+
-          '<td><input class="cell" value="'+esc(row.lane)+'" placeholder="" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].lane=this.value"></td>'+
-          '<td><input class="cell" value="'+esc(row.chute)+'" placeholder="BOX-C-01A" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].chute=this.value"></td>'+
-          '<td><input class="cell sort" value="'+esc(row.sort)+'" placeholder="" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].sort=this.value"></td>'+
-          '<td><input class="cell bay" value="'+esc(row.bay)+'" placeholder="" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].bay=this.value"></td>'+
-          '<td><input class="cell owner" value="'+esc(row.owner)+'" placeholder="Name" oninput="sheets['+si+'].carriers['+ki+'].rows['+ri+'].owner=this.value"></td>'+
-          '<td style="width:36px"><button class="del-row-btn" onclick="delRow('+si+','+ki+','+ri+')">&#215;</button></td>'+
-        '</tr>';
-      }).join('');
-      var cb=document.createElement('div');
-      cb.className='carrier-block';
-      cb.innerHTML=
-        '<div class="carrier-head">'+
-          '<span style="color:#8b949e;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">CARRIER / ROUTE</span>'+
-          '<input class="carrier-name-input" value="'+esc(car.name)+'" placeholder="e.g. DPD, NORTHAMP" oninput="sheets['+si+'].carriers['+ki+'].name=this.value">'+
-          '<div class="carrier-head-right">'+
-            '<button class="icon-btn" onclick="dupCarrier('+si+','+ki+')" title="Duplicate">&#128386;</button>'+
-            '<button class="icon-btn" onclick="delCarrier('+si+','+ki+')" title="Remove" style="color:#f87171">&#215;</button>'+
-          '</div>'+
-        '</div>'+
-        '<table class="cpt-table"><thead><tr><th>Lane</th><th>Stacking / Chute</th><th>Sort</th><th>Bay</th><th>Owner</th><th></th></tr></thead>'+
-        '<tbody>'+rows_html+
-          '<tr><td colspan="6"><button class="add-row-btn" onclick="addRow('+si+','+ki+')">+ Add row</button></td></tr>'+
-        '</tbody></table>';
+  var container = document.getElementById('sheetsContainer');
+  container.innerHTML = '';
+  sheets.forEach(function(sh, si){
+    var div = document.createElement('div');
+    div.className = 'sheet' + (si === activeSheet ? ' active' : '');
+
+    var toolbar = document.createElement('div');
+    toolbar.className = 'sheet-toolbar';
+    var nameIn = document.createElement('input');
+    nameIn.className = 'sheet-name-input';
+    nameIn.value = sh.name || '';
+    nameIn.placeholder = 'e.g. 2030-2130';
+    nameIn.addEventListener('input', (function(i){ return function(){ sheets[i].name = this.value; renderTabs(); }; })(si));
+    toolbar.appendChild(nameIn);
+
+    var addCarBtn = document.createElement('button');
+    addCarBtn.className = 'btn btn-blue';
+    addCarBtn.textContent = '+ Add Carrier';
+    addCarBtn.addEventListener('click', (function(i){ return function(){ addCarrier(i); }; })(si));
+    toolbar.appendChild(addCarBtn);
+
+    if(sheets.length > 1){
+      var delBtn = document.createElement('button');
+      delBtn.className = 'icon-btn';
+      delBtn.innerHTML = '&#128465;';
+      delBtn.style.color = '#f87171';
+      delBtn.title = 'Delete sheet';
+      delBtn.addEventListener('click', (function(i){ return function(){ delSheet(i); }; })(si));
+      toolbar.appendChild(delBtn);
+    }
+    div.appendChild(toolbar);
+
+    sh.carriers.forEach(function(car, ki){
+      var cb = document.createElement('div');
+      cb.className = 'carrier-block';
+
+      var head = document.createElement('div');
+      head.className = 'carrier-head';
+      var label = document.createElement('span');
+      label.style.cssText = 'color:#8b949e;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em';
+      label.textContent = 'CARRIER / ROUTE';
+      head.appendChild(label);
+      var nameInp = document.createElement('input');
+      nameInp.className = 'carrier-name-input';
+      nameInp.value = car.name || '';
+      nameInp.placeholder = 'e.g. DPD, STN8';
+      nameInp.addEventListener('input', (function(s,k){ return function(){ sheets[s].carriers[k].name = this.value; }; })(si,ki));
+      head.appendChild(nameInp);
+      var hr = document.createElement('div');
+      hr.className = 'carrier-head-right';
+      var delCarBtn = document.createElement('button');
+      delCarBtn.className = 'icon-btn';
+      delCarBtn.innerHTML = '&#215;';
+      delCarBtn.style.color = '#f87171';
+      delCarBtn.addEventListener('click', (function(s,k){ return function(){ delCarrier(s,k); }; })(si,ki));
+      hr.appendChild(delCarBtn);
+      head.appendChild(hr);
+      cb.appendChild(head);
+
+      var tbl = document.createElement('table');
+      tbl.className = 'cpt-table';
+      tbl.innerHTML = '<thead><tr><th>CPT</th><th>Lane</th><th>Chute</th><th>Sort</th><th>Bay</th><th>Owner</th><th></th></tr></thead>';
+      var tbody = document.createElement('tbody');
+      car.rows.forEach(function(row, ri){
+        var tr = document.createElement('tr');
+        [
+          {key:'cptTime', cls:'sort',   ph:'e.g. 01:30'},
+          {key:'lane',    cls:'',       ph:''},
+          {key:'chute',   cls:'',       ph:'BOX-A-01'},
+          {key:'sort',    cls:'sort',   ph:''},
+          {key:'bay',     cls:'bay',    ph:''},
+          {key:'owner',   cls:'owner',  ph:'Name'}
+        ].forEach(function(col){
+          var td = document.createElement('td');
+          var inp = document.createElement('input');
+          inp.className = 'cell ' + col.cls;
+          inp.value = row[col.key] || '';
+          inp.placeholder = col.ph;
+          inp.addEventListener('input', (function(s,k,r,key){ return function(){ sheets[s].carriers[k].rows[r][key] = this.value; }; })(si,ki,ri,col.key));
+          td.appendChild(inp);
+          tr.appendChild(td);
+        });
+        var tdDel = document.createElement('td');
+        tdDel.style.width = '36px';
+        var delBtn = document.createElement('button');
+        delBtn.className = 'del-row-btn';
+        delBtn.innerHTML = '&#215;';
+        delBtn.addEventListener('click', (function(s,k,r){ return function(){ delRow(s,k,r); }; })(si,ki,ri));
+        tdDel.appendChild(delBtn);
+        tr.appendChild(tdDel);
+        tbody.appendChild(tr);
+      });
+      var trAdd = document.createElement('tr');
+      var tdAdd = document.createElement('td');
+      tdAdd.colSpan = 7;
+      var addRowBtn = document.createElement('button');
+      addRowBtn.className = 'add-row-btn';
+      addRowBtn.textContent = '+ Add row';
+      addRowBtn.addEventListener('click', (function(s,k){ return function(){ addRow(s,k); }; })(si,ki));
+      tdAdd.appendChild(addRowBtn);
+      trAdd.appendChild(tdAdd);
+      tbody.appendChild(trAdd);
+      tbl.appendChild(tbody);
+      cb.appendChild(tbl);
       div.appendChild(cb);
     });
-    var acb=document.createElement('button');
-    acb.className='add-carrier-btn';acb.textContent='+ Add Carrier / Route';
-    acb.onclick=(function(s){return function(){addCarrier(s);};})(si);
+
+    var acb = document.createElement('button');
+    acb.className = 'add-carrier-btn';
+    acb.textContent = '+ Add Carrier / Route';
+    acb.addEventListener('click', (function(i){ return function(){ addCarrier(i); }; })(si));
     div.appendChild(acb);
     container.appendChild(div);
   });
 }
 
-function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
-function addSheet(){sheets.push({name:'New CPT',carriers:[{name:'',rows:[{lane:'',chute:'',sort:'',bay:'',owner:''}]}]});activeSheet=sheets.length-1;render();}
-function delSheet(si){if(!confirm('Delete?'))return;sheets.splice(si,1);if(activeSheet>=sheets.length)activeSheet=sheets.length-1;render();}
-function dupSheet(si){var c=JSON.parse(JSON.stringify(sheets[si]));c.name+=' (copy)';sheets.splice(si+1,0,c);activeSheet=si+1;render();}
-function addCarrier(si){sheets[si].carriers.push({name:'',rows:[{lane:'',chute:'',sort:'',bay:'',owner:''}]});render();}
-function delCarrier(si,ki){sheets[si].carriers.splice(ki,1);render();}
-function dupCarrier(si,ki){var c=JSON.parse(JSON.stringify(sheets[si].carriers[ki]));c.name+=' (copy)';sheets[si].carriers.splice(ki+1,0,c);render();}
-function addRow(si,ki){sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});render();}
-function delRow(si,ki,ri){sheets[si].carriers[ki].rows.splice(ri,1);if(!sheets[si].carriers[ki].rows.length)sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});render();}
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function addSheet(){ sheets.push({name:'New CPT',carriers:[{name:'',cptTime:'',rows:[{cptTime:'',lane:'',chute:'',sort:'',bay:'',owner:''}]}]}); activeSheet=sheets.length-1; render(); }
+function delSheet(si){ if(!confirm('Delete?'))return; sheets.splice(si,1); if(activeSheet>=sheets.length)activeSheet=sheets.length-1; render(); }
+function addCarrier(si){ sheets[si].carriers.push({name:'',cptTime:'',rows:[{cptTime:'',lane:'',chute:'',sort:'',bay:'',owner:''}]}); render(); }
+function delCarrier(si,ki){ sheets[si].carriers.splice(ki,1); render(); }
+function addRow(si,ki){ sheets[si].carriers[ki].rows.push({cptTime:'',lane:'',chute:'',sort:'',bay:'',owner:''}); render(); }
+function delRow(si,ki,ri){ sheets[si].carriers[ki].rows.splice(ri,1); if(!sheets[si].carriers[ki].rows.length) sheets[si].carriers[ki].rows.push({cptTime:'',lane:'',chute:'',sort:'',bay:'',owner:''}); render(); }
 
+/* ── Flatten for publish ── */
 function fmtT(raw){
-  // '2030'->'20:30', '0100'->'01:00', '130'->'01:30', already 'HH:MM'->unchanged
-  if(!raw)return'00:00';
+  if(!raw)return'';
   raw=String(raw).trim().replace(/\s+/g,'');
   if(/^\d{1,2}:\d{2}$/.test(raw))return raw.length===4?'0'+raw:raw;
   raw=raw.replace(/:/g,'').padStart(4,'0');
@@ -179,147 +243,191 @@ function fmtT(raw){
 function flatten(){
   var out=[];
   sheets.forEach(function(sh){
+    var fallbackM=(sh.name||'').match(/(\d{3,4})/);
+    var fallbackT=fallbackM?fmtT(fallbackM[1]):'';
     sh.carriers.forEach(function(car){
-      var fallbackM=(sh.name||'').match(/(\d{3,4})/);
-      var fallbackT=fallbackM?fmtT(fallbackM[1]):'00:00';
       car.rows.forEach(function(row){
         if(!row.chute&&!row.owner&&!row.lane)return;
         var t=row.cptTime||car.cptTime||fallbackT;
-        out.push({sheet:sh.name,cpt:t,carrier:row.lane||car.name,chute:row.chute,sort:row.sort,bay:row.bay,owner:row.owner});
+        if(t)out.push({sheet:sh.name,cpt:t,carrier:row.lane||car.name,chute:row.chute||'',sort:row.sort||'',bay:row.bay||'',owner:row.owner||''});
       });
     });
   });
   return out;
 }
 
+/* ── Import Excel ── */
+function handleFile(file){
+  showStatus('Reading Excel...','inf');
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      var wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array'});
+      importWB(wb);
+    } catch(err){
+      showStatus('Read error: ' + err.message, 'err');
+    }
+  };
+  reader.onerror = function(){ showStatus('Could not read file.','err'); };
+  reader.readAsArrayBuffer(file);
+}
+
+var SKIP_SH = ['roster','bags','bags sun',' bags'];
+
+function importWB(wb){
+  var ns = [];
+  wb.SheetNames.forEach(function(sn){
+    if(SKIP_SH.indexOf(sn.toLowerCase().trim()) !== -1) return;
+    var cars = parseSheet(wb.Sheets[sn]);
+    if(cars.length) ns.push({name:sn, carriers:cars});
+  });
+  if(!ns.length){ showStatus('No CPT data found in file.','err'); return; }
+  sheets = ns; activeSheet = 0; render();
+  var total = ns.reduce(function(s,sh){ return s + sh.carriers.reduce(function(a,c){ return a+c.rows.length; },0); },0);
+  var times = [...new Set(flatten().map(function(r){return r.cpt;}))].sort();
+  showStatus('Imported ' + ns.length + ' sheets, ' + total + ' rows. CPTs: ' + times.join(', ') + ' — review then Publish.','inf');
+}
+
 function parseSheet(ws){
-  // Get raw rows as arrays of strings
-  var raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
-  var rows=raw.map(function(r){return r.map(function(c){return String(c||'').trim();});});
+  var raw = XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
+  var rows = raw.map(function(r){ return r.map(function(c){ return String(c||'').trim(); }); });
+  var BAD = ['Lane','Stacking','Sort','Bay','Owner','None',''];
 
-  var BAD=['Lane','Stacking','Sort','Bay','Owner','lane','stacking','sort','bay','owner'];
-  function isBad(s){return !s||BAD.indexOf(s)!==-1||s.length>80;}
+  function isBad(s){ return !s || BAD.indexOf(s)!==-1 || s.length>80; }
 
-  // Pass 1: find all carrier blocks with their column positions and CPT times
-  // A carrier block = row containing "XXXX BRS1->..." or "XXXX BRS1-..." or "SP CPT XXXX"
-  // Data rows follow until the next block header or blank section
-
-  // Build a map of row -> [{col, carrierName, cptTime}]
-  var blocksByRow={};
-  var lastCPTtime='';
-
-  for(var ri=0;ri<rows.length;ri++){
-    var row=rows[ri];
-    for(var ci=0;ci<row.length;ci++){
-      var cell=row[ci];
-      if(!cell)continue;
-
-      // CPT time standalone header: '2030 CPT', '2030CPT', '2030 CPT' etc
-      var cptM=cell.match(/^(\d{3,4})\s*CPT\s*$/i);
-      if(cptM){lastCPTtime=fmtT(cptM[1]);continue;}
-
-      // SP CPT header: 'SP CPT 2030'
-      var spM=cell.match(/^SP\s+CPT\s+(\d{3,4})\s*$/i);
-      if(spM){lastCPTtime=fmtT(spM[1]);}  // don't skip — may also be a carrier below
-
-      // Carrier header patterns:
-      // '2030 BRS1->CARRIER', '2030 BRS1- CARRIER', '2030 BRS1 CARRIER'
-      // 'SP CPT 2030' (SP pick lane)
-      var carM=cell.match(/^(\d{3,4})\s+BRS1\s*[-\u2013>]+\s*(.+)/i)
-             ||cell.match(/^(\d{3,4})\s+BRS1\s+-\s*(.+)/i)
-             ||cell.match(/^(\d{3,4})\s+BRS1\s+([A-Z].+)/i);
-      if(carM){
-        var ctime=fmtT(carM[1]);
-        lastCPTtime=ctime;
-        if(!blocksByRow[ri])blocksByRow[ri]=[];
-        blocksByRow[ri].push({col:ci,name:carM[2].trim(),cptTime:ctime});
-        continue;
-      }
-      // SP CPT as carrier
-      if(spM){
-        if(!blocksByRow[ri])blocksByRow[ri]=[];
-        blocksByRow[ri].push({col:ci,name:'SP '+fmtT(spM[1]),cptTime:fmtT(spM[1])});
-      }
+  // Find all carrier/SP blocks with their row, col, CPT time
+  var blocks = [];
+  for(var ri=0; ri<rows.length; ri++){
+    var row = rows[ri];
+    for(var ci=0; ci<row.length; ci++){
+      var cell = row[ci];
+      if(!cell) continue;
+      // Standalone CPT header (not a carrier) - skip
+      if(/^\d{3,4}\s*CPT\s*$/i.test(cell)) continue;
+      // SP CPT block
+      var spM = cell.match(/^SP\s+CPT\s+(\d{3,4})\s*$/i);
+      if(spM){ blocks.push({ri:ri,ci:ci,name:'SP',cpt:fmtT(spM[1])}); continue; }
+      // Carrier block: '2030 BRS1->X', '2030 BRS1- X', '2030 BRS1 X'
+      var carM = cell.match(/^(\d{3,4})\s+BRS1\s*[-\u2013>]*\s*(.+)/i);
+      if(carM){ blocks.push({ri:ri,ci:ci,name:carM[2].trim(),cpt:fmtT(carM[1])}); }
     }
   }
 
-  // Pass 2: for each block, collect its data rows
-  var carriers=[];
-  var blockRows=Object.keys(blocksByRow).map(Number).sort(function(a,b){return a-b;});
+  blocks.sort(function(a,b){ return a.ri===b.ri ? a.ci-b.ci : a.ri-b.ri; });
 
-  // Also collect all "SP CPT" blocks as separate carriers
-  blockRows.forEach(function(blockRi){
-    blocksByRow[blockRi].forEach(function(block){
-      var car={name:block.name,cptTime:block.cptTime,baseCol:block.col,rows:[]};
-      carriers.push(car);
-
-      // Data rows start 2 rows after block header (skip "Lane Stacking Sort Bay Owner" header)
-      // Find them until next block header
-      var nextBlockRi=blockRows.find(function(r){return r>blockRi;})||rows.length;
-      var dataStart=blockRi+1;
-      // Skip Lane/Stacking header row if present
-      if(dataStart<rows.length){
-        var hr=rows[dataStart];
-        if(hr.some(function(c){return c.toLowerCase()==='lane'||c.toLowerCase()==='stacking';}))dataStart++;
+  var carriers = [];
+  blocks.forEach(function(blk, bi){
+    // Next block on same column (within ±3) that comes after this row
+    var nextRi = rows.length;
+    for(var j=0; j<blocks.length; j++){
+      if(j===bi) continue;
+      if(blocks[j].ri > blk.ri && Math.abs(blocks[j].ci - blk.ci) <= 3){
+        nextRi = Math.min(nextRi, blocks[j].ri);
       }
+    }
 
-      for(var ri=dataStart;ri<nextBlockRi;ri++){
-        var row=rows[ri];
-        if(!row.some(function(c){return c!=='';}))continue;
+    var bc = blk.ci;
+    var ds = blk.ri + 1;
+    // Skip Lane/Stacking header row
+    if(ds < rows.length){
+      var hv = rows[ds].map(function(v){ return v.toLowerCase(); });
+      if(hv.indexOf('lane')!==-1 || hv.indexOf('stacking')!==-1) ds++;
+    }
 
-        // Data is at block.col offset: Lane=col, Stacking=col+1, Sort=col+2, Bay=col+3, Owner=col+4
-        var bc=block.col;
-        var lane =row[bc]  ||'';
-        var chute=row[bc+1]||'';
-        var sort =row[bc+2]||'';
-        var bay  =row[bc+3]||'';
-        var owner=row[bc+4]||'';
-
-        // Skip if no chute
-        if(!chute||isBad(chute))continue;
-        // Skip if chute looks like a header or long text
-        if(!/^[A-Z0-9\-]+$/i.test(chute.replace(/\s/g,'')))continue;
-
-        car.rows.push({
-          lane:  isBad(lane)?'':lane,
-          chute: chute,
-          sort:  isBad(sort)?'':sort,
-          bay:   isBad(bay)?'':bay,
-          owner: isBad(owner)?'':owner,
-          cptTime: block.cptTime
-        });
-      }
-    });
+    var car = {name:blk.name, cptTime:blk.cpt, rows:[]};
+    for(var ri=ds; ri<nextRi; ri++){
+      var row = rows[ri];
+      while(row.length <= bc+4) row.push('');
+      var chute = row[bc+1];
+      if(!chute || isBad(chute)) continue;
+      if(!/^[A-Z0-9][A-Z0-9\-]+$/i.test(chute)) continue;
+      car.rows.push({
+        cptTime: blk.cpt,
+        lane:    isBad(row[bc])   ? '' : row[bc],
+        chute:   chute,
+        sort:    isBad(row[bc+2]) ? '' : row[bc+2],
+        bay:     isBad(row[bc+3]) ? '' : row[bc+3],
+        owner:   isBad(row[bc+4]) ? '' : row[bc+4]
+      });
+    }
+    if(car.rows.length) carriers.push(car);
   });
 
-  return carriers.filter(function(c){return c.rows.length>0;});
+  return carriers;
 }
 
-/* ── Load existing ── */
-function loadExisting(){
-  fetch(DATA_RAW+'?t='+Date.now(),{cache:'no-store'})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d&&d.sheets&&d.sheets.length){
-      sheets=d.sheets;activeSheet=0;render();
-      showStatus('Loaded: '+d.ts+' ('+d.data.length+' rows)','inf');
-    }else{addSheet();render();}
+/* ── Publish ── */
+function publishAll(){
+  var data = flatten();
+  if(!data.length){ showStatus('Nothing to publish — import Excel first.','err'); return; }
+  if(!GH_TOKEN){ showStatus('No GitHub token — save your token first.','err'); return; }
+
+  var btn = document.getElementById('publishBtn');
+  btn.disabled = true; btn.textContent = 'Publishing...';
+  var times = [...new Set(data.map(function(r){return r.cpt;}))].sort();
+  showStatus('Publishing ' + data.length + ' rows across ' + times.length + ' CPT times...','inf');
+
+  var payload = JSON.stringify({ts:new Date().toLocaleString('en-GB'), data:data, sheets:sheets, rosterMap:{}});
+
+  fetch('https://api.github.com/repos/santojef/brs1-cpt/contents/data.json',{
+    headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','User-Agent':'brs1-cpt'}
   })
-  .catch(function(){addSheet();render();});
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    var body = {message:'Publish '+data.length+' rows — '+times.join(', '), content:btoa(unescape(encodeURIComponent(payload))), branch:'main'};
+    if(d.sha) body.sha = d.sha;
+    return fetch('https://api.github.com/repos/santojef/brs1-cpt/contents/data.json',{
+      method:'PUT',
+      headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json','User-Agent':'brs1-cpt'},
+      body:JSON.stringify(body)
+    });
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    btn.disabled=false; btn.textContent='✅ Publish to TVs';
+    if(d.content){
+      showStatus('✓ Published ' + data.length + ' rows — CPTs: ' + times.join(', ') + ' — TVs update in ~15s','ok');
+    } else {
+      showStatus('Error: '+(d.message||JSON.stringify(d).substring(0,100)),'err');
+    }
+  })
+  .catch(function(e){ btn.disabled=false; btn.textContent='✅ Publish to TVs'; showStatus('Error: '+e.message,'err'); });
+}
+
+function showStatus(msg, cls){
+  var el = document.getElementById('status');
+  el.textContent = msg; el.className = 'status '+cls;
+  if(cls==='ok') setTimeout(function(){ el.style.display='none'; }, 8000);
 }
 
 function saveToken(){
-  var t=document.getElementById('tokenInput').value.trim();
-  if(!t){alert('Please enter a token');return;}
-  localStorage.setItem('gh_token',t);
-  GH_TOKEN=t;
-  document.getElementById('tokenSetup').style.display='none';
-  showStatus('Token saved. Click Publish to TVs.','ok');
+  var t = document.getElementById('tokenInput').value.trim();
+  if(!t){ alert('Please enter a token'); return; }
+  localStorage.setItem('gh_token', t);
+  GH_TOKEN = t;
+  document.getElementById('tokenSetup').style.display = 'none';
+  showStatus('Token saved.','ok');
 }
+
 function checkToken(){
   if(!localStorage.getItem('gh_token')){
-    document.getElementById('tokenSetup').style.display='flex';
+    document.getElementById('tokenSetup').style.display = 'flex';
   }
+}
+
+/* ── Load existing data on page open ── */
+function loadExisting(){
+  fetch(DATA_RAW+'?t='+Date.now(),{cache:'no-store'})
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d && d.sheets && d.sheets.length){
+      sheets = d.sheets; activeSheet = 0; render();
+      showStatus('Loaded: ' + d.ts + ' (' + (d.data||[]).length + ' rows)','inf');
+    } else {
+      addSheet(); render();
+    }
+  })
+  .catch(function(){ addSheet(); render(); });
 }
 
 loadExisting();
