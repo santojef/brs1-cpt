@@ -167,15 +167,26 @@ function dupCarrier(si,ki){var c=JSON.parse(JSON.stringify(sheets[si].carriers[k
 function addRow(si,ki){sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});render();}
 function delRow(si,ki,ri){sheets[si].carriers[ki].rows.splice(ri,1);if(!sheets[si].carriers[ki].rows.length)sheets[si].carriers[ki].rows.push({lane:'',chute:'',sort:'',bay:'',owner:''});render();}
 
+function fmtCPT(raw){
+  // Convert raw string like '2030', '0100', '01:00', '20:30' -> 'HH:MM'
+  if(!raw)return'00:00';
+  raw=String(raw).trim();
+  if(raw.indexOf(':')!==-1)return raw; // already HH:MM
+  raw=raw.padStart(4,'0');
+  return raw.slice(0,2)+':'+raw.slice(2);
+}
 function flatten(){
   var out=[];
   sheets.forEach(function(sh){
     sh.carriers.forEach(function(car){
+      // Each carrier has a cptTime set by the parser; fall back to sheet name
+      var fallbackM=(sh.name||'').match(/(\d{3,4})/);
+      var fallbackT=fallbackM?fmtCPT(fallbackM[1].padStart(4,'0')):'00:00';
       car.rows.forEach(function(row){
         if(!row.chute&&!row.owner&&!row.lane)return;
-        var m=(sh.name||'').match(/(\d{3,4})/);
-        var t=m?m[1].padStart(4,'0'):'0000';
-        out.push({sheet:sh.name,cpt:t.slice(0,2)+':'+t.slice(2),carrier:row.lane||car.name,chute:row.chute,sort:row.sort,bay:row.bay,owner:row.owner});
+        // Per-carrier cptTime wins; per-row cptTime wins over that
+        var t=row.cptTime||car.cptTime||fallbackT;
+        out.push({sheet:sh.name,cpt:t,carrier:row.lane||car.name,chute:row.chute,sort:row.sort,bay:row.bay,owner:row.owner});
       });
     });
   });
@@ -252,36 +263,106 @@ function importWB(wb){
   showStatus('Imported '+ns.length+' CPT windows. Review then Publish.','inf');
 }
 
+function fmtTime4(s){
+  // '2030'->'20:30', '0100'->'01:00', '130'->'01:30'
+  s=String(s||'').replace(/:/g,'').trim().padStart(4,'0');
+  return s.slice(0,2)+':'+s.slice(2);
+}
 function parseSheet(ws){
   var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
-  var carriers=[];var current=null;
+  var carriers=[];
   var BAD=['Lane','Stacking','Sort','Bay','Owner',''];
+  var currentCPT=''; // tracks current CPT time as we scan down
+
   for(var ri=0;ri<rows.length;ri++){
     var row=rows[ri].map(function(c){return String(c||'').trim();});
-    var a=row[0]||'';
     if(!row.some(function(c){return c!=='';}))continue;
-    if(row.some(function(c){return c.length>50;}))continue;
-    if(a.match(/^\d{3,4}\s*CPT/i)||a.match(/^SP\s+CPT/i))continue;
-    if(row.some(function(c){return c.toLowerCase()==='lane';}))continue;
-    var cm=a.match(/^\d{3,4}\s+BRS1\s*[-–>]+\s*(.+)/i);
-    if(cm){current={name:cm[1].trim(),rows:[]};carriers.push(current);continue;}
-    for(var ci=0;ci<row.length;ci+=6){
-      var lane=row[ci]||'',chute=row[ci+1]||'',sort=row[ci+2]||'',bay=row[ci+3]||'',owner=row[ci+4]||'';
-      if(!chute||BAD.indexOf(chute)!==-1)continue;
-      if(lane&&BAD.indexOf(lane)===-1){
-        var found=null;carriers.forEach(function(c){if(c.name===lane)found=c;});
-        if(found){current=found;}else{current={name:lane,rows:[]};carriers.push(current);}
+
+    // Scan ALL cells in the row for CPT time headers and carrier headers
+    // This handles side-by-side columns correctly
+    var foundCarriersThisRow=[];
+    var foundCPTsThisRow=[];
+
+    for(var ci=0;ci<row.length;ci++){
+      var cell=row[ci]||'';
+
+      // CPT time header: '2030 CPT', '2100CPT', 'SP CPT 2030'
+      var cptM=cell.match(/^(\d{3,4})\s*CPT$/i)||cell.match(/^SP\s+CPT\s+(\d{3,4})$/i);
+      if(cptM){
+        var timeStr=cptM[1]||cptM[2];
+        if(timeStr)foundCPTsThisRow.push(fmtTime4(timeStr));
+        continue;
       }
-      if(!current){current={name:lane||'Unknown',rows:[]};carriers.push(current);}
-      current.rows.push({
+
+      // Carrier header: '2030 BRS1->CARRIER' or '2030 BRS1- CARRIER'
+      var carM=cell.match(/^\d{3,4}\s+BRS1\s*[-–>]+\s*(.+)/i)||cell.match(/^\d{3,4}\s+BRS1\s*-\s*(.+)/i);
+      if(carM){
+        var cname=carM[1].trim();
+        // Extract CPT time from this carrier header
+        var ctM=cell.match(/^(\d{3,4})/);
+        if(ctM)currentCPT=fmtTime4(ctM[1]);
+        foundCarriersThisRow.push({col:ci,name:cname,cptTime:currentCPT});
+        continue;
+      }
+    }
+
+    // Update currentCPT if we found any CPT headers this row
+    if(foundCPTsThisRow.length)currentCPT=foundCPTsThisRow[0];
+
+    // Add carriers found in this row
+    foundCarriersThisRow.forEach(function(fc){
+      carriers.push({name:fc.name,cptTime:fc.cptTime,baseCol:fc.col,rows:[]});
+    });
+
+    // Skip header rows
+    if(row.some(function(c){return c.toLowerCase()==='lane'||c.toLowerCase()==='stacking';}))continue;
+
+    // Parse data rows - scan every group of 5 cols starting at known carrier base cols
+    // Also try col 0,6,12... as legacy fallback
+    var baseCols=[];
+    carriers.forEach(function(car){baseCols.push(car.baseCol);});
+    // Add standard offsets if not already there
+    [0,6,12,18,24].forEach(function(c){if(baseCols.indexOf(c)===-1&&c<row.length)baseCols.push(c);});
+    baseCols.sort(function(a,b){return a-b;});
+
+    baseCols.forEach(function(ci){
+      var lane=row[ci]||'',chute=row[ci+1]||'',sort=row[ci+2]||'',bay=row[ci+3]||'',owner=row[ci+4]||'';
+      if(!chute||BAD.indexOf(chute)!==-1)return;
+      if(chute.length>50)return; // skip long text cells (close & move notices)
+
+      // Find the matching carrier by base col proximity, or create one
+      var best=null,bestDist=9999;
+      carriers.forEach(function(car){
+        var d=Math.abs(car.baseCol-ci);
+        if(d<bestDist){bestDist=d;best=car;}
+      });
+
+      // If lane name matches a known carrier name, use that carrier
+      if(lane&&BAD.indexOf(lane)===-1){
+        var named=null;
+        carriers.forEach(function(c){
+          if(c.name.toLowerCase().indexOf(lane.toLowerCase())!==-1||
+             lane.toLowerCase().indexOf(c.name.toLowerCase())!==-1)named=c;
+        });
+        if(named)best=named;
+      }
+
+      if(!best){
+        best={name:lane||'Unknown',cptTime:currentCPT,baseCol:ci,rows:[]};
+        carriers.push(best);
+      }
+
+      best.rows.push({
         lane:  BAD.indexOf(lane)===-1?lane:'',
         chute: chute,
         sort:  BAD.indexOf(sort)===-1?sort:'',
         bay:   BAD.indexOf(bay)===-1?bay:'',
-        owner: BAD.indexOf(owner)===-1?owner:''
+        owner: BAD.indexOf(owner)===-1?owner:'',
+        cptTime: best.cptTime  // stamp the CPT time on each row
       });
-    }
+    });
   }
+
   return carriers.filter(function(c){return c.rows.some(function(r){return r.chute||r.owner;});});
 }
 
