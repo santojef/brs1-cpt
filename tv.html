@@ -382,7 +382,7 @@ function updateNextBanner(){
   var lbl=document.getElementById("nextLabel"),cd=document.getElementById("nextCountdown");
   lbl.className="next-label"+(flashCls?" "+flashCls:"");
   cd.className="next-countdown"+(flashCls?" "+flashCls:"");
-  lbl.textContent=mLeft<=10?"&#9888; CPT IMMINENT":mLeft<=15?"&#128993; CPT IN 15 MIN":"NEXT CPT";
+  lbl.innerHTML=mLeft<=10?"⚠️ CPT IMMINENT":mLeft<=15?"🟡 CPT IN 15 MIN":"NEXT CPT";
   document.getElementById("nextTime").textContent=next;
   document.getElementById("nextInfo").textContent=grps.length+" groups • "+owners.size+" associates";
   cd.textContent=fmtCountdownSecs(mLeft*60);
@@ -559,9 +559,9 @@ function renderSections(){
       var chuteRows=chutes.map(function(c){
         var ownerCls=c.owner?"":"no-roster";
         return "<div class='chute-row'>"+
-          "<span class='chute-location'>"+esc(c.stacking||"&mdash;")+"</span>"+
-          "<span class='chute-sort-tag'>"+esc(c.sort||"&mdash;")+"</span>"+
-          "<span class='chute-bay'>"+esc(c.bay||"&mdash;")+"</span>"+
+          "<span class='chute-location'>"+esc(c.stacking||"—")+"</span>"+
+          "<span class='chute-sort-tag'>"+esc(c.sort||"")+"</span>"+
+          "<span class='chute-bay'>"+(c.bay||"")+"</span>"+
           "<div class='owner-cell "+ownerCls+"'><span class='owner-fullname'>"+esc(c.owner||"Unassigned")+"</span></div>"+
         "</div>";
       }).join("");
