@@ -439,9 +439,14 @@ function publishAll(){
   showStatus('Publishing ' + data.length + ' rows across ' + times.length + ' CPT times...','inf');
 
   // Detect shift type from CPT times
+  // Night shift has at least one CPT >= 20:00; day shift all CPTs < 20:00
+  var hasNightTime = times.some(function(t){ return parseInt(t.split(':')[0]) >= 20; });
   var shiftType = 'WEEKDAY';
-  if(times.length && parseInt(times[0].split(':')[0]) < 20) shiftType = 'DAYS';
-  else if(sheets.length && sheets[0].name && /sun/i.test(sheets[0].name)) shiftType = 'SUNDAY';
+  if(!hasNightTime) {
+    shiftType = 'DAYS';
+  } else if(sheets.some(function(sh){ return /sun/i.test(sh.name); })) {
+    shiftType = 'SUNDAY';
+  }
 
   var payload = JSON.stringify({ts:new Date().toLocaleString('en-GB'), shiftType:shiftType, data:data, sheets:sheets, rosterMap:{}});
   var GH_API = 'https://api.github.com/repos/santojef/brs1-cpt/contents/data.json';
