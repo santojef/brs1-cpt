@@ -729,28 +729,8 @@ function applyData(rec){
   document.getElementById("boardWrap").style.display="block";
   var groups=flatToGroups(_allData);
   buildTabs(groups);
-  // Auto-select current CPT on first load — same logic as autoAdvanceCPT
-  if(_activeTime==="all"){
-    var times=getCPTTimes(groups);
-    var nowN=nowShiftMins();
-    var target=null;
-    // Pick first CPT not yet passed by more than 30s (0.5 min)
-    for(var i=0;i<times.length;i++){
-      if(shiftMins(times[i])>=nowN-1){target=times[i];break;}
-    }
-    // All passed -> last one
-    if(!target&&times.length)target=times[times.length-1];
-    if(target){
-      _activeTime=target;
-      _lastAdvancedTime=target;
-      document.querySelectorAll("#filterTabs .tab-btn[data-time]").forEach(function(btn){
-        if(btn.getAttribute("data-time")===target)btn.classList.add("active");
-      });
-      document.querySelectorAll("#filterTabs .tab-btn:not([data-time])").forEach(function(btn){
-        btn.classList.remove("active");
-      });
-    }
-  }
+  // Auto-select correct CPT tab using the same logic as autoAdvanceCPT
+  autoAdvanceCPT();
   renderSections();
   updateNextBanner();
   updateStats();
