@@ -1,5 +1,5 @@
 {
-  "ts": "29/06/2026 03:22",
+  "ts": "29/06/2026 03:40",
   "shiftType": "WEEKDAY",
   "data": [
     {
@@ -1390,6 +1390,16 @@
       "sort": "DBS3-SD",
       "bay": "36",
       "owner": "Asad",
+      "lane": "DBS3-SD"
+    },
+    {
+      "sheet": "2355-0045",
+      "cpt": "00:30",
+      "carrier": "SP",
+      "chute": "F-SP-20",
+      "sort": "DBS3-SD",
+      "bay": "36",
+      "owner": "Mustapha",
       "lane": "DBS3-SD"
     },
     {
