@@ -6,481 +6,693 @@
 <meta http-equiv="Cache-Control" content="no-store">
 <title>BRS1 CPT Board</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0e1a;color:#e6edf3;
-     display:flex;flex-direction:column;height:100vh;overflow:hidden}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d1117; color: #e6edf3; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
 /* HEADER */
-.header{background:linear-gradient(90deg,#0d1b2e,#0a1628);
-        border-bottom:3px solid #f97316;padding:0 24px;height:68px;flex-shrink:0;
-        display:flex;align-items:center;justify-content:space-between;z-index:200}
-.amazon-logo{color:#f97316;font-size:24px;font-weight:900;font-style:italic;margin-right:14px}
-.header-title{font-size:19px;font-weight:700}
-.header-sub{font-size:11px;color:#8b949e;margin-top:2px}
-.header-centre{flex:1;display:flex;flex-direction:column;align-items:center}
-.clock{font-size:32px;font-weight:900;color:#f97316;font-variant-numeric:tabular-nums;line-height:1}
-.date-lbl{font-size:11px;color:#8b949e;margin-top:2px}
-.header-right{display:flex;align-items:center;gap:10px}
+.header { background: linear-gradient(135deg, #1e3a5f, #1a2f50); border-bottom: 3px solid #f97316;
+          padding: 10px 24px; display: grid; grid-template-columns: 1fr auto 1fr;
+          align-items: center; gap: 12px; flex-shrink: 0; }
+.header-left { display: flex; align-items: center; gap: 16px; }
+.amazon-logo { font-size: 26px; font-weight: 900; color: #f97316; letter-spacing: -1px; font-style: italic; }
+.header-title { font-size: 20px; font-weight: 700; color: #fff; }
+.header-subtitle { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+.header-centre { display: flex; flex-direction: column; align-items: center; }
+.clock { font-size: 28px; font-weight: 700; color: #f97316; font-variant-numeric: tabular-nums; }
+.date-display { font-size: 12px; color: #9ca3af; text-align: center; }
+.header-right { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.tv-btn { background: #1f2937; border: 1px solid #374151; color: #9ca3af; padding: 8px 14px;
+          border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center;
+          gap: 6px; transition: all 0.2s; white-space: nowrap; text-decoration: none; }
+.tv-btn:hover { border-color: #f97316; color: #f97316; }
 
-/* Next pill */
-.next-pill{background:#1c2333;border:1px solid #374151;border-radius:20px;
-           padding:6px 14px;display:flex;align-items:center;gap:10px}
-.next-pill-label{font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
-.next-pill-time{font-size:16px;font-weight:700;color:#f97316}
-.next-pill-cd{font-size:14px;font-weight:700;color:#fff;background:#374151;
-              padding:2px 8px;border-radius:10px}
-.next-pill.amber .next-pill-cd{background:#d97706;animation:flash 1s infinite}
-.next-pill.red   .next-pill-cd{background:#dc2626;animation:flash .5s infinite}
+/* NEXT CPT BANNER */
+.next-cpt-banner { display: none; flex-shrink: 0; padding: 10px 24px;
+                   grid-template-columns: 1fr auto 1fr; align-items: center;
+                   background: linear-gradient(135deg, #166534, #15803d);
+                   border-bottom: 3px solid #16a34a; }
+.next-cpt-banner.visible { display: grid; }
+.next-cpt-banner.warn { background: linear-gradient(135deg, #854d0e, #a16207);
+                        border-bottom-color: #facc15; animation: warnFlash 1.2s infinite; }
+.next-cpt-banner.imminent { background: linear-gradient(135deg, #7f1d1d, #991b1b);
+                            border-bottom-color: #ef4444; animation: urgentPulse 0.8s infinite; }
+@keyframes warnFlash { 0%,100%{opacity:1;box-shadow:0 0 0 rgba(250,204,21,0);} 50%{opacity:.85;box-shadow:0 0 18px rgba(250,204,21,.7);} }
+@keyframes urgentPulse { 0%,100%{opacity:1;} 50%{opacity:.75;} }
+.next-cpt-left { display: flex; flex-direction: column; justify-content: center; padding-left: 8px; }
+.next-cpt-centre { display: flex; justify-content: center; align-items: center; }
+.next-cpt-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 6px; padding-right: 8px; }
+.next-label { font-size: 22px; color: #86efac; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+.next-label.warn { color: #fdba74; }
+.next-label.imminent { color: #fca5a5; }
+.next-time { font-size: 48px; font-weight: 900; color: #fff; letter-spacing: 4px; line-height: 1; }
+.next-countdown { font-size: 32px; font-weight: 800; color: #4ade80; font-variant-numeric: tabular-nums; }
+.next-countdown.warn { color: #fb923c; }
+.next-countdown.imminent { color: #f87171; }
+.next-info { font-size: 14px; color: #86efac; margin-top: 2px; }
+.next-info.warn { color: #fed7aa; }
 
-/* Icon buttons */
-.icon-btn{background:#1c2333;border:1px solid #374151;color:#8b949e;
-          padding:8px 12px;border-radius:8px;font-size:15px;cursor:pointer;text-decoration:none}
-.icon-btn:hover{border-color:#60a5fa;color:#60a5fa}
+/* PROGRESS BAR */
+.progress-bar { height: 4px; background: #1f2937; flex-shrink: 0; }
+.progress-fill { height: 100%; background: #f97316; width: 0%; }
 
-/* TABS BAR */
-.tabs-bar{background:#111827;border-bottom:1px solid #1f2937;padding:10px 24px;
-          display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;flex-shrink:0;align-items:center}
-.tab{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;
-     border:1px solid #374151;background:#1c2333;color:#8b949e;
-     display:flex;align-items:center;gap:7px;white-space:nowrap;transition:all .15s;flex-shrink:0}
-.tab.active{background:#f97316;border-color:#f97316;color:#fff}
-.tab.current{background:#1c2333;border-color:#f97316;color:#f97316}
-.tab:hover:not(.active){color:#e6edf3;border-color:#6b7280}
-.tab-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
-.dot-passed{background:#374151}
-.dot-upcoming{background:#22c55e}
-.dot-imminent{background:#f97316;animation:flash 1s infinite}
-.dot-urgent{background:#dc2626;animation:flash .5s infinite}
+/* TABS */
+.controls { background: #161b22; border-bottom: 1px solid #21262d; padding: 10px 24px;
+            display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; flex-shrink: 0;
+            align-items: center; justify-content: space-between; }
+.filter-tabs { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
+.tab-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid #374151;
+           background: #1c2333; color: #6b7280; font-size: 13px; cursor: pointer;
+           white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
+.tab-btn:hover { border-color: #f97316; color: #f97316; }
+.tab-btn.active { background: #f97316; border-color: #f97316; color: #fff; font-weight: 600; }
+.tab-btn.tab-upcoming { border-color: #16a34a; color: #4ade80; }
+.tab-btn.tab-passed { border-color: #374151; color: #4b5563; opacity: 0.6; }
+.tab-btn.tab-warn { border-color: #f59e0b; color: #fbbf24; animation: tabPulse 1.2s infinite; }
+.tab-btn.tab-imminent { border-color: #ef4444; color: #f87171; animation: tabPulse 0.8s infinite; }
+@keyframes tabPulse { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+.stats-bar { font-size: 12px; color: #4b5563; white-space: nowrap; flex-shrink: 0; }
+.stats-bar span { color: #f97316; font-weight: 600; }
 
-/* IMMINENT BANNER */
-.imminent-banner{display:none;padding:14px 24px;
-                 align-items:center;justify-content:space-between;flex-shrink:0}
-.imminent-banner.amber{background:linear-gradient(90deg,#92400e,#78350f);
-                       border-bottom:2px solid #d97706;display:flex}
-.imminent-banner.red{background:linear-gradient(90deg,#7f1d1d,#6b1a1a);
-                     border-bottom:2px solid #dc2626;display:flex;animation:bannerFlash .8s infinite}
-.banner-left{display:flex;align-items:center;gap:12px}
-.banner-icon{font-size:24px}
-.banner-title{font-size:20px;font-weight:900;letter-spacing:.05em}
-.banner-sub{font-size:13px;opacity:.8;margin-top:1px}
-.banner-cpt{font-size:56px;font-weight:900;font-variant-numeric:tabular-nums;
-            color:#fff;text-shadow:0 0 20px rgba(255,255,255,.3)}
-.banner-next{font-size:32px;font-weight:900;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums}
-.jump-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
-          color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:6px;display:block}
+/* BOARD */
+.board-wrap { flex: 1; overflow-y: auto; }
+.board { padding: 20px 24px; }
 
-/* BOARD AREA - scrollable */
-.board-wrap{flex:1;overflow-y:auto;padding:0}
-.board{padding:16px 24px}
-.cpt-section{margin-bottom:32px;scroll-margin-top:20px}
-.cpt-section.passed{opacity:.3;pointer-events:none}
+/* CPT SECTIONS */
+.cpt-section { margin-bottom: 28px; transition: all 0.3s; }
+.cpt-section.is-upcoming { border: 2px solid #16a34a; border-radius: 14px; padding: 14px; background: rgba(22,163,74,.06); }
+.cpt-section.is-warn     { border: 2px solid #f59e0b; border-radius: 14px; padding: 14px; background: rgba(245,158,11,.08); animation: warnPulse 1.2s infinite; }
+.cpt-section.is-imminent { border: 2px solid #ef4444; border-radius: 14px; padding: 14px; background: rgba(239,68,68,.08); animation: sectionPulse 0.8s infinite; }
+.cpt-section.is-passed   { opacity: 0.35; }
+@keyframes sectionPulse { 0%,100%{background:rgba(239,68,68,.08);} 50%{background:rgba(239,68,68,.16);} }
+@keyframes warnPulse { 0%,100%{background:rgba(245,158,11,.08);} 50%{background:rgba(245,158,11,.15);} }
 
-/* Section header */
-.section-header{display:flex;align-items:center;justify-content:space-between;
-                margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #1f2937}
-.section-time{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums}
-.section-time.passed{color:#374151}
-.section-time.upcoming{color:#e6edf3}
-.section-time.imminent{color:#f97316}
-.section-time.urgent{color:#ef4444}
-.section-meta{font-size:12px;color:#6b7280;margin-left:10px}
-.section-cd{font-size:17px;font-weight:700}
-.section-cd.passed{color:#374151}
-.section-cd.upcoming{color:#8b949e}
-.section-cd.imminent{color:#f97316}
-.section-cd.urgent{color:#ef4444;animation:flash .5s infinite}
+.cpt-section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+                      padding-bottom: 10px; border-bottom: 2px solid #21262d; flex-wrap: wrap; }
+.cpt-time-badge { background: #f97316; color: #fff; font-size: 20px; font-weight: 800;
+                  padding: 5px 18px; border-radius: 8px; letter-spacing: 1px; }
+.cpt-upcoming-badge { background: #16a34a; }
+.cpt-warn-badge { background: #d97706; }
+.cpt-imminent-badge { background: #dc2626; }
+.cpt-passed-badge { background: #374151; }
+.cpt-status { font-size: 13px; }
+.cpt-status.green { color: #4ade80; font-weight: 600; }
+.cpt-status.amber { color: #f59e0b; font-weight: 700; }
+.cpt-status.red   { color: #f87171; font-weight: 700; }
+.cpt-countdown { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cpt-countdown.green { color: #4ade80; }
+.cpt-countdown.amber { color: #f59e0b; }
+.cpt-countdown.red   { color: #f87171; }
+.cpt-count { font-size: 13px; color: #4b5563; margin-left: auto; }
 
-/* Carriers grid */
-.carriers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.carrier-card{background:#111827;border:1px solid #1f2937;border-radius:10px;overflow:hidden}
-.carrier-card-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
-                   border-bottom:1px solid #1f2937}
-.carrier-name{font-size:14px;font-weight:700}
-.cn-regular{color:#22d3ee}.cn-sp{color:#a78bfa}.cn-inner{color:#fb923c}
-.chutes-badge{font-size:11px;color:#6b7280;background:#1f2937;padding:2px 8px;border-radius:10px}
-.col-headers{display:grid;grid-template-columns:1fr 1fr 48px 1fr;gap:6px;
-             padding:5px 14px;background:#0d1117}
-.col-hdr{font-size:10px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.06em}
-.chute-row{display:grid;grid-template-columns:1fr 1fr 48px 1fr;gap:6px;
-           padding:7px 14px;border-top:1px solid #0d1117;align-items:center}
-.chute-row:hover{background:#161b22}
-.chute-code{font-size:12px;font-weight:700;color:#e6edf3;background:#1f2937;
-            padding:2px 7px;border-radius:4px;font-family:monospace}
-.chute-sort{font-size:11px;color:#a78bfa}
-.chute-bay{font-size:12px;font-weight:700;color:#fbbf24}
-.chute-owner{font-size:12px;font-weight:600;color:#4ade80;font-style:italic}
-.chute-owner.empty{color:#374151;font-weight:400}
-.close-move{background:#3b1f08;border-top:1px solid #92400e;
-            padding:6px 14px;font-size:11px;color:#fbbf24}
+/* LANE CARDS */
+.lanes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.lane-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+.lane-card.upcoming-card { border-color: #22c55e44; }
+.lane-card.warn-card     { border-color: #f59e0b44; }
+.lane-card.imminent-card { border-color: #ef444444; }
+.lane-header { padding: 10px 14px; display: flex; align-items: center;
+               justify-content: space-between; background: #1e3a5f; border-bottom: 1px solid #21262d; }
+.lane-header.upcoming-header { background: #052e16; }
+.lane-header.warn-header     { background: #2c1a03; }
+.lane-header.imminent-header { background: #2a0505; }
+.lane-name { font-size: 15px; font-weight: 800; letter-spacing: .5px; }
+.lane-bay  { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 600; }
+.lane-body { padding: 0 14px 10px; background: #ffffff; }
+.col-headers { display: grid; grid-template-columns: 2fr 2fr 0.7fr 2.2fr;
+               font-size: 10px; font-weight: 700; letter-spacing: .8px; color: #64748b;
+               padding: 8px 4px 6px; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; }
+.chute-row { display: grid; grid-template-columns: 2fr 2fr 0.7fr 2.2fr;
+             align-items: center; padding: 7px 4px; border-bottom: 1px solid #f1f5f9; gap: 4px; }
+.chute-row:last-child { border-bottom: none; }
+.chute-location { font-size: 12px; font-weight: 700; color: #fff; font-family: 'Courier New', monospace;
+                  background: #0d111a; border: 1px solid #2d3748; padding: 3px 7px; border-radius: 5px; white-space: nowrap; display: inline-block; }
+.chute-sort-tag { font-size: 11px; font-weight: 600; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chute-bay { font-size: 12px; font-weight: 700; color: #fbbf24; text-align: center; }
+.owner-cell { display: flex; flex-direction: column; min-width: 0; }
+.owner-fullname { font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.owner-login { font-size: 9px; color: #94a3b8; font-family: monospace; }
+.owner-cell.no-roster .owner-fullname { color: #60a5fa; font-style: italic; }
+.close-move-alert { background: #431407; border: 1px solid #c2410c; border-radius: 6px;
+                    padding: 5px 10px; font-size: 11px; color: #fed7aa; margin-top: 6px;
+                    text-align: center; font-weight: 600; }
 
-/* Waiting */
-#waiting{display:flex;flex-direction:column;align-items:center;justify-content:center;
-         flex:1;color:#6b7280;text-align:center;padding:40px}
-#pollStatus{font-size:12px;color:#4b5563;margin-top:12px}
+/* WAITING */
+#waiting { display: flex; flex-direction: column; align-items: center; justify-content: center;
+           flex: 1; color: #6b7280; text-align: center; padding: 40px; }
 
-/* Auto-scroll progress bar */
-.scroll-progress{height:3px;background:#1f2937;flex-shrink:0}
-.scroll-progress-fill{height:100%;background:#f97316;width:0%;transition:width .5s linear}
+/* TV mode font boost */
+body.tv-mode .lanes-grid    { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+body.tv-mode .chute-location{ font-size: 14px; }
+body.tv-mode .chute-sort-tag{ font-size: 12px; }
+body.tv-mode .chute-bay     { font-size: 13px; }
+body.tv-mode .owner-fullname{ font-size: 14px; }
 
-/* Stats */
-.stats-bar{font-size:12px;color:#4b5563;padding:4px 24px;flex-shrink:0;text-align:right}
-
-@keyframes flash{0%,100%{opacity:1}50%{opacity:.2}}
-@keyframes bannerFlash{0%,100%{opacity:1}50%{opacity:.6}}
-.debug-bar{background:#0d1117;color:#374151;font-size:10px;padding:2px 12px;
-           flex-shrink:0;font-family:monospace}
+.debug-bar { background: #0d1117; color: #374151; font-size: 10px; padding: 2px 12px;
+             flex-shrink: 0; font-family: monospace; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header">
-  <div style="display:flex;align-items:center">
+  <div class="header-left">
     <span class="amazon-logo">amazon</span>
     <div>
       <div class="header-title">&#128230; BRS1 CPT Assignment Board</div>
-      <div class="header-sub">FC Shipping &mdash; Avonmouth, Bristol</div>
+      <div class="header-subtitle">FC Shipping &mdash; Avonmouth, Bristol &nbsp;&bull;&nbsp;
+        <span id="tvLastUpdated" style="color:#4ade80">Waiting&hellip;</span></div>
     </div>
   </div>
   <div class="header-centre">
     <div class="clock" id="clock">--:--:--</div>
-    <div class="date-lbl" id="dateLbl"></div>
+    <div class="date-display" id="dateDisplay"></div>
   </div>
   <div class="header-right">
-    <div class="next-pill" id="nextPill">
-      <div>
-        <div class="next-pill-label">NEXT CPT</div>
-        <div class="next-pill-time" id="nextPillTime">--:--</div>
-      </div>
-      <div class="next-pill-cd" id="nextPillCd">--</div>
-    </div>
-    <button class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen">&#x26F6;</button>
-    <a class="icon-btn" href="index.html" title="Admin">&#9998;</a>
+    <div id="advancePill" style="display:none"></div>
+    <button class="tv-btn" onclick="toggleFullscreen()">&#x26F6; Fullscreen</button>
+    <a class="tv-btn" href="index.html">&#9998; Admin</a>
   </div>
 </div>
 
-<!-- TABS -->
-<div class="tabs-bar" id="tabBar"></div>
-
-<!-- IMMINENT BANNER -->
-<div class="imminent-banner" id="imminentBanner">
-  <div class="banner-left">
-    <span class="banner-icon" id="bannerIcon">&#9888;</span>
-    <div>
-      <div class="banner-title" id="bannerTitle">CPT IMMINENT</div>
-      <div class="banner-sub" id="bannerSub"></div>
-    </div>
+<!-- NEXT CPT BANNER -->
+<div class="next-cpt-banner" id="nextBanner">
+  <div class="next-cpt-left">
+    <div class="next-label" id="nextLabel">NEXT CPT</div>
+    <div class="next-info" id="nextInfo"></div>
   </div>
-  <div class="banner-cpt" id="bannerCpt">--:--</div>
-  <div>
-    <div class="banner-next" id="bannerNext"></div>
-    <button class="jump-btn" onclick="jumpToCurrent()">&#8595; Jump to it</button>
+  <div class="next-cpt-centre">
+    <div class="next-time" id="nextTime">--:--</div>
+  </div>
+  <div class="next-cpt-right">
+    <div class="next-countdown" id="nextCountdown">--</div>
+    <button class="tv-btn" onclick="scrollToNext()">&#8595; Jump to it</button>
   </div>
 </div>
 
-<!-- SCROLL PROGRESS -->
-<div class="scroll-progress"><div class="scroll-progress-fill" id="progressFill"></div></div>
-<div class="stats-bar" id="statsBar"></div>
+<!-- PROGRESS BAR -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- TABS + STATS -->
+<div class="controls">
+  <div class="filter-tabs" id="filterTabs">
+    <button class="tab-btn active" id="allTabBtn">All CPTs</button>
+  </div>
+  <div class="stats-bar" id="statsBar"></div>
+</div>
 
 <!-- WAITING -->
 <div id="waiting">
   <div style="font-size:56px;margin-bottom:16px">&#128225;</div>
-  <div style="font-size:22px;font-weight:700;color:#9ca3af;margin-bottom:8px">Waiting for CPT data</div>
+  <div style="font-size:20px;font-weight:700;color:#9ca3af;margin-bottom:8px">Waiting for CPT data</div>
   <div style="font-size:13px">Publish assignments from the Admin page</div>
-  <div id="pollStatus">Checking&hellip;</div>
+  <div id="pollStatus" style="font-size:12px;color:#4b5563;margin-top:12px">Checking&hellip;</div>
 </div>
 
 <!-- BOARD -->
 <div class="board-wrap" id="boardWrap" style="display:none">
-  <div class="board" id="board"></div>
+  <div class="board" id="cptSections"></div>
 </div>
+
 <div class="debug-bar" id="debugBar">Loading&hellip;</div>
 
 <script>
-var DATA_RAW="https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json";
-var _lastTs=null,_allData=[],_activeTab="current";
-var _scrollInt=null,_progressInt=null,_progressVal=0;
-var _currentCPTIdx=0;
+var DATA_RAW = "https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json";
+var _allData = [];
+var _lastTs = null;
+var _activeTime = "all";
+var _lastAdvancedTime = null;
+var _autoAdvanceEnabled = true;
+var _tvScrollTimer = null;
+var _tvScrollSections = [];
+var _tvScrollIndex = 0;
+var _tvScrollDirection = 1;
+var TV_SCROLL_INTERVAL = 20000;
+var _liveTimer = null;
 
-function dbg(m){document.getElementById("debugBar").textContent=new Date().toLocaleTimeString("en-GB")+" - "+m;}
-function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function nowMins(){var n=new Date();return n.getHours()*60+n.getMinutes();}
-function cptMins(t){
-  if(!t)return 9999;
-  var m=t.match(/(\d+):(\d+)/);
-  if(!m)return 9999;
-  // Times before 08:00 = next day
-  var h=parseInt(m[1]),mn=parseInt(m[2]);
-  return h*60+mn;
+function dbg(m){ document.getElementById("debugBar").textContent = new Date().toLocaleTimeString("en-GB") + " - " + m; }
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* ── TIME HELPERS (exact Harmony logic) ── */
+function shiftMins(t){
+  if(!t||t==="all")return -1;
+  var parts=t.split(":"); var h=parseInt(parts[0]),m=parseInt(parts[1]);
+  var total=h*60+m;
+  // Night shift: 20:00 = start, anything <20:00 = next calendar day
+  return total>=20*60 ? total : total+24*60;
 }
-function sortedMins(t){
-  var m=cptMins(t);
-  return m<480?m+1440:m; // push early-morning times to end
+function nowShiftMins(){
+  var n=new Date(), m=n.getHours()*60+n.getMinutes();
+  return m<20*60 ? m+1440 : m;
+}
+function nowShiftSecs(){
+  var n=new Date(), s=n.getHours()*3600+n.getMinutes()*60+n.getSeconds();
+  return s<20*3600 ? s+86400 : s;
 }
 function minsUntil(t){
-  var nm=nowMins();
-  var cm=cptMins(t);
-  // If CPT is early morning and now is evening, treat as tomorrow
-  if(cm<480&&nm>1200)return cm+1440-nm;
-  return cm-nm;
+  var nm=new Date().getHours()*60+new Date().getMinutes();
+  var SHIFT_START=20*60, SHIFT_RESET=4*60+50;
+  var inPreShift=(nm>=SHIFT_RESET&&nm<SHIFT_START);
+  if(inPreShift){ var tm=shiftMins(t); return tm===-1?9999:tm-nm; }
+  return shiftMins(t)-nowShiftMins();
 }
-function fmtCd(diff){
-  if(diff<-30)return "passed";
-  if(diff<=0)return "NOW";
-  var h=Math.floor(diff/60),m=diff%60;
-  return h>0?h+"h "+m+"m":m+"m";
+function secsUntil(t){
+  return (shiftMins(t)-nowShiftSecs());
 }
-function cptStatus(t){
-  var d=minsUntil(t);
-  if(d<-30)return "passed";
-  if(d<=10)return "urgent";
-  if(d<=15)return "imminent";
-  return "upcoming";
+function fmtCountdown(m){
+  if(m<=0)return"NOW";
+  var h=Math.floor(m/60),mm=m%60;
+  return h>0?h+"h "+String(mm).padStart(2,"0")+"m":mm+"m";
+}
+function fmtCountdownSecs(s){
+  if(s<=0)return"NOW";
+  var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+  return h>0?h+"h "+String(m).padStart(2,"0")+"m":String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");
 }
 
+/* ── STATUS (exact Harmony night-shift logic) ── */
+function getStatus(t){
+  if(!t||t==="all")return"";
+  var nm=new Date().getHours()*60+new Date().getMinutes();
+  var SHIFT_START=20*60, SHIFT_RESET=4*60+50;
+  var inPreShift=(nm>=SHIFT_RESET&&nm<SHIFT_START);
+  if(inPreShift){ var tm=shiftMins(t); if(tm-nm<=60)return"upcoming"; return"future"; }
+  var nowN=nm>=SHIFT_START?nm:nm+24*60;
+  var tm=shiftMins(t);
+  if(tm<nowN-5)return"passed";
+  if(tm<=nowN+10)return"imminent";
+  if(tm<=nowN+15)return"warn";
+  if(tm<=nowN+60)return"upcoming";
+  return"future";
+}
+
+/* ── ZONE CLASSIFIER ── */
+function getZone(chute){
+  if(!chute)return"Other";
+  var c=chute.toUpperCase().trim();
+  var n=function(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):0;};
+  if(/^F-SP-/i.test(c)||/^FST-SP-/i.test(c))return"SP Flat";
+  if(/^FST-A-/i.test(c))return"Inner Flat";
+  if(/^FST-B-/i.test(c))return"West Flat";
+  if(/^F-A-/i.test(c)){var v=n(c.replace(/^F-A-/i,""));return v>=72?"Inner Box":"Inner Flat";}
+  if(/^F-B-/i.test(c))return"West Flat";
+  if(/^F-C-/i.test(c))return"South Flat";
+  if(/^BOX-A-/i.test(c))return"Inner Box";
+  if(/^BOX-B-/i.test(c)){var v2=n(c.replace(/^BOX-B-/i,""));return v2<=12?"West Box":"South Box";}
+  if(/^BOX-C-/i.test(c))return"South Flat";
+  if(/^BG-/i.test(c))return"Bags";
+  return"Other";
+}
+var ZONE_ORDER=["Inner Flat","SP Flat","West Flat","Inner Box","South Flat","West Box","South Box","Bags","Other"];
+var ZONE_COLORS={"Inner Flat":"#0ea5e9","SP Flat":"#8b5cf6","West Flat":"#10b981",
+  "Inner Box":"#f59e0b","South Flat":"#ec4899","West Box":"#14b8a6",
+  "South Box":"#f97316","Bags":"#0ea5e9","Other":"#6b7280"};
+
+/* ── FLAT DATA -> GROUPS ── */
 function flatToGroups(data){
   var map={},order=[];
   data.forEach(function(row){
     var time=row.cpt||"",lane=row.carrier||"";
     var key=time+"|"+lane.toLowerCase().trim();
-    if(!map[key]){map[key]={time:time,lane:lane,chutes:[]};order.push(key);}
+    if(!map[key]){map[key]={time:time,lane:lane,hasCloseMove:false,chutes:[]};order.push(key);}
+    var hasClose=(row.sort||"").toUpperCase().indexOf("CLOSE")!==-1;
+    if(hasClose)map[key].hasCloseMove=true;
     map[key].chutes.push({stacking:row.chute||"",sort:row.sort||"",bay:row.bay||"",owner:row.owner||""});
   });
   return order.map(function(k){return map[k];});
 }
 
+/* ── GET SORTED CPT TIMES ── */
 function getCPTTimes(groups){
   var times={};
   groups.forEach(function(g){times[g.time]=true;});
-  return Object.keys(times).sort(function(a,b){return sortedMins(a)-sortedMins(b);});
+  return Object.keys(times).sort(function(a,b){return shiftMins(a)-shiftMins(b);});
 }
 
-// Returns the CPT time that should currently be displayed
-function getCurrentCPT(times){
-  // Find the first CPT that is not passed (or the most recent one)
-  for(var i=0;i<times.length;i++){
-    if(minsUntil(times[i])>=-30)return times[i];
+/* ── BUILD TABS ── */
+function buildTabs(groups){
+  var times=getCPTTimes(groups);
+  var el=document.getElementById("filterTabs");
+  el.innerHTML="";
+  var allBtn=document.createElement("button");
+  allBtn.className="tab-btn"+(_activeTime==="all"?" active":"");
+  allBtn.textContent="All CPTs";
+  allBtn.onclick=function(){filterByTime("all",allBtn);};
+  el.appendChild(allBtn);
+
+  times.forEach(function(t){
+    var ml=minsUntil(t),st=getStatus(t);
+    var isPast=st==="passed"||ml<-5;
+    var tabCls=isPast?"tab-passed":ml<=10?"tab-imminent":ml<=15?"tab-warn":"tab-upcoming";
+    var dot=isPast?"&#9898; ":ml<=10?"&#128308; ":ml<=15?"&#128993; ":"&#128994; ";
+    var btn=document.createElement("button");
+    btn.className="tab-btn"+(tabCls?" "+tabCls:"")+(_activeTime===t?" active":"");
+    btn.innerHTML=dot+t;
+    btn.setAttribute("data-time",t);
+    btn.onclick=(function(tt,b){return function(){filterByTime(tt,b);};})(t,btn);
+    el.appendChild(btn);
+  });
+}
+
+function filterByTime(t, btn){
+  _activeTime=t;
+  if(t&&t!=="all"&&(!_lastAdvancedTime||shiftMins(t)>=shiftMins(_lastAdvancedTime))){
+    _lastAdvancedTime=t;
   }
-  return times[times.length-1]||null;
+  document.querySelectorAll("#filterTabs .tab-btn").forEach(function(b){b.classList.remove("active");});
+  if(btn)btn.classList.add("active");
+  renderSections();
+  updateStats();
 }
 
-function renderTabs(groups){
+/* ── UPDATE NEXT BANNER ── */
+function updateNextBanner(){
+  if(!_allData.length)return;
+  var groups=flatToGroups(_allData);
   var times=getCPTTimes(groups);
-  var bar=document.getElementById("tabBar");
-  bar.innerHTML="";
-  // "Current" tab
-  var allTab=document.createElement("div");
-  allTab.className="tab"+(_activeTab==="current"?" active":"");
-  allTab.innerHTML="&#128250; Current";
-  allTab.onclick=function(){_activeTab="current";_currentCPTIdx=0;renderBoard(_allData);};
-  bar.appendChild(allTab);
-  // Individual CPT tabs
-  times.forEach(function(t){
-    var st=cptStatus(t);
-    var tab=document.createElement("div");
-    tab.className="tab"+(_activeTab===t?" active":"")
-      +(st==="urgent"||st==="imminent"?" current":"");
-    tab.innerHTML='<span class="tab-dot dot-'+st+'"></span>'+t;
-    tab.onclick=(function(tt){return function(){_activeTab=tt;renderBoard(_allData);};})(t);
-    bar.appendChild(tab);
-  });
-}
-
-function renderBanner(groups){
-  var banner=document.getElementById("imminentBanner");
-  var times=getCPTTimes(groups);
-  var urgent=null,imminent=null;
-  times.forEach(function(t){
-    var d=minsUntil(t);
-    if(d>=-1&&d<=10&&!urgent)urgent=t;
-    else if(d>10&&d<=15&&!imminent)imminent=t;
-  });
-  var target=urgent||imminent;
-  if(!target){banner.style.display="none";return;}
-  var isUrgent=minsUntil(target)<=10;
-  banner.className="imminent-banner "+(isUrgent?"red":"amber");
-  banner.style.display="flex";
-  document.getElementById("bannerTitle").textContent=isUrgent?"CPT URGENT - ACTION NOW":"CPT IMMINENT";
-  document.getElementById("bannerIcon").textContent=isUrgent?"&#128308;":"&#9888;";
-  document.getElementById("bannerCpt").textContent=target;
-  var grps=groups.filter(function(g){return g.time===target;});
+  var upcoming=times.filter(function(t){return minsUntil(t)>=0;});
+  var banner=document.getElementById("nextBanner");
+  if(!upcoming.length){banner.className="next-cpt-banner";return;}
+  var next=upcoming[0],mLeft=minsUntil(next);
+  var grps=groups.filter(function(g){return g.time===next;});
   var owners=new Set();
   grps.forEach(function(g){g.chutes.forEach(function(c){if(c.owner)owners.add(c.owner);});});
-  document.getElementById("bannerSub").textContent=grps.length+" groups \u2022 "+owners.size+" associates";
-  var nextT=times.find(function(t){return sortedMins(t)>sortedMins(target)&&minsUntil(t)>0;});
-  document.getElementById("bannerNext").textContent=nextT?"Next: "+nextT:"";
+  var flashCls=mLeft<=10?"imminent":mLeft<=15?"warn":"";
+  banner.className="next-cpt-banner visible"+(flashCls?" "+flashCls:"");
+  var lbl=document.getElementById("nextLabel"),cd=document.getElementById("nextCountdown");
+  lbl.className="next-label"+(flashCls?" "+flashCls:"");
+  cd.className="next-countdown"+(flashCls?" "+flashCls:"");
+  lbl.textContent=mLeft<=10?"&#9888; CPT IMMINENT":mLeft<=15?"&#128993; CPT IN 15 MIN":"NEXT CPT";
+  document.getElementById("nextTime").textContent=next;
+  document.getElementById("nextInfo").textContent=grps.length+" groups • "+owners.size+" associates";
+  cd.textContent=fmtCountdownSecs(mLeft*60);
 }
 
-function renderNextPill(groups){
-  var times=getCPTTimes(groups);
-  var next=times.find(function(t){return minsUntil(t)>=-1;});
-  if(!next)return;
-  var d=minsUntil(next);
-  document.getElementById("nextPillTime").textContent=next;
-  document.getElementById("nextPillCd").textContent=d<=0?"NOW":d+"m";
-  document.getElementById("nextPill").className="next-pill"+(d<=10?" red":d<=15?" amber":"");
-}
-
-function renderSection(time,carriers){
-  var diff=minsUntil(time);
-  var st=cptStatus(time);
-  var section=document.createElement("div");
-  section.className="cpt-section"+(st==="passed"?" passed":"");
-  section.id="cpt-"+time.replace(":","");
-  var totalC=carriers.reduce(function(s,g){return s+g.chutes.length;},0);
-  var ow=new Set();
-  carriers.forEach(function(g){g.chutes.forEach(function(c){if(c.owner)ow.add(c.owner);});});
-  var cdTxt=diff<-30?"Passed":diff===0?"NOW":diff<0?"Just passed":diff+"m";
-  section.innerHTML=
-    '<div class="section-header">'+
-      '<div style="display:flex;align-items:baseline;gap:10px">'+
-        '<span class="section-time '+st+'">'+(time||"--")+'</span>'+
-        '<span class="section-meta">'+carriers.length+' groups \u2022 '+totalC+' chutes \u2022 '+ow.size+' associates</span>'+
-      '</div>'+
-      '<span class="section-cd '+st+'">'+(cdTxt)+'</span>'+
-    '</div>'+
-    '<div class="carriers-grid"></div>';
-  var grid=section.querySelector(".carriers-grid");
-  carriers.forEach(function(g){
-    var ln=g.lane.toUpperCase();
-    var nameCls=ln.indexOf("SP")!==-1?"cn-sp":ln.indexOf("INNER")!==-1?"cn-inner":"cn-regular";
-    var hasClose=g.chutes.some(function(c){
-      return (c.sort||"").toUpperCase().indexOf("CLOSE")!==-1||(c.stacking||"").toUpperCase().indexOf("CLOSE")!==-1;
-    });
-    var rows=g.chutes.map(function(c){
-      var oc=c.owner?"chute-owner":"chute-owner empty";
-      return '<div class="chute-row">'+
-        '<span class="chute-code">'+(esc(c.stacking)||"&mdash;")+'</span>'+
-        '<span class="chute-sort">'+esc(c.sort)+'</span>'+
-        '<span class="chute-bay">'+(c.bay||"&mdash;")+'</span>'+
-        '<span class="'+oc+'">'+esc(c.owner||"Unassigned")+'</span>'+
-      '</div>';
-    }).join("");
-    var card=document.createElement("div");
-    card.className="carrier-card";
-    card.innerHTML=
-      '<div class="carrier-card-head">'+
-        '<span class="carrier-name '+nameCls+'">'+esc(g.lane)+'</span>'+
-        '<span class="chutes-badge">'+g.chutes.length+' chutes</span>'+
-      '</div>'+
-      '<div class="col-headers">'+
-        '<span class="col-hdr">CHUTE</span>'+
-        '<span class="col-hdr">SORT</span>'+
-        '<span class="col-hdr">BAY</span>'+
-        '<span class="col-hdr">ASSOCIATE</span>'+
-      '</div>'+
-      rows+
-      (hasClose?'<div class="close-move">&#9888; Close chute 10 min before CPT '+time+'</div>':"")+
-      "";
-    grid.appendChild(card);
-  });
-  return section;
-}
-
-function renderBoard(data){
-  if(!data||!data.length)return;
-  var groups=flatToGroups(data);
-  var times=getCPTTimes(groups);
-  renderTabs(groups);
-  renderBanner(groups);
-  renderNextPill(groups);
-
-  // Build cptMap
-  var cptMap={},cptOrder=[];
-  times.forEach(function(t){cptMap[t]=[];});
-  groups.forEach(function(g){
-    if(!cptMap[g.time])cptMap[g.time]=[];
-    cptMap[g.time].push(g);
-  });
-
-  var board=document.getElementById("board");
-  board.innerHTML="";
-
-  if(_activeTab==="current"){
-    // Show only current CPT window (current + next)
-    var current=getCurrentCPT(times);
-    if(!current){board.innerHTML='<div style="padding:40px;text-align:center;color:#6b7280">All CPTs have passed.</div>';return;}
-    var idx=times.indexOf(current);
-    // Show current and next CPT
-    var toShow=[times[idx]];
-    if(idx+1<times.length)toShow.push(times[idx+1]);
-    toShow.forEach(function(t){
-      if(cptMap[t]&&cptMap[t].length)board.appendChild(renderSection(t,cptMap[t]));
-    });
-    // Stats
-    var shown=toShow.reduce(function(s,t){return s+(cptMap[t]?cptMap[t].length:0);},0);
-    var chutes=toShow.reduce(function(s,t){
-      return s+(cptMap[t]?cptMap[t].reduce(function(a,g){return a+g.chutes.length;},0):0);
-    },0);
-    document.getElementById("statsBar").textContent=
-      "Showing CPT "+toShow.join(" + ")+" \u2022 "+shown+" groups \u2022 "+chutes+" chutes";
-  } else {
-    // Show selected CPT
-    var t=_activeTab;
-    if(cptMap[t])board.appendChild(renderSection(t,cptMap[t]));
-    var g2=cptMap[t]||[];
-    var ch2=g2.reduce(function(s,g){return s+g.chutes.length;},0);
-    document.getElementById("statsBar").textContent=g2.length+" groups \u2022 "+ch2+" chutes";
-  }
-
-  dbg("Rendered tab="+_activeTab);
-}
-
-// Auto-scroll within board area
-function startAutoScroll(){
-  stopAutoScroll();
-  _progressVal=0;
-  var wrap=document.getElementById("boardWrap");
-  var fill=document.getElementById("progressFill");
-  var SCROLL_DURATION=12000; // 12s per screen
-  var scrollStep=function(){
-    if(!wrap)return;
-    var maxScroll=wrap.scrollHeight-wrap.clientHeight;
-    if(maxScroll<=0)return; // nothing to scroll
-    // Scroll down slowly
-    wrap.scrollBy({top:2,behavior:"auto"});
-  };
-  // Smooth scroll down then jump back to top
-  var totalSteps=SCROLL_DURATION/50;
-  var step=0;
-  _scrollInt=setInterval(function(){
-    step++;
-    _progressVal=Math.min(100,(step/totalSteps)*100);
-    fill.style.width=_progressVal+"%";
-    var wrap2=document.getElementById("boardWrap");
-    if(!wrap2)return;
-    var maxScroll=wrap2.scrollHeight-wrap2.clientHeight;
-    if(step>=totalSteps||wrap2.scrollTop>=maxScroll-5){
-      // Reset
-      wrap2.scrollTop=0;
-      fill.style.width="0%";
-      step=0;
-    } else {
-      wrap2.scrollBy({top:Math.ceil(maxScroll/totalSteps),behavior:"auto"});
+/* ── UPDATE LIVE COUNTDOWNS ON SECTION HEADERS ── */
+function updateLiveCountdowns(){
+  document.querySelectorAll("[data-cpt-time]").forEach(function(el){
+    var t=el.getAttribute("data-cpt-time");
+    var mLeft=minsUntil(t),status=getStatus(t);
+    el.classList.remove("is-imminent","is-warn","is-upcoming","is-passed");
+    if(status==="passed"){el.classList.add("is-passed");return;}
+    if(mLeft<=10)el.classList.add("is-imminent");
+    else if(mLeft<=15)el.classList.add("is-warn");
+    else el.classList.add("is-upcoming");
+    var cd=el.querySelector(".cpt-countdown");
+    if(cd){
+      cd.textContent=fmtCountdownSecs(mLeft*60);
+      cd.className="cpt-countdown "+(mLeft<=10?"red":mLeft<=15?"amber":"green");
     }
-  },50);
-}
-function stopAutoScroll(){
-  if(_scrollInt)clearInterval(_scrollInt);
-  _scrollInt=null;
+    var st=el.querySelector(".cpt-status");
+    if(st){
+      if(mLeft<=10){st.innerHTML="&#128308; IMMINENT";st.className="cpt-status red";}
+      else if(mLeft<=15){st.innerHTML="&#128993; CPT in 15 min";st.className="cpt-status amber";}
+      else{st.innerHTML="&#128994; Upcoming";st.className="cpt-status green";}
+    }
+  });
+
+  // Update tab dots
+  document.querySelectorAll("#filterTabs .tab-btn[data-time]").forEach(function(btn){
+    var t=btn.getAttribute("data-time");
+    var ml=minsUntil(t),st=getStatus(t);
+    var isPast=st==="passed"||ml<-5;
+    var tabCls=isPast?"tab-passed":ml<=10?"tab-imminent":ml<=15?"tab-warn":"tab-upcoming";
+    var dot=isPast?"&#9898; ":ml<=10?"&#128308; ":ml<=15?"&#128993; ":"&#128994; ";
+    var isActive=btn.classList.contains("active");
+    btn.className="tab-btn "+tabCls+(isActive?" active":"");
+    // Update dot but keep time text
+    var time=t;
+    btn.innerHTML=dot+time;
+  });
+
+  // AUTO-ADVANCE: switch to next CPT as time passes
+  autoAdvanceCPT();
 }
 
-function jumpToCurrent(){
-  var t=document.getElementById("bannerCpt").textContent;
-  var el=document.getElementById("cpt-"+t.replace(":",""));
-  if(el){var wrap=document.getElementById("boardWrap");wrap.scrollTop=el.offsetTop-20;}
-}
-
-function toggleFullscreen(){
-  if(!document.fullscreenElement){
-    document.documentElement.requestFullscreen().catch(function(){});
-  } else {
-    document.exitFullscreen();
+/* ── AUTO ADVANCE ── */
+function autoAdvanceCPT(){
+  if(!_allData.length||!_autoAdvanceEnabled)return;
+  var groups=flatToGroups(_allData);
+  var times=getCPTTimes(groups);
+  if(!times.length)return;
+  var nowN=nowShiftMins();
+  // Current CPT = last one whose shiftMins <= nowN
+  var targetTime=times[0];
+  for(var i=0;i<times.length;i++){
+    if(shiftMins(times[i])<=nowN)targetTime=times[i];
+    else break;
   }
+  if(targetTime===_lastAdvancedTime)return;
+  // Don't go backward
+  if(_lastAdvancedTime&&shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
+  _lastAdvancedTime=targetTime;
+  // Find and click the right tab
+  var tabs=document.querySelectorAll("#filterTabs .tab-btn[data-time]");
+  tabs.forEach(function(btn){
+    if(btn.getAttribute("data-time")===targetTime){
+      filterByTime(targetTime,btn);
+      dbg("Auto-advanced to "+targetTime);
+    }
+  });
 }
 
-// Fetch & poll
+/* ── UPDATE STATS ── */
+function updateStats(){
+  var groups=flatToGroups(_allData);
+  var vis=groups.filter(function(g){return _activeTime==="all"||g.time===_activeTime;});
+  var tot=vis.reduce(function(s,g){return s+g.chutes.length;},0);
+  var owners=new Set();
+  vis.forEach(function(g){g.chutes.forEach(function(c){if(c.owner)owners.add(c.owner);});});
+  document.getElementById("statsBar").innerHTML=
+    "<span>"+vis.length+"</span> groups &nbsp;&bull;&nbsp; <span>"+tot+"</span> chutes &nbsp;&bull;&nbsp; <span>"+owners.size+"</span> associates";
+}
+
+/* ── RENDER SECTIONS ── */
+function renderSections(){
+  var groups=flatToGroups(_allData);
+  var times=getCPTTimes(groups);
+  var allPassed=groups.every(function(g){return getStatus(g.time)==="passed";});
+  var filtered=groups.filter(function(g){
+    if(_activeTime!=="all")return g.time===_activeTime;
+    return allPassed||getStatus(g.time)!=="passed";
+  });
+  // Group by CPT time
+  var byTime={},timeOrder=[];
+  times.forEach(function(t){byTime[t]=[];});
+  filtered.forEach(function(g){
+    if(!byTime[g.time])byTime[g.time]=[];
+    byTime[g.time].push(g);
+  });
+
+  var sec=document.getElementById("cptSections");
+  sec.innerHTML="";
+
+  times.filter(function(t){return byTime[t]&&byTime[t].length;}).forEach(function(time){
+    var groupsForTime=byTime[time];
+    var status=getStatus(time),mLeft=minsUntil(time);
+
+    // Flatten all chutes, group by zone
+    var allChutes=[];
+    var hasCloseMove=false;
+    groupsForTime.forEach(function(g){
+      g.chutes.forEach(function(c){allChutes.push({stacking:c.stacking,sort:c.sort,bay:c.bay,owner:c.owner,lane:g.lane});});
+      if(g.hasCloseMove)hasCloseMove=true;
+    });
+    var byZone={};
+    allChutes.forEach(function(c){
+      var z=getZone(c.stacking);
+      if(!byZone[z])byZone[z]=[];
+      byZone[z].push(c);
+    });
+    // Sort chutes numerically within each zone
+    Object.keys(byZone).forEach(function(z){
+      byZone[z].sort(function(a,b){
+        var na=a.stacking.toUpperCase(),nb=b.stacking.toUpperCase();
+        var ma=na.match(/\d+/g),mb=nb.match(/\d+/g);
+        if(ma&&mb){var d=parseInt(ma[0])-parseInt(mb[0]);if(d!==0)return d;return parseInt(ma[1]||0)-parseInt(mb[1]||0);}
+        return na.localeCompare(nb);
+      });
+    });
+
+    var zonesPresent=ZONE_ORDER.filter(function(z){return byZone[z]&&byZone[z].length;});
+    var tot=allChutes.length;
+
+    var badgeCls=status==="passed"?"cpt-passed-badge":
+                 status==="imminent"?"cpt-imminent-badge":
+                 status==="warn"?"cpt-warn-badge":
+                 status==="upcoming"||status==="future"?"cpt-upcoming-badge":"";
+
+    var statusHtml="";
+    if(status==="passed"){statusHtml="<div class='cpt-status'>&#10003; Completed</div>";}
+    else if(mLeft<=10){statusHtml="<div class='cpt-status red'>&#128308; IMMINENT</div><div class='cpt-countdown red'>"+fmtCountdownSecs(mLeft*60)+"</div>";}
+    else if(mLeft<=15){statusHtml="<div class='cpt-status amber'>&#128993; CPT in 15 min</div><div class='cpt-countdown amber'>"+fmtCountdownSecs(mLeft*60)+"</div>";}
+    else{statusHtml="<div class='cpt-status green'>&#128994; Upcoming</div><div class='cpt-countdown green'>"+fmtCountdown(mLeft)+"</div>";}
+
+    var sectionCls="cpt-section"+(
+      status==="imminent"?" is-imminent":
+      status==="warn"?" is-warn":
+      status==="upcoming"||status==="future"?" is-upcoming":
+      status==="passed"?" is-passed":"");
+
+    var div=document.createElement("div");
+    div.className=sectionCls;
+    div.setAttribute("data-cpt-time",time);
+    div.id="section-"+time.replace(":","");
+    div.innerHTML=
+      "<div class='cpt-section-header'>"+
+        "<div class='cpt-time-badge "+badgeCls+"'>"+time+"</div>"+
+        statusHtml+
+        "<div class='cpt-count'>"+zonesPresent.length+" zones &nbsp;&bull;&nbsp; "+tot+" chutes</div>"+
+      "</div>"+
+      "<div class='lanes-grid'></div>";
+    sec.appendChild(div);
+
+    var grid=div.querySelector(".lanes-grid");
+    var cardCls=status==="imminent"?"imminent-card":status==="warn"?"warn-card":
+                status==="upcoming"||status==="future"?"upcoming-card":"";
+    var hdrCls=status==="imminent"?"imminent-header":status==="warn"?"warn-header":
+               status==="upcoming"||status==="future"?"upcoming-header":"";
+
+    zonesPresent.forEach(function(zone){
+      var chutes=byZone[zone];
+      var zcolor=ZONE_COLORS[zone]||"#6b7280";
+      var chuteRows=chutes.map(function(c){
+        var ownerCls=c.owner?"":"no-roster";
+        return "<div class='chute-row'>"+
+          "<span class='chute-location'>"+esc(c.stacking||"&mdash;")+"</span>"+
+          "<span class='chute-sort-tag'>"+esc(c.sort||"&mdash;")+"</span>"+
+          "<span class='chute-bay'>"+esc(c.bay||"&mdash;")+"</span>"+
+          "<div class='owner-cell "+ownerCls+"'><span class='owner-fullname'>"+esc(c.owner||"Unassigned")+"</span></div>"+
+        "</div>";
+      }).join("");
+      var card=document.createElement("div");
+      card.className="lane-card "+cardCls;
+      card.innerHTML=
+        "<div class='lane-header "+hdrCls+"' style='border-left:4px solid "+zcolor+"'>"+
+          "<span class='lane-name' style='color:"+zcolor+"'>"+esc(zone)+"</span>"+
+          "<span class='lane-bay' style='background:"+zcolor+"22;color:"+zcolor+";border:1px solid "+zcolor+"55'>"+chutes.length+" chutes</span>"+
+        "</div>"+
+        "<div class='lane-body'>"+
+          "<div class='col-headers'><span>CHUTE</span><span>SORT</span><span>BAY</span><span>ASSOCIATE</span></div>"+
+          chuteRows+
+          (hasCloseMove?"<div class='close-move-alert'>&#9888; Close chute 10 min before CPT "+time+"</div>":"")+
+        "</div>";
+      grid.appendChild(card);
+    });
+  });
+
+  // Rebuild TV scroll sections
+  buildTVScrollSections();
+  dbg("Rendered tab="+_activeTime+" groups="+filtered.length);
+}
+
+/* ── TV SCROLL ── */
+function buildTVScrollSections(){
+  _tvScrollSections=Array.from(document.querySelectorAll(".cpt-section:not(.is-passed)"));
+  _tvScrollSections.sort(function(a,b){
+    return shiftMins(a.getAttribute("data-cpt-time"))-shiftMins(b.getAttribute("data-cpt-time"));
+  });
+}
+
+function tvScrollToSection(idx){
+  buildTVScrollSections();
+  if(!_tvScrollSections.length)return;
+  idx=Math.max(0,Math.min(idx,_tvScrollSections.length-1));
+  var el=_tvScrollSections[idx];
+  var bw=document.getElementById("boardWrap");
+  var targetY=el.offsetTop-8;
+  slowScrollTo(bw,targetY,1800);
+}
+
+function slowScrollTo(el,targetY,duration){
+  var startY=el.scrollTop;
+  var dist=targetY-startY;
+  if(Math.abs(dist)<2)return;
+  var startTime=performance.now();
+  function ease(t){return t<0.5?2*t*t:-1+(4-2*t)*t;}
+  function step(now){
+    var elapsed=now-startTime;
+    var progress=Math.min(elapsed/duration,1);
+    el.scrollTop=startY+dist*ease(progress);
+    if(progress<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function startTVScroll(){
+  stopTVScroll();
+  buildTVScrollSections();
+  if(!_tvScrollSections.length)return;
+  _tvScrollIndex=0;
+  _tvScrollDirection=1;
+  tvScrollToSection(0);
+  animateProgress();
+  _tvScrollTimer=setInterval(function(){
+    buildTVScrollSections();
+    if(!_tvScrollSections.length)return;
+    var last=_tvScrollSections.length-1;
+    if(_tvScrollDirection===1){
+      if(_tvScrollIndex>=last){
+        _tvScrollDirection=-1;
+        var bw=document.getElementById("boardWrap");
+        slowScrollTo(bw,0,1800);
+        animateProgress();
+      } else {
+        _tvScrollIndex++;
+        tvScrollToSection(_tvScrollIndex);
+        animateProgress();
+      }
+    } else {
+      _tvScrollDirection=1;
+      _tvScrollIndex=0;
+      tvScrollToSection(0);
+      animateProgress();
+    }
+  },TV_SCROLL_INTERVAL);
+}
+
+function stopTVScroll(){
+  if(_tvScrollTimer){clearInterval(_tvScrollTimer);_tvScrollTimer=null;}
+  var fill=document.getElementById("progressFill");
+  if(fill){fill.style.transition="none";fill.style.width="0%";}
+}
+
+function animateProgress(){
+  var fill=document.getElementById("progressFill");
+  if(!fill)return;
+  fill.style.transition="none";fill.style.width="0%";
+  setTimeout(function(){fill.style.transition="width "+TV_SCROLL_INTERVAL+"ms linear";fill.style.width="100%";},50);
+}
+
+function scrollToNext(){
+  var el=document.querySelector(".cpt-section.is-imminent,.cpt-section.is-warn,.cpt-section.is-upcoming");
+  if(el){var bw=document.getElementById("boardWrap");slowScrollTo(bw,el.offsetTop-8,1000);}
+}
+
+/* ── FULLSCREEN ── */
+function toggleFullscreen(){
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});}
+  else{document.exitFullscreen();}
+}
+
+/* ── CLOCK ── */
+function updateClock(){
+  var n=new Date();
+  document.getElementById("clock").textContent=n.toLocaleTimeString("en-GB");
+  document.getElementById("dateDisplay").textContent=n.toLocaleDateString("en-GB",
+    {weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+updateClock(); setInterval(updateClock,1000);
+
+/* ── LIVE UPDATES every 1s ── */
+function startLiveUpdates(){
+  if(_liveTimer)clearInterval(_liveTimer);
+  _liveTimer=setInterval(function(){updateNextBanner();updateLiveCountdowns();},1000);
+  // Full re-render every 60s (catches new data, status changes)
+  setInterval(function(){if(_allData.length){buildTabs(flatToGroups(_allData));renderSections();}},60000);
+}
+
+/* ── FETCH & POLL ── */
 function fetchData(cb){
   dbg("Fetching...");
   fetch(DATA_RAW+"?t="+Date.now(),{cache:"no-store"})
@@ -495,10 +707,32 @@ function applyData(rec){
   _lastTs=rec.ts;
   _allData=rec.data;
   document.getElementById("waiting").style.display="none";
-  var bw=document.getElementById("boardWrap");
-  bw.style.display="block";
-  renderBoard(_allData);
-  startAutoScroll();
+  document.getElementById("boardWrap").style.display="block";
+  var groups=flatToGroups(_allData);
+  buildTabs(groups);
+  // Auto-select current CPT on first load
+  if(_activeTime==="all"){
+    var times=getCPTTimes(groups);
+    var nowN=nowShiftMins();
+    var target=times[0];
+    for(var i=0;i<times.length;i++){if(shiftMins(times[i])<=nowN)target=times[i];else break;}
+    if(target){
+      _activeTime=target;
+      _lastAdvancedTime=target;
+      document.querySelectorAll("#filterTabs .tab-btn[data-time]").forEach(function(btn){
+        if(btn.getAttribute("data-time")===target)btn.classList.add("active");
+      });
+      document.querySelectorAll("#filterTabs .tab-btn:not([data-time])").forEach(function(btn){
+        btn.classList.remove("active");
+      });
+    }
+  }
+  renderSections();
+  updateNextBanner();
+  updateStats();
+  startLiveUpdates();
+  startTVScroll();
+  document.getElementById("tvLastUpdated").textContent="Updated: "+rec.ts;
   dbg("Applied "+rec.data.length+" rows ts="+rec.ts);
 }
 
@@ -511,21 +745,7 @@ function poll(){
 poll();
 setInterval(poll,15000);
 
-// Refresh status/banner/tabs every 30s, and auto-advance CPT
-setInterval(function(){
-  if(!_allData.length)return;
-  renderBoard(_allData);
-},30000);
-
-// Clock
-function tick(){
-  var n=new Date();
-  document.getElementById("clock").textContent=n.toLocaleTimeString("en-GB");
-  document.getElementById("dateLbl").textContent=n.toLocaleDateString("en-GB",
-    {weekday:"long",day:"numeric",month:"long",year:"numeric"});
-}
-setInterval(tick,1000);tick();
-dbg("TV v4 ready");
+dbg("TV v5 ready");
 </script>
 </body>
 </html>
