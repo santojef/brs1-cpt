@@ -7,116 +7,136 @@
 <title>BRS1 CPT Board</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0e1a;color:#e6edf3;min-height:100vh;overflow-x:hidden}
-.header{background:linear-gradient(90deg,#0d1b2e 0%,#0a1628 100%);
-        border-bottom:3px solid #f97316;padding:0 24px;height:70px;
-        display:flex;align-items:center;justify-content:space-between;
-        position:sticky;top:0;z-index:200}
-.header-left{display:flex;align-items:center;gap:16px}
-.amazon-logo{color:#f97316;font-size:24px;font-weight:900;font-style:italic}
-.header-title{font-size:20px;font-weight:700}
-.header-sub{font-size:12px;color:#8b949e;margin-top:2px}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0e1a;color:#e6edf3;
+     display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* HEADER */
+.header{background:linear-gradient(90deg,#0d1b2e,#0a1628);
+        border-bottom:3px solid #f97316;padding:0 24px;height:68px;flex-shrink:0;
+        display:flex;align-items:center;justify-content:space-between;z-index:200}
+.amazon-logo{color:#f97316;font-size:24px;font-weight:900;font-style:italic;margin-right:14px}
+.header-title{font-size:19px;font-weight:700}
+.header-sub{font-size:11px;color:#8b949e;margin-top:2px}
 .header-centre{flex:1;display:flex;flex-direction:column;align-items:center}
 .clock{font-size:32px;font-weight:900;color:#f97316;font-variant-numeric:tabular-nums;line-height:1}
-.date-lbl{font-size:12px;color:#8b949e;margin-top:2px}
+.date-lbl{font-size:11px;color:#8b949e;margin-top:2px}
 .header-right{display:flex;align-items:center;gap:10px}
-.next-pill{background:#1c2333;border:1px solid #374151;border-radius:20px;padding:6px 14px;
-           display:flex;align-items:center;gap:10px}
+
+/* Next pill */
+.next-pill{background:#1c2333;border:1px solid #374151;border-radius:20px;
+           padding:6px 14px;display:flex;align-items:center;gap:10px}
 .next-pill-label{font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
 .next-pill-time{font-size:16px;font-weight:700;color:#f97316}
 .next-pill-cd{font-size:14px;font-weight:700;color:#fff;background:#374151;
               padding:2px 8px;border-radius:10px}
 .next-pill.amber .next-pill-cd{background:#d97706;animation:flash 1s infinite}
 .next-pill.red   .next-pill-cd{background:#dc2626;animation:flash .5s infinite}
-.admin-btn{background:#1c2333;border:1px solid #374151;color:#8b949e;
-           padding:8px 14px;border-radius:8px;font-size:13px;text-decoration:none}
-.admin-btn:hover{border-color:#60a5fa;color:#60a5fa}
-.controls{background:#111827;border-bottom:1px solid #1f2937;padding:12px 24px;
-          position:sticky;top:70px;z-index:100}
-.search-wrap{position:relative;display:inline-block;margin-bottom:10px}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#6b7280}
-.search-input{width:300px;background:#1c2333;border:1px solid #374151;border-radius:20px;
-              color:#e6edf3;font-size:14px;padding:8px 16px 8px 36px;outline:none}
-.search-input:focus{border-color:#f97316}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.tab{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;
+
+/* Icon buttons */
+.icon-btn{background:#1c2333;border:1px solid #374151;color:#8b949e;
+          padding:8px 12px;border-radius:8px;font-size:15px;cursor:pointer;text-decoration:none}
+.icon-btn:hover{border-color:#60a5fa;color:#60a5fa}
+
+/* TABS BAR */
+.tabs-bar{background:#111827;border-bottom:1px solid #1f2937;padding:10px 24px;
+          display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;flex-shrink:0;align-items:center}
+.tab{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;
      border:1px solid #374151;background:#1c2333;color:#8b949e;
-     display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s}
+     display:flex;align-items:center;gap:7px;white-space:nowrap;transition:all .15s;flex-shrink:0}
 .tab.active{background:#f97316;border-color:#f97316;color:#fff}
-.tab:hover:not(.active){border-color:#6b7280;color:#e6edf3}
-.tab-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.tab.current{background:#1c2333;border-color:#f97316;color:#f97316}
+.tab:hover:not(.active){color:#e6edf3;border-color:#6b7280}
+.tab-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
 .dot-passed{background:#374151}
 .dot-upcoming{background:#22c55e}
 .dot-imminent{background:#f97316;animation:flash 1s infinite}
 .dot-urgent{background:#dc2626;animation:flash .5s infinite}
-.stats-bar{font-size:13px;color:#f97316;text-align:right;padding:4px 0 0}
-.imminent-banner{display:none;padding:20px 24px;
-                 align-items:center;justify-content:space-between}
+
+/* IMMINENT BANNER */
+.imminent-banner{display:none;padding:14px 24px;
+                 align-items:center;justify-content:space-between;flex-shrink:0}
 .imminent-banner.amber{background:linear-gradient(90deg,#92400e,#78350f);
                        border-bottom:2px solid #d97706;display:flex}
 .imminent-banner.red{background:linear-gradient(90deg,#7f1d1d,#6b1a1a);
-                     border-bottom:2px solid #dc2626;display:flex;
-                     animation:bannerFlash .8s infinite}
+                     border-bottom:2px solid #dc2626;display:flex;animation:bannerFlash .8s infinite}
 .banner-left{display:flex;align-items:center;gap:12px}
-.banner-icon{font-size:28px}
-.banner-title{font-size:22px;font-weight:900;letter-spacing:.05em}
-.banner-sub{font-size:14px;opacity:.8;margin-top:2px}
-.banner-cpt{font-size:72px;font-weight:900;font-variant-numeric:tabular-nums;
-            color:#fff;text-shadow:0 0 30px rgba(255,255,255,.3)}
-.banner-next{font-size:42px;font-weight:900;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums}
+.banner-icon{font-size:24px}
+.banner-title{font-size:20px;font-weight:900;letter-spacing:.05em}
+.banner-sub{font-size:13px;opacity:.8;margin-top:1px}
+.banner-cpt{font-size:56px;font-weight:900;font-variant-numeric:tabular-nums;
+            color:#fff;text-shadow:0 0 20px rgba(255,255,255,.3)}
+.banner-next{font-size:32px;font-weight:900;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums}
 .jump-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
-          color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;margin-top:8px;display:block}
-.board{padding:20px 24px}
-.cpt-section{margin-bottom:40px;scroll-margin-top:220px}
-.cpt-section.passed{opacity:.35}
+          color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:6px;display:block}
+
+/* BOARD AREA - scrollable */
+.board-wrap{flex:1;overflow-y:auto;padding:0}
+.board{padding:16px 24px}
+.cpt-section{margin-bottom:32px;scroll-margin-top:20px}
+.cpt-section.passed{opacity:.3;pointer-events:none}
+
+/* Section header */
 .section-header{display:flex;align-items:center;justify-content:space-between;
-                margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1f2937}
-.section-time{font-size:32px;font-weight:900;font-variant-numeric:tabular-nums}
+                margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #1f2937}
+.section-time{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums}
 .section-time.passed{color:#374151}
 .section-time.upcoming{color:#e6edf3}
 .section-time.imminent{color:#f97316}
 .section-time.urgent{color:#ef4444}
-.section-meta{font-size:13px;color:#6b7280;margin-left:12px}
-.section-cd{font-size:18px;font-weight:700}
+.section-meta{font-size:12px;color:#6b7280;margin-left:10px}
+.section-cd{font-size:17px;font-weight:700}
 .section-cd.passed{color:#374151}
 .section-cd.upcoming{color:#8b949e}
 .section-cd.imminent{color:#f97316}
 .section-cd.urgent{color:#ef4444;animation:flash .5s infinite}
-.carriers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.carrier-card{background:#111827;border:1px solid #1f2937;border-radius:12px;overflow:hidden}
-.carrier-card-head{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+
+/* Carriers grid */
+.carriers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.carrier-card{background:#111827;border:1px solid #1f2937;border-radius:10px;overflow:hidden}
+.carrier-card-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
                    border-bottom:1px solid #1f2937}
-.carrier-name{font-size:15px;font-weight:700}
+.carrier-name{font-size:14px;font-weight:700}
 .cn-regular{color:#22d3ee}.cn-sp{color:#a78bfa}.cn-inner{color:#fb923c}
-.chutes-badge{font-size:12px;color:#6b7280;background:#1f2937;padding:2px 10px;border-radius:12px}
-.col-headers{display:grid;grid-template-columns:1fr 1fr 50px 1fr;gap:8px;
-             padding:6px 16px;background:#0d1117}
-.col-hdr{font-size:10px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.07em}
-.chute-row{display:grid;grid-template-columns:1fr 1fr 50px 1fr;gap:8px;
-           padding:8px 16px;border-top:1px solid #0d1117;align-items:center}
+.chutes-badge{font-size:11px;color:#6b7280;background:#1f2937;padding:2px 8px;border-radius:10px}
+.col-headers{display:grid;grid-template-columns:1fr 1fr 48px 1fr;gap:6px;
+             padding:5px 14px;background:#0d1117}
+.col-hdr{font-size:10px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.06em}
+.chute-row{display:grid;grid-template-columns:1fr 1fr 48px 1fr;gap:6px;
+           padding:7px 14px;border-top:1px solid #0d1117;align-items:center}
 .chute-row:hover{background:#161b22}
-.chute-code{font-size:13px;font-weight:700;color:#e6edf3;background:#1f2937;
-            padding:3px 8px;border-radius:5px;font-family:monospace}
-.chute-sort{font-size:12px;color:#a78bfa}
-.chute-bay{font-size:13px;font-weight:700;color:#fbbf24}
-.chute-owner{font-size:13px;font-weight:600;color:#4ade80;font-style:italic}
+.chute-code{font-size:12px;font-weight:700;color:#e6edf3;background:#1f2937;
+            padding:2px 7px;border-radius:4px;font-family:monospace}
+.chute-sort{font-size:11px;color:#a78bfa}
+.chute-bay{font-size:12px;font-weight:700;color:#fbbf24}
+.chute-owner{font-size:12px;font-weight:600;color:#4ade80;font-style:italic}
 .chute-owner.empty{color:#374151;font-weight:400}
-.close-move{background:#3b1f08;border-top:1px solid #92400e;padding:8px 16px;
-            font-size:12px;color:#fbbf24;display:flex;align-items:center;gap:8px}
+.close-move{background:#3b1f08;border-top:1px solid #92400e;
+            padding:6px 14px;font-size:11px;color:#fbbf24}
+
+/* Waiting */
 #waiting{display:flex;flex-direction:column;align-items:center;justify-content:center;
-         min-height:60vh;color:#6b7280;text-align:center;padding:40px}
-.wait-icon{font-size:64px;margin-bottom:20px}
+         flex:1;color:#6b7280;text-align:center;padding:40px}
 #pollStatus{font-size:12px;color:#4b5563;margin-top:12px}
+
+/* Auto-scroll progress bar */
+.scroll-progress{height:3px;background:#1f2937;flex-shrink:0}
+.scroll-progress-fill{height:100%;background:#f97316;width:0%;transition:width .5s linear}
+
+/* Stats */
+.stats-bar{font-size:12px;color:#4b5563;padding:4px 24px;flex-shrink:0;text-align:right}
+
 @keyframes flash{0%,100%{opacity:1}50%{opacity:.2}}
-@keyframes bannerFlash{0%,100%{opacity:1}50%{opacity:.7}}
-.debug-bar{position:fixed;bottom:0;left:0;right:0;background:#0d1117;color:#374151;
-           font-size:10px;padding:3px 12px;z-index:999;font-family:monospace}
+@keyframes bannerFlash{0%,100%{opacity:1}50%{opacity:.6}}
+.debug-bar{background:#0d1117;color:#374151;font-size:10px;padding:2px 12px;
+           flex-shrink:0;font-family:monospace}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
-  <div class="header-left">
+  <div style="display:flex;align-items:center">
     <span class="amazon-logo">amazon</span>
     <div>
       <div class="header-title">&#128230; BRS1 CPT Assignment Board</div>
@@ -135,21 +155,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0e1a;color:#e6edf3;mi
       </div>
       <div class="next-pill-cd" id="nextPillCd">--</div>
     </div>
-    <a class="admin-btn" href="index.html">&#9998; Admin</a>
+    <button class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen">&#x26F6;</button>
+    <a class="icon-btn" href="index.html" title="Admin">&#9998;</a>
   </div>
 </div>
 
-<div class="controls">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-    <div class="search-wrap">
-      <span class="search-icon">&#128269;</span>
-      <input class="search-input" id="searchInput" type="text" placeholder="Search name or login ID...">
-    </div>
-    <div class="stats-bar" id="statsBar"></div>
-  </div>
-  <div class="tabs" id="tabBar"></div>
-</div>
+<!-- TABS -->
+<div class="tabs-bar" id="tabBar"></div>
 
+<!-- IMMINENT BANNER -->
 <div class="imminent-banner" id="imminentBanner">
   <div class="banner-left">
     <span class="banner-icon" id="bannerIcon">&#9888;</span>
@@ -161,28 +175,33 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0e1a;color:#e6edf3;mi
   <div class="banner-cpt" id="bannerCpt">--:--</div>
   <div>
     <div class="banner-next" id="bannerNext"></div>
-    <button class="jump-btn" onclick="jumpToImminent()">&#8595; Jump to it</button>
+    <button class="jump-btn" onclick="jumpToCurrent()">&#8595; Jump to it</button>
   </div>
 </div>
 
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress"><div class="scroll-progress-fill" id="progressFill"></div></div>
+<div class="stats-bar" id="statsBar"></div>
+
+<!-- WAITING -->
 <div id="waiting">
-  <div class="wait-icon">&#128225;</div>
+  <div style="font-size:56px;margin-bottom:16px">&#128225;</div>
   <div style="font-size:22px;font-weight:700;color:#9ca3af;margin-bottom:8px">Waiting for CPT data</div>
-  <div style="font-size:14px;color:#6b7280">Publish assignments from the Admin page</div>
+  <div style="font-size:13px">Publish assignments from the Admin page</div>
   <div id="pollStatus">Checking&hellip;</div>
 </div>
 
-<div class="board" id="board" style="display:none"></div>
+<!-- BOARD -->
+<div class="board-wrap" id="boardWrap" style="display:none">
+  <div class="board" id="board"></div>
+</div>
 <div class="debug-bar" id="debugBar">Loading&hellip;</div>
 
 <script>
-var DATA_RAW = "https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json";
-var _lastTs = null;
-var _allData = [];
-var _activeTab = "all";
-var _searchQ = "";
-var _scrollInt = null;
-var _scrollIdx = 0;
+var DATA_RAW="https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json";
+var _lastTs=null,_allData=[],_activeTab="current";
+var _scrollInt=null,_progressInt=null,_progressVal=0;
+var _currentCPTIdx=0;
 
 function dbg(m){document.getElementById("debugBar").textContent=new Date().toLocaleTimeString("en-GB")+" - "+m;}
 function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -191,21 +210,32 @@ function cptMins(t){
   if(!t)return 9999;
   var m=t.match(/(\d+):(\d+)/);
   if(!m)return 9999;
+  // Times before 08:00 = next day
   var h=parseInt(m[1]),mn=parseInt(m[2]);
   return h*60+mn;
 }
-function minsUntil(t){return cptMins(t)-nowMins();}
+function sortedMins(t){
+  var m=cptMins(t);
+  return m<480?m+1440:m; // push early-morning times to end
+}
+function minsUntil(t){
+  var nm=nowMins();
+  var cm=cptMins(t);
+  // If CPT is early morning and now is evening, treat as tomorrow
+  if(cm<480&&nm>1200)return cm+1440-nm;
+  return cm-nm;
+}
 function fmtCd(diff){
-  if(diff<-1)return "passed";
+  if(diff<-30)return "passed";
   if(diff<=0)return "NOW";
   var h=Math.floor(diff/60),m=diff%60;
   return h>0?h+"h "+m+"m":m+"m";
 }
 function cptStatus(t){
-  var diff=minsUntil(t);
-  if(diff<-1)return "passed";
-  if(diff<=10)return "urgent";
-  if(diff<=15)return "imminent";
+  var d=minsUntil(t);
+  if(d<-30)return "passed";
+  if(d<=10)return "urgent";
+  if(d<=15)return "imminent";
   return "upcoming";
 }
 
@@ -223,27 +253,34 @@ function flatToGroups(data){
 function getCPTTimes(groups){
   var times={};
   groups.forEach(function(g){times[g.time]=true;});
-  return Object.keys(times).sort(function(a,b){
-    var am=cptMins(a),bm=cptMins(b);
-    if(am<480)am+=1440;
-    if(bm<480)bm+=1440;
-    return am-bm;
-  });
+  return Object.keys(times).sort(function(a,b){return sortedMins(a)-sortedMins(b);});
+}
+
+// Returns the CPT time that should currently be displayed
+function getCurrentCPT(times){
+  // Find the first CPT that is not passed (or the most recent one)
+  for(var i=0;i<times.length;i++){
+    if(minsUntil(times[i])>=-30)return times[i];
+  }
+  return times[times.length-1]||null;
 }
 
 function renderTabs(groups){
   var times=getCPTTimes(groups);
   var bar=document.getElementById("tabBar");
   bar.innerHTML="";
+  // "Current" tab
   var allTab=document.createElement("div");
-  allTab.className="tab"+(_activeTab==="all"?" active":"");
-  allTab.textContent="All CPTs";
-  allTab.onclick=function(){_activeTab="all";renderBoard(_allData);};
+  allTab.className="tab"+(_activeTab==="current"?" active":"");
+  allTab.innerHTML="&#128250; Current";
+  allTab.onclick=function(){_activeTab="current";_currentCPTIdx=0;renderBoard(_allData);};
   bar.appendChild(allTab);
+  // Individual CPT tabs
   times.forEach(function(t){
     var st=cptStatus(t);
     var tab=document.createElement("div");
-    tab.className="tab"+(_activeTab===t?" active":"");
+    tab.className="tab"+(_activeTab===t?" active":"")
+      +(st==="urgent"||st==="imminent"?" current":"");
     tab.innerHTML='<span class="tab-dot dot-'+st+'"></span>'+t;
     tab.onclick=(function(tt){return function(){_activeTab=tt;renderBoard(_allData);};})(t);
     bar.appendChild(tab);
@@ -255,145 +292,201 @@ function renderBanner(groups){
   var times=getCPTTimes(groups);
   var urgent=null,imminent=null;
   times.forEach(function(t){
-    var diff=minsUntil(t);
-    if(diff>=-1&&diff<=10&&!urgent)urgent=t;
-    else if(diff>10&&diff<=15&&!imminent)imminent=t;
+    var d=minsUntil(t);
+    if(d>=-1&&d<=10&&!urgent)urgent=t;
+    else if(d>10&&d<=15&&!imminent)imminent=t;
   });
   var target=urgent||imminent;
   if(!target){banner.style.display="none";return;}
-  var diff=minsUntil(target);
-  var isUrgent=diff<=10;
+  var isUrgent=minsUntil(target)<=10;
   banner.className="imminent-banner "+(isUrgent?"red":"amber");
   banner.style.display="flex";
-  document.getElementById("bannerTitle").textContent=isUrgent?"CPT URGENT":"CPT IMMINENT";
+  document.getElementById("bannerTitle").textContent=isUrgent?"CPT URGENT - ACTION NOW":"CPT IMMINENT";
   document.getElementById("bannerIcon").textContent=isUrgent?"&#128308;":"&#9888;";
   document.getElementById("bannerCpt").textContent=target;
   var grps=groups.filter(function(g){return g.time===target;});
   var owners=new Set();
   grps.forEach(function(g){g.chutes.forEach(function(c){if(c.owner)owners.add(c.owner);});});
   document.getElementById("bannerSub").textContent=grps.length+" groups \u2022 "+owners.size+" associates";
-  var next=times.find(function(t){return cptMins(t)>cptMins(target)&&minsUntil(t)>0;});
-  document.getElementById("bannerNext").textContent=next?next:"";
+  var nextT=times.find(function(t){return sortedMins(t)>sortedMins(target)&&minsUntil(t)>0;});
+  document.getElementById("bannerNext").textContent=nextT?"Next: "+nextT:"";
 }
 
 function renderNextPill(groups){
   var times=getCPTTimes(groups);
   var next=times.find(function(t){return minsUntil(t)>=-1;});
   if(!next)return;
-  var diff=minsUntil(next);
+  var d=minsUntil(next);
   document.getElementById("nextPillTime").textContent=next;
-  document.getElementById("nextPillCd").textContent=diff<=0?"NOW":diff+"m";
-  document.getElementById("nextPill").className="next-pill"+(diff<=10?" red":diff<=15?" amber":"");
+  document.getElementById("nextPillCd").textContent=d<=0?"NOW":d+"m";
+  document.getElementById("nextPill").className="next-pill"+(d<=10?" red":d<=15?" amber":"");
+}
+
+function renderSection(time,carriers){
+  var diff=minsUntil(time);
+  var st=cptStatus(time);
+  var section=document.createElement("div");
+  section.className="cpt-section"+(st==="passed"?" passed":"");
+  section.id="cpt-"+time.replace(":","");
+  var totalC=carriers.reduce(function(s,g){return s+g.chutes.length;},0);
+  var ow=new Set();
+  carriers.forEach(function(g){g.chutes.forEach(function(c){if(c.owner)ow.add(c.owner);});});
+  var cdTxt=diff<-30?"Passed":diff===0?"NOW":diff<0?"Just passed":diff+"m";
+  section.innerHTML=
+    '<div class="section-header">'+
+      '<div style="display:flex;align-items:baseline;gap:10px">'+
+        '<span class="section-time '+st+'">'+(time||"--")+'</span>'+
+        '<span class="section-meta">'+carriers.length+' groups \u2022 '+totalC+' chutes \u2022 '+ow.size+' associates</span>'+
+      '</div>'+
+      '<span class="section-cd '+st+'">'+(cdTxt)+'</span>'+
+    '</div>'+
+    '<div class="carriers-grid"></div>';
+  var grid=section.querySelector(".carriers-grid");
+  carriers.forEach(function(g){
+    var ln=g.lane.toUpperCase();
+    var nameCls=ln.indexOf("SP")!==-1?"cn-sp":ln.indexOf("INNER")!==-1?"cn-inner":"cn-regular";
+    var hasClose=g.chutes.some(function(c){
+      return (c.sort||"").toUpperCase().indexOf("CLOSE")!==-1||(c.stacking||"").toUpperCase().indexOf("CLOSE")!==-1;
+    });
+    var rows=g.chutes.map(function(c){
+      var oc=c.owner?"chute-owner":"chute-owner empty";
+      return '<div class="chute-row">'+
+        '<span class="chute-code">'+(esc(c.stacking)||"&mdash;")+'</span>'+
+        '<span class="chute-sort">'+esc(c.sort)+'</span>'+
+        '<span class="chute-bay">'+(c.bay||"&mdash;")+'</span>'+
+        '<span class="'+oc+'">'+esc(c.owner||"Unassigned")+'</span>'+
+      '</div>';
+    }).join("");
+    var card=document.createElement("div");
+    card.className="carrier-card";
+    card.innerHTML=
+      '<div class="carrier-card-head">'+
+        '<span class="carrier-name '+nameCls+'">'+esc(g.lane)+'</span>'+
+        '<span class="chutes-badge">'+g.chutes.length+' chutes</span>'+
+      '</div>'+
+      '<div class="col-headers">'+
+        '<span class="col-hdr">CHUTE</span>'+
+        '<span class="col-hdr">SORT</span>'+
+        '<span class="col-hdr">BAY</span>'+
+        '<span class="col-hdr">ASSOCIATE</span>'+
+      '</div>'+
+      rows+
+      (hasClose?'<div class="close-move">&#9888; Close chute 10 min before CPT '+time+'</div>':"")+
+      "";
+    grid.appendChild(card);
+  });
+  return section;
 }
 
 function renderBoard(data){
   if(!data||!data.length)return;
   var groups=flatToGroups(data);
+  var times=getCPTTimes(groups);
   renderTabs(groups);
   renderBanner(groups);
   renderNextPill(groups);
-  var filtered=groups;
-  if(_activeTab!=="all")filtered=groups.filter(function(g){return g.time===_activeTab;});
-  if(_searchQ){
-    var q=_searchQ.toLowerCase();
-    filtered=filtered.filter(function(g){
-      return g.chutes.some(function(c){
-        return (c.owner||"").toLowerCase().indexOf(q)!==-1||(c.stacking||"").toLowerCase().indexOf(q)!==-1;
-      });
-    });
-  }
-  var chutes=filtered.reduce(function(s,g){return s+g.chutes.length;},0);
-  var owners=new Set();
-  filtered.forEach(function(g){g.chutes.forEach(function(c){if(c.owner)owners.add(c.owner);});});
-  document.getElementById("statsBar").textContent=filtered.length+" groups \u2022 "+chutes+" chutes \u2022 "+owners.size+" associates";
+
+  // Build cptMap
   var cptMap={},cptOrder=[];
-  filtered.forEach(function(g){
-    if(!cptMap[g.time]){cptMap[g.time]=[];cptOrder.push(g.time);}
+  times.forEach(function(t){cptMap[t]=[];});
+  groups.forEach(function(g){
+    if(!cptMap[g.time])cptMap[g.time]=[];
     cptMap[g.time].push(g);
   });
+
   var board=document.getElementById("board");
   board.innerHTML="";
-  cptOrder.forEach(function(time){
-    var carriers=cptMap[time];
-    var diff=minsUntil(time);
-    var st=cptStatus(time);
-    var section=document.createElement("div");
-    section.className="cpt-section"+(st==="passed"?" passed":"");
-    section.id="cpt-"+time.replace(":","");
-    var totalC=carriers.reduce(function(s,g){return s+g.chutes.length;},0);
-    var ow=new Set();
-    carriers.forEach(function(g){g.chutes.forEach(function(c){if(c.owner)ow.add(c.owner);});});
-    section.innerHTML=
-      '<div class="section-header">'+
-        '<div style="display:flex;align-items:baseline;gap:12px">'+
-          '<span class="section-time '+st+'">'+(time||"--:--")+'</span>'+
-          '<span class="section-meta">'+carriers.length+' groups \u2022 '+totalC+' chutes \u2022 '+ow.size+' associates</span>'+
-        '</div>'+
-        '<span class="section-cd '+st+'">'+(diff<-1?"Passed":diff===0?"NOW":diff+"m")+"</span>"+
-      '</div>'+
-      '<div class="carriers-grid" id="cg-'+time.replace(":","")+"\"></div>";
-    board.appendChild(section);
-    var grid=section.querySelector(".carriers-grid");
-    carriers.forEach(function(g){
-      var ln=g.lane.toUpperCase();
-      var nameCls=ln.indexOf("SP")!==-1||ln.indexOf("FLAT")!==-1?"cn-sp":
-                  ln.indexOf("INNER")!==-1||ln.indexOf("BOX")!==-1?"cn-inner":"cn-regular";
-      var hasClose=g.chutes.some(function(c){
-        return (c.sort||"").toUpperCase().indexOf("CLOSE")!==-1||(c.stacking||"").toUpperCase().indexOf("CLOSE")!==-1;
-      });
-      var rows=g.chutes.map(function(c){
-        var ocls=c.owner?"chute-owner":"chute-owner empty";
-        return '<div class="chute-row">'+
-          '<span class="chute-code">'+(esc(c.stacking)||"&mdash;")+'</span>'+
-          '<span class="chute-sort">'+esc(c.sort)+'</span>'+
-          '<span class="chute-bay">'+(c.bay||"&mdash;")+'</span>'+
-          '<span class="'+ocls+'">'+esc(c.owner||"Unassigned")+'</span>'+
-        '</div>';
-      }).join("");
-      var card=document.createElement("div");
-      card.className="carrier-card";
-      card.innerHTML=
-        '<div class="carrier-card-head">'+
-          '<span class="carrier-name '+nameCls+'">'+esc(g.lane)+'</span>'+
-          '<span class="chutes-badge">'+g.chutes.length+' chutes</span>'+
-        '</div>'+
-        '<div class="col-headers">'+
-          '<span class="col-hdr">CHUTE</span>'+
-          '<span class="col-hdr">SORT</span>'+
-          '<span class="col-hdr">BAY</span>'+
-          '<span class="col-hdr">ASSOCIATE</span>'+
-        '</div>'+
-        rows+
-        (hasClose?'<div class="close-move">&#9888; Close chute 10 min before CPT '+time+'</div>':"")+
-      "";
-      grid.appendChild(card);
+
+  if(_activeTab==="current"){
+    // Show only current CPT window (current + next)
+    var current=getCurrentCPT(times);
+    if(!current){board.innerHTML='<div style="padding:40px;text-align:center;color:#6b7280">All CPTs have passed.</div>';return;}
+    var idx=times.indexOf(current);
+    // Show current and next CPT
+    var toShow=[times[idx]];
+    if(idx+1<times.length)toShow.push(times[idx+1]);
+    toShow.forEach(function(t){
+      if(cptMap[t]&&cptMap[t].length)board.appendChild(renderSection(t,cptMap[t]));
     });
-  });
-  dbg("Rendered "+filtered.length+" groups tab="+_activeTab);
+    // Stats
+    var shown=toShow.reduce(function(s,t){return s+(cptMap[t]?cptMap[t].length:0);},0);
+    var chutes=toShow.reduce(function(s,t){
+      return s+(cptMap[t]?cptMap[t].reduce(function(a,g){return a+g.chutes.length;},0):0);
+    },0);
+    document.getElementById("statsBar").textContent=
+      "Showing CPT "+toShow.join(" + ")+" \u2022 "+shown+" groups \u2022 "+chutes+" chutes";
+  } else {
+    // Show selected CPT
+    var t=_activeTab;
+    if(cptMap[t])board.appendChild(renderSection(t,cptMap[t]));
+    var g2=cptMap[t]||[];
+    var ch2=g2.reduce(function(s,g){return s+g.chutes.length;},0);
+    document.getElementById("statsBar").textContent=g2.length+" groups \u2022 "+ch2+" chutes";
+  }
+
+  dbg("Rendered tab="+_activeTab);
 }
 
-function jumpToImminent(){
+// Auto-scroll within board area
+function startAutoScroll(){
+  stopAutoScroll();
+  _progressVal=0;
+  var wrap=document.getElementById("boardWrap");
+  var fill=document.getElementById("progressFill");
+  var SCROLL_DURATION=12000; // 12s per screen
+  var scrollStep=function(){
+    if(!wrap)return;
+    var maxScroll=wrap.scrollHeight-wrap.clientHeight;
+    if(maxScroll<=0)return; // nothing to scroll
+    // Scroll down slowly
+    wrap.scrollBy({top:2,behavior:"auto"});
+  };
+  // Smooth scroll down then jump back to top
+  var totalSteps=SCROLL_DURATION/50;
+  var step=0;
+  _scrollInt=setInterval(function(){
+    step++;
+    _progressVal=Math.min(100,(step/totalSteps)*100);
+    fill.style.width=_progressVal+"%";
+    var wrap2=document.getElementById("boardWrap");
+    if(!wrap2)return;
+    var maxScroll=wrap2.scrollHeight-wrap2.clientHeight;
+    if(step>=totalSteps||wrap2.scrollTop>=maxScroll-5){
+      // Reset
+      wrap2.scrollTop=0;
+      fill.style.width="0%";
+      step=0;
+    } else {
+      wrap2.scrollBy({top:Math.ceil(maxScroll/totalSteps),behavior:"auto"});
+    }
+  },50);
+}
+function stopAutoScroll(){
+  if(_scrollInt)clearInterval(_scrollInt);
+  _scrollInt=null;
+}
+
+function jumpToCurrent(){
   var t=document.getElementById("bannerCpt").textContent;
   var el=document.getElementById("cpt-"+t.replace(":",""));
-  if(el)el.scrollIntoView({behavior:"smooth",block:"start"});
+  if(el){var wrap=document.getElementById("boardWrap");wrap.scrollTop=el.offsetTop-20;}
 }
 
-function startAutoScroll(){
-  if(_scrollInt)clearInterval(_scrollInt);
-  _scrollInt=setInterval(function(){
-    var sections=Array.from(document.querySelectorAll(".cpt-section:not(.passed)"));
-    if(!sections.length)return;
-    _scrollIdx=(_scrollIdx+1)%sections.length;
-    sections[_scrollIdx].scrollIntoView({behavior:"smooth",block:"start"});
-  },8000);
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(function(){});
+  } else {
+    document.exitFullscreen();
+  }
 }
 
+// Fetch & poll
 function fetchData(cb){
   dbg("Fetching...");
   fetch(DATA_RAW+"?t="+Date.now(),{cache:"no-store"})
     .then(function(r){return r.text();})
     .then(function(t){var d=JSON.parse(t);cb(d&&d.ts?d:null);})
-    .catch(function(e){dbg("ERROR: "+e.message);cb(null);});
+    .catch(function(e){dbg("ERR: "+e.message);cb(null);});
 }
 
 function applyData(rec){
@@ -402,10 +495,11 @@ function applyData(rec){
   _lastTs=rec.ts;
   _allData=rec.data;
   document.getElementById("waiting").style.display="none";
-  document.getElementById("board").style.display="block";
+  var bw=document.getElementById("boardWrap");
+  bw.style.display="block";
   renderBoard(_allData);
   startAutoScroll();
-  dbg("Applied "+rec.data.length+" rows");
+  dbg("Applied "+rec.data.length+" rows ts="+rec.ts);
 }
 
 function poll(){
@@ -416,13 +510,14 @@ function poll(){
 }
 poll();
 setInterval(poll,15000);
-setInterval(function(){if(_allData.length)renderBoard(_allData);},30000);
 
-document.getElementById("searchInput").addEventListener("input",function(e){
-  _searchQ=e.target.value.trim();
-  if(_allData.length)renderBoard(_allData);
-});
+// Refresh status/banner/tabs every 30s, and auto-advance CPT
+setInterval(function(){
+  if(!_allData.length)return;
+  renderBoard(_allData);
+},30000);
 
+// Clock
 function tick(){
   var n=new Date();
   document.getElementById("clock").textContent=n.toLocaleTimeString("en-GB");
@@ -430,7 +525,7 @@ function tick(){
     {weekday:"long",day:"numeric",month:"long",year:"numeric"});
 }
 setInterval(tick,1000);tick();
-dbg("TV v3 ready");
+dbg("TV v4 ready");
 </script>
 </body>
 </html>
