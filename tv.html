@@ -446,22 +446,24 @@ function autoAdvanceCPT(){
   if(!times.length)return;
   var nowN=nowShiftMins();
 
-  // Pick the correct tab:
-  // Show the LAST CPT that has already passed (i.e. shiftMins <= nowN).
-  // This means a CPT is shown for its entire window, right up until the
-  // moment the NEXT CPT time arrives. Switches within 1 minute of each CPT.
-  // If no CPT has passed yet, show the first one (pre-shift).
-  var targetTime=times[0];
-  for(var i=0;i<times.length;i++){
-    if(shiftMins(times[i])<=nowN){
-      targetTime=times[i]; // keep updating - last one that passed wins
+  // RULE: switch to next CPT exactly 1 minute after each CPT time.
+  // Find the first CPT that has NOT yet been passed by 1 minute.
+  // i.e. first CPT where shiftMins(cpt) > nowN - 1
+  // That CPT is the one currently being worked / about to start.
+  // If all CPTs are more than 1 min in the past -> show the last CPT.
+  var sc=times.slice().sort(function(a,b){return shiftMins(a)-shiftMins(b);});
+  var targetTime=sc[sc.length-1]; // default: last CPT (end of shift)
+  for(var i=0;i<sc.length;i++){
+    if(shiftMins(sc[i]) > nowN-1){
+      targetTime=sc[i];
+      break;
     }
   }
 
   // Only switch if target has actually changed
   if(targetTime===_lastAdvancedTime)return;
 
-  // Never go backward (prevents flicker)
+  // Never go backward (prevents flicker on re-render)
   if(_lastAdvancedTime&&shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
 
   _lastAdvancedTime=targetTime;
@@ -469,7 +471,7 @@ function autoAdvanceCPT(){
   tabs.forEach(function(btn){
     if(btn.getAttribute("data-time")===targetTime){
       filterByTime(targetTime,btn);
-      dbg("Auto-advanced to "+targetTime+" (shiftType="+_shiftType+")");
+      dbg("Auto-advanced to "+targetTime+" (now="+nowN+", shiftType="+_shiftType+")");
     }
   });
 }
