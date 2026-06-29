@@ -436,10 +436,9 @@ function publishAll(){
   var btn = document.getElementById('publishBtn');
   btn.disabled = true; btn.textContent = 'Publishing...';
   var times = [...new Set(data.map(function(r){return r.cpt;}))].sort();
-  showStatus('Publishing ' + data.length + ' rows across ' + times.length + ' CPT times...','inf');
+  showStatus('Publishing ' + data.length + ' rows...','inf');
 
-  // Detect shift type from CPT times
-  // Night shift has at least one CPT >= 20:00; day shift all CPTs < 20:00
+  // Detect shift type: night shift has at least one CPT >= 20:00
   var hasNightTime = times.some(function(t){ return parseInt(t.split(':')[0]) >= 20; });
   var shiftType = 'WEEKDAY';
   if(!hasNightTime) {
@@ -448,36 +447,43 @@ function publishAll(){
     shiftType = 'SUNDAY';
   }
 
-  var payload = JSON.stringify({ts:new Date().toLocaleString('en-GB'), shiftType:shiftType, data:data, sheets:sheets, rosterMap:{}});
+  var payload = JSON.stringify({ts:new Date().toLocaleString('en-GB'), shiftType:shiftType, data:data, sheets:[], rosterMap:{}});
   var GH_API = 'https://api.github.com/repos/santojef/brs1-cpt/contents/data.json';
   var GH_HDR = {'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','User-Agent':'brs1-cpt'};
 
-  function doPut(sha){
+  function done(ok, msg){
+    btn.disabled=false; btn.textContent='✅ Publish to TVs';
+    showStatus(msg, ok ? 'ok' : 'err');
+  }
+
+  function doPut(sha, isRetry){
     var body = {message:'Publish '+shiftType+' '+data.length+' rows — '+times.join(', '),
                 content:btoa(unescape(encodeURIComponent(payload))), branch:'main'};
     if(sha) body.sha = sha;
-    return fetch(GH_API,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},GH_HDR),body:JSON.stringify(body)})
+    fetch(GH_API,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},GH_HDR),body:JSON.stringify(body)})
       .then(function(r){ return r.json(); })
       .then(function(d){
         if(d.content){
-          btn.disabled=false; btn.textContent='✅ Publish to TVs';
-          showStatus('✓ Published '+shiftType+' — '+data.length+' rows — CPTs: '+times.join(', ')+' — TVs update in ~15s','ok');
-        } else if(d.message && d.message.indexOf('does not match')!==-1){
-          // SHA conflict — fetch fresh SHA and retry once
-          showStatus('SHA conflict — retrying with fresh SHA...','inf');
-          return fetch(GH_API,{headers:GH_HDR}).then(function(r){return r.json();}).then(function(d2){doPut(d2.sha);});
+          done(true, '✓ Published '+shiftType+' — '+data.length+' rows — CPTs: '+times.join(', ')+' — TVs update in ~15s');
+        } else if(!isRetry && d.message && d.message.indexOf('does not match')!==-1){
+          // SHA stale — fetch fresh and retry exactly once
+          showStatus('Retrying...','inf');
+          fetch(GH_API,{headers:GH_HDR})
+            .then(function(r2){ return r2.json(); })
+            .then(function(d2){ doPut(d2.sha, true); })
+            .catch(function(e){ done(false,'Error on retry: '+e.message); });
         } else {
-          btn.disabled=false; btn.textContent='✅ Publish to TVs';
-          showStatus('Error: '+(d.message||JSON.stringify(d).substring(0,120)),'err');
+          done(false,'Error: '+(d.message||JSON.stringify(d).substring(0,120)));
         }
-      });
+      })
+      .catch(function(e){ done(false,'Error: '+e.message); });
   }
 
-  // Always fetch a fresh SHA immediately before publishing
+  // Fetch fresh SHA then publish
   fetch(GH_API,{headers:GH_HDR})
     .then(function(r){ return r.json(); })
-    .then(function(d){ return doPut(d.sha||null); })
-    .catch(function(e){ btn.disabled=false; btn.textContent='✅ Publish to TVs'; showStatus('Error: '+e.message,'err'); });
+    .then(function(d){ doPut(d.sha||null, false); })
+    .catch(function(e){ done(false,'Error: '+e.message); });
 }
 
 function showStatus(msg, cls){
