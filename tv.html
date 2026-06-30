@@ -740,8 +740,10 @@ function fetchData(cb){
 function applyData(rec){
   _shiftType=(arguments[0]&&arguments[0].shiftType)?arguments[0].shiftType:"WEEKDAY";
   if(!rec||!rec.ts||!rec.data||!rec.data.length)return;
-  if(rec.ts===_lastTs){dbg("no change");return;}
-  _lastTs=rec.ts;
+  // Re-render if timestamp changed OR row count changed (catches same-ts re-publishes)
+  var recKey=rec.ts+'|'+rec.data.length;
+  if(recKey===_lastTs){dbg("no change");return;}
+  _lastTs=recKey;
   _allData=rec.data;
   document.getElementById("waiting").style.display="none";
   document.getElementById("boardWrap").style.display="block";
@@ -766,6 +768,15 @@ function poll(){
 }
 poll();
 setInterval(poll,15000);
+
+// Force immediate poll when page becomes visible again
+// (covers TV screen wake-up, tab switching back, etc.)
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible'){
+    dbg('Visibility restored — forcing poll');
+    poll();
+  }
+});
 
 // Version-check every 60s — only reloads if a NEW tv.html was deployed.
 // This means fullscreen is NEVER broken by a routine refresh.
