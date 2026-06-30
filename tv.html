@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- v202606301957 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-store">
@@ -778,8 +779,12 @@ function applyData(rec){
   // Store the hour when this file was published so we know which shift it belongs to
   // rec.ts format: "30/06/2026, 19:17:00"
   try{
-    var tsParts=rec.ts.split(', ');
-    if(tsParts.length>1){ _publishHour=parseInt(tsParts[1].split(':')[0]); }
+    // ts format: "30/06/2026, 19:44:48" — extract hour robustly
+    var tsStr=rec.ts||'';
+    var hMatch=tsStr.match(/(\d{1,2}):(\d{2}):\d{2}\s*$/);
+    if(!hMatch) hMatch=tsStr.match(/,\s*(\d{1,2}):/);
+    _publishHour=hMatch?parseInt(hMatch[1]):null;
+    dbg('publishHour='+_publishHour+' from ts='+tsStr);
   }catch(e){ _publishHour=null; }
   document.getElementById("waiting").style.display="none";
   document.getElementById("boardWrap").style.display="block";
@@ -821,7 +826,7 @@ document.addEventListener('visibilitychange', function(){
 // Version-check every 60s — only reloads if a NEW tv.html was deployed.
 // This means fullscreen is NEVER broken by a routine refresh.
 (function(){
-  var CURRENT_VER = 'v0';
+  var CURRENT_VER = 'v202606301957';
   setInterval(function(){
     fetch(location.href + '?_=' + Date.now(), {cache:'no-store'})
       .then(function(r){ return r.text(); })
