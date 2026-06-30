@@ -220,6 +220,7 @@ body.tv-mode .owner-fullname{ font-size: 14px; }
 var DATA_RAW = "https://raw.githubusercontent.com/santojef/brs1-cpt/main/data.json";
 var _allData = [];
 var _lastTs = null;
+var _publishHour = null; // hour when last file was published
 var _activeTime = "all";
 var _lastAdvancedTime = null;
 var _shiftType = "WEEKDAY"; // set by applyData from data.json
@@ -447,23 +448,43 @@ function autoAdvanceCPT(){
   var nowN=nowShiftMins();
   var sc=times.slice().sort(function(a,b){return shiftMins(a)-shiftMins(b);});
 
-  // RULE: switch to next CPT exactly 1 minute after each CPT time.
-  // Before the shift starts (nowN < first CPT): show the first CPT.
-  // During shift: show the first CPT whose time has NOT yet passed by 1 min.
-  // After all CPTs have passed by >1 min: show the last CPT (end of shift).
+  // Use publish hour to filter out CPTs from the PREVIOUS shift.
+  // e.g. file published at 19:17 -> ignore CPTs like 04:45 from last night.
+  // A CPT belongs to the current shift if its wall-clock hour >= publishHour
+  // OR if it is a night-shift CPT after midnight (hour < 06).
+  var activeCpts=sc;
+  if(_publishHour!==null){
+    var ph=_publishHour;
+    activeCpts=sc.filter(function(t){
+      var h=parseInt(t.split(':')[0]);
+      // Keep CPTs that start at or after publish hour (same shift)
+      // OR early-morning CPTs (00:xx - 06:xx) which are always part of night shift
+      if(_shiftType==="DAYS"){
+        // Day shift: all CPTs are daytime, just keep those >= publishHour
+        return h>=ph;
+      } else {
+        // Night shift: keep 20:xx-23:xx that are >= publishHour,
+        // AND keep 00:xx-06:xx (next calendar day portion of night shift)
+        return h>=ph || h<8;
+      }
+    });
+    // Safety: if filter removes everything, fall back to all CPTs
+    if(!activeCpts.length) activeCpts=sc;
+  }
 
-  var firstCptMins = shiftMins(sc[0]);
+  // PRE-SHIFT: if current time is before the first active CPT, show first one
+  var firstCptMins=shiftMins(activeCpts[0]);
   var targetTime;
 
   if(nowN < firstCptMins){
-    // Pre-shift: show the first CPT
-    targetTime = sc[0];
+    // Pre-shift: show the first CPT of this shift
+    targetTime=activeCpts[0];
   } else {
     // During/after shift: first CPT not yet 1 min old
-    targetTime = sc[sc.length-1]; // default: last (end of shift)
-    for(var i=0;i<sc.length;i++){
-      if(shiftMins(sc[i]) > nowN-1){
-        targetTime = sc[i];
+    targetTime=activeCpts[activeCpts.length-1]; // default: last
+    for(var i=0;i<activeCpts.length;i++){
+      if(shiftMins(activeCpts[i]) > nowN-1){
+        targetTime=activeCpts[i];
         break;
       }
     }
@@ -472,7 +493,8 @@ function autoAdvanceCPT(){
   // Only switch if target has actually changed
   if(targetTime===_lastAdvancedTime)return;
 
-  // Never go backward (prevents flicker on re-render)
+  // Never go backward WITHIN the same shift
+  // But ALLOW going backward when a new file is published (reset clears _lastAdvancedTime)
   if(_lastAdvancedTime&&shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
 
   _lastAdvancedTime=targetTime;
@@ -480,7 +502,7 @@ function autoAdvanceCPT(){
   tabs.forEach(function(btn){
     if(btn.getAttribute("data-time")===targetTime){
       filterByTime(targetTime,btn);
-      dbg("Auto-advanced to "+targetTime+" (now="+nowN+", shiftType="+_shiftType+")");
+      dbg("Auto-advanced to "+targetTime+" (now="+nowN+", publish="+_publishHour+", shiftType="+_shiftType+")");
     }
   });
 }
@@ -754,6 +776,12 @@ function applyData(rec){
   if(recKey===_lastTs){dbg("no change");return;}
   _lastTs=recKey;
   _allData=rec.data;
+  // Store the hour when this file was published so we know which shift it belongs to
+  // rec.ts format: "30/06/2026, 19:17:00"
+  try{
+    var tsParts=rec.ts.split(', ');
+    if(tsParts.length>1){ _publishHour=parseInt(tsParts[1].split(':')[0]); }
+  }catch(e){ _publishHour=null; }
   document.getElementById("waiting").style.display="none";
   document.getElementById("boardWrap").style.display="block";
   var groups=flatToGroups(_allData);
