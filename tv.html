@@ -620,7 +620,23 @@ function tvScrollToSection(idx){
   idx=Math.max(0,Math.min(idx,_tvScrollSections.length-1));
   var el=_tvScrollSections[idx];
   var bw=document.getElementById("boardWrap");
-  var targetY=el.offsetTop-8;
+  // Get offset relative to boardWrap (not nearest positioned parent)
+  var offsetRelative=0;
+  var node=el;
+  while(node&&node!==bw){
+    offsetRelative+=node.offsetTop;
+    node=node.offsetParent;
+  }
+  // For the last section: scroll so the bottom is visible
+  var isLast=(idx===_tvScrollSections.length-1);
+  var targetY;
+  if(isLast){
+    // scroll so bottom of last section is at bottom of boardWrap
+    targetY=offsetRelative+el.offsetHeight-bw.clientHeight;
+    targetY=Math.max(0,targetY);
+  } else {
+    targetY=Math.max(0,offsetRelative-8);
+  }
   slowScrollTo(bw,targetY,1800);
 }
 
@@ -751,10 +767,25 @@ function poll(){
 poll();
 setInterval(poll,15000);
 
-// Hard refresh every 60s — picks up new tv.html deploys automatically
+// Soft reload every 60s — re-enters fullscreen automatically
 setTimeout(function hardRefresh(){
+  // Remember fullscreen state so we can restore it after reload
+  if(document.fullscreenElement){
+    sessionStorage.setItem('brs1_fs','1');
+  }
   location.reload(true);
 }, 60000);
+
+// On page load: if we were fullscreen before the reload, re-enter it
+(function(){
+  if(sessionStorage.getItem('brs1_fs')==='1'){
+    sessionStorage.removeItem('brs1_fs');
+    // Small delay to let page render first
+    setTimeout(function(){
+      document.documentElement.requestFullscreen().catch(function(){});
+    }, 800);
+  }
+})();
 
 dbg("TV v5 ready");
 </script>
