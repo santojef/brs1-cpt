@@ -767,24 +767,23 @@ function poll(){
 poll();
 setInterval(poll,15000);
 
-// Soft reload every 60s — re-enters fullscreen automatically
-setTimeout(function hardRefresh(){
-  // Remember fullscreen state so we can restore it after reload
-  if(document.fullscreenElement){
-    sessionStorage.setItem('brs1_fs','1');
-  }
-  location.reload(true);
-}, 60000);
-
-// On page load: if we were fullscreen before the reload, re-enter it
+// Version-check every 60s — only reloads if a NEW tv.html was deployed.
+// This means fullscreen is NEVER broken by a routine refresh.
 (function(){
-  if(sessionStorage.getItem('brs1_fs')==='1'){
-    sessionStorage.removeItem('brs1_fs');
-    // Small delay to let page render first
-    setTimeout(function(){
-      document.documentElement.requestFullscreen().catch(function(){});
-    }, 800);
-  }
+  var CURRENT_VER = 'v0';
+  setInterval(function(){
+    fetch(location.href + '?_=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        var m = html.match(/<!-- (v\d+) -->/);
+        if(m && m[1] !== CURRENT_VER){
+          // A new version was deployed — reload to pick it up
+          location.reload(true);
+        }
+        // Same version — do nothing, fullscreen stays intact
+      })
+      .catch(function(){});
+  }, 60000);
 })();
 
 dbg("TV v5 ready");
