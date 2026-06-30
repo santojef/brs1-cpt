@@ -448,40 +448,35 @@ function autoAdvanceCPT(){
   var nowN=nowShiftMins();
   var sc=times.slice().sort(function(a,b){return shiftMins(a)-shiftMins(b);});
 
-  // Use publish hour to filter out CPTs from the PREVIOUS shift.
-  // e.g. file published at 19:17 -> ignore CPTs like 04:45 from last night.
-  // A CPT belongs to the current shift if its wall-clock hour >= publishHour
-  // OR if it is a night-shift CPT after midnight (hour < 06).
+  // Filter CPTs to only those belonging to the CURRENT shift.
+  // Uses _publishHour (set when file was published) to exclude CPTs
+  // from the previous shift (e.g. 04:45 from last night when it is now 19:xx).
   var activeCpts=sc;
   if(_publishHour!==null){
     var ph=_publishHour;
-    activeCpts=sc.filter(function(t){
+    var filtered=sc.filter(function(t){
       var h=parseInt(t.split(':')[0]);
-      // Keep CPTs that start at or after publish hour (same shift)
-      // OR early-morning CPTs (00:xx - 06:xx) which are always part of night shift
-      if(_shiftType==="DAYS"){
-        // Day shift: all CPTs are daytime, just keep those >= publishHour
+      if(_shiftType==='DAYS'){
         return h>=ph;
       } else {
-        // Night shift: keep 20:xx-23:xx that are >= publishHour,
-        // AND keep 00:xx-06:xx (next calendar day portion of night shift)
+        // Night shift: keep CPTs at or after publish hour,
+        // plus early-morning (00:xx-07:xx) which are always night shift
         return h>=ph || h<8;
       }
     });
-    // Safety: if filter removes everything, fall back to all CPTs
-    if(!activeCpts.length) activeCpts=sc;
+    if(filtered.length) activeCpts=filtered;
   }
 
-  // PRE-SHIFT: if current time is before the first active CPT, show first one
-  var firstCptMins=shiftMins(activeCpts[0]);
+  // Determine target CPT:
+  // - Before first CPT of shift: show first CPT
+  // - During shift: show first CPT not yet 1 min old (switch 1 min after each CPT)
+  // - After all CPTs passed by >1 min: show last CPT
+  var firstMins=shiftMins(activeCpts[0]);
   var targetTime;
-
-  if(nowN < firstCptMins){
-    // Pre-shift: show the first CPT of this shift
+  if(nowN < firstMins){
     targetTime=activeCpts[0];
   } else {
-    // During/after shift: first CPT not yet 1 min old
-    targetTime=activeCpts[activeCpts.length-1]; // default: last
+    targetTime=activeCpts[activeCpts.length-1];
     for(var i=0;i<activeCpts.length;i++){
       if(shiftMins(activeCpts[i]) > nowN-1){
         targetTime=activeCpts[i];
@@ -490,19 +485,23 @@ function autoAdvanceCPT(){
     }
   }
 
-  // Only switch if target has actually changed
+  // Skip if already showing correct tab
   if(targetTime===_lastAdvancedTime)return;
 
-  // Never go backward WITHIN the same shift
-  // But ALLOW going backward when a new file is published (reset clears _lastAdvancedTime)
-  if(_lastAdvancedTime&&shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
+  // Backward guard: only apply DURING a shift (when _lastAdvancedTime is set).
+  // When _lastAdvancedTime is null (fresh publish/page load), always allow.
+  if(_lastAdvancedTime!==null){
+    if(shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
+  }
 
   _lastAdvancedTime=targetTime;
-  var tabs=document.querySelectorAll("#filterTabs .tab-btn[data-time]");
+
+  // Find and activate the correct tab button
+  var tabs=document.querySelectorAll('#filterTabs .tab-btn[data-time]');
   tabs.forEach(function(btn){
-    if(btn.getAttribute("data-time")===targetTime){
+    if(btn.getAttribute('data-time')===targetTime){
       filterByTime(targetTime,btn);
-      dbg("Auto-advanced to "+targetTime+" (now="+nowN+", publish="+_publishHour+", shiftType="+_shiftType+")");
+      dbg('Auto-advanced to '+targetTime+' (now='+nowN+', pub='+_publishHour+', shift='+_shiftType+')');
     }
   });
 }
