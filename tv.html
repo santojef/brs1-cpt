@@ -445,18 +445,27 @@ function autoAdvanceCPT(){
   var times=getCPTTimes(groups);
   if(!times.length)return;
   var nowN=nowShiftMins();
+  var sc=times.slice().sort(function(a,b){return shiftMins(a)-shiftMins(b);});
 
   // RULE: switch to next CPT exactly 1 minute after each CPT time.
-  // Find the first CPT that has NOT yet been passed by 1 minute.
-  // i.e. first CPT where shiftMins(cpt) > nowN - 1
-  // That CPT is the one currently being worked / about to start.
-  // If all CPTs are more than 1 min in the past -> show the last CPT.
-  var sc=times.slice().sort(function(a,b){return shiftMins(a)-shiftMins(b);});
-  var targetTime=sc[sc.length-1]; // default: last CPT (end of shift)
-  for(var i=0;i<sc.length;i++){
-    if(shiftMins(sc[i]) > nowN-1){
-      targetTime=sc[i];
-      break;
+  // Before the shift starts (nowN < first CPT): show the first CPT.
+  // During shift: show the first CPT whose time has NOT yet passed by 1 min.
+  // After all CPTs have passed by >1 min: show the last CPT (end of shift).
+
+  var firstCptMins = shiftMins(sc[0]);
+  var targetTime;
+
+  if(nowN < firstCptMins){
+    // Pre-shift: show the first CPT
+    targetTime = sc[0];
+  } else {
+    // During/after shift: first CPT not yet 1 min old
+    targetTime = sc[sc.length-1]; // default: last (end of shift)
+    for(var i=0;i<sc.length;i++){
+      if(shiftMins(sc[i]) > nowN-1){
+        targetTime = sc[i];
+        break;
+      }
     }
   }
 
