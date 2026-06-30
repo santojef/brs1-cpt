@@ -757,9 +757,13 @@ function applyData(rec){
   document.getElementById("waiting").style.display="none";
   document.getElementById("boardWrap").style.display="block";
   var groups=flatToGroups(_allData);
+  // Reset tab state so autoAdvanceCPT always re-selects and re-renders after publish
+  _lastAdvancedTime=null;
+  _activeTime="all";
   buildTabs(groups);
-  // Auto-select correct CPT tab using the same logic as autoAdvanceCPT
+  // Auto-select correct CPT tab — _lastAdvancedTime is null so it will always fire
   autoAdvanceCPT();
+  // Safety net: renderSections regardless in case autoAdvanceCPT skipped
   renderSections();
   updateNextBanner();
   updateStats();
