@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- v202606301957 -->
+<!-- v202607011922 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-store">
@@ -800,7 +800,7 @@ document.addEventListener('visibilitychange', function(){
 // Version-check every 60s — only reloads if a NEW tv.html was deployed.
 // This means fullscreen is NEVER broken by a routine refresh.
 (function(){
-  var CURRENT_VER = 'v202606301957';
+  var CURRENT_VER = 'v202607011922';
   setInterval(function(){
     fetch(location.href + '?_=' + Date.now(), {cache:'no-store'})
       .then(function(r){ return r.text(); })
