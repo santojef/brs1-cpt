@@ -448,62 +448,35 @@ function autoAdvanceCPT(){
   var times=getCPTTimes(groups);
   if(!times.length)return;
   var nowN=nowShiftMins();
+
+  // Sort CPTs in shift order
   var sc=times.slice().sort(function(a,b){return shiftMins(a)-shiftMins(b);});
 
-  // Filter CPTs to only those belonging to the CURRENT shift.
-  // Uses _publishHour (set when file was published) to exclude CPTs
-  // from the previous shift (e.g. 04:45 from last night when it is now 19:xx).
-  var activeCpts=sc;
-  if(_publishHour!==null){
-    var ph=_publishHour;
-    var filtered=sc.filter(function(t){
-      var h=parseInt(t.split(':')[0]);
-      if(_shiftType==='DAYS'){
-        return h>=ph;
-      } else {
-        // Night shift: keep CPTs at or after publish hour,
-        // plus early-morning (00:xx-07:xx) which are always night shift
-        return h>=ph || h<8;
-      }
-    });
-    if(filtered.length) activeCpts=filtered;
-  }
-
-  // Determine target CPT:
-  // - Before first CPT of shift: show first CPT
-  // - During shift: show first CPT not yet 1 min old (switch 1 min after each CPT)
-  // - After all CPTs passed by >1 min: show last CPT
-  var firstMins=shiftMins(activeCpts[0]);
-  var targetTime;
-  if(nowN < firstMins){
-    targetTime=activeCpts[0];
-  } else {
-    targetTime=activeCpts[activeCpts.length-1];
-    for(var i=0;i<activeCpts.length;i++){
-      if(shiftMins(activeCpts[i]) > nowN-1){
-        targetTime=activeCpts[i];
-        break;
-      }
+  // Find the first CPT whose shift-time > nowN-1
+  // (i.e. not yet passed by 1 full minute)
+  // That is the CPT to display.
+  // If all have passed -> show last.
+  // If none have passed -> show first (pre-shift).
+  var targetTime=sc[0]; // default: first (pre-shift)
+  var allPassed=true;
+  for(var i=0;i<sc.length;i++){
+    if(shiftMins(sc[i]) > nowN-1){
+      targetTime=sc[i];
+      allPassed=false;
+      break;
     }
   }
+  if(allPassed) targetTime=sc[sc.length-1];
 
-  // Skip if already showing correct tab
+  // Only act if target has changed
   if(targetTime===_lastAdvancedTime)return;
 
-  // Backward guard: only apply DURING a shift (when _lastAdvancedTime is set).
-  // When _lastAdvancedTime is null (fresh publish/page load), always allow.
-  if(_lastAdvancedTime!==null){
-    if(shiftMins(targetTime)<shiftMins(_lastAdvancedTime))return;
-  }
-
   _lastAdvancedTime=targetTime;
-
-  // Find and activate the correct tab button
   var tabs=document.querySelectorAll('#filterTabs .tab-btn[data-time]');
   tabs.forEach(function(btn){
     if(btn.getAttribute('data-time')===targetTime){
       filterByTime(targetTime,btn);
-      dbg('Auto-advanced to '+targetTime+' (now='+nowN+', pub='+_publishHour+', shift='+_shiftType+')');
+      dbg('Auto-advanced to '+targetTime+' nowN='+nowN+' shiftType='+_shiftType);
     }
   });
 }
