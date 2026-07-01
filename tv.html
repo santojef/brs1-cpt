@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- v202607011946 -->
+<!-- v202607011956 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-store">
@@ -797,39 +797,38 @@ document.addEventListener('visibilitychange', function(){
   }
 });
 
-// Version-check every 60s — reloads only if new tv.html deployed.
-// Also hard-reloads daily at 04:50 to clear any stale state.
+// Auto-reload logic — runs every 60s
 (function(){
-  var CURRENT_VER = 'v202607011946';
-  var _lastReloadDate = null;
+  var CURRENT_VER = 'v202607011956';
+  var _reloadedToday = {};  // tracks which reset times have fired today
 
-  function checkAndReload(){
-    var now = new Date();
-    var h = now.getHours(), m = now.getMinutes();
-    var today = now.toDateString();
+  setInterval(function(){
+    var now  = new Date();
+    var h    = now.getHours();
+    var m    = now.getMinutes();
+    var key  = now.toDateString()+'-'+h+'-'+Math.floor(m/5); // 5-min window
 
-    // Daily reset at 04:50 — clears stale CPT state from previous shift
-    if(h===4 && m>=50 && m<=52 && _lastReloadDate!==today){
-      _lastReloadDate=today;
-      dbg('Daily 04:50 reset — reloading');
-      location.reload(true);
+    // Hard reload at 04:50 (end of night shift) and 18:30 (pre-evening shift)
+    var isResetTime = (h===4&&m>=50) || (h===18&&m>=30&&m<=34);
+    if(isResetTime && !_reloadedToday[key]){
+      _reloadedToday[key]=true;
+      dbg('Scheduled reset at '+h+':'+String(m).padStart(2,'0')+' — reloading');
+      setTimeout(function(){ location.reload(true); }, 2000);
       return;
     }
 
-    // Version-check — reload only if new build deployed
-    fetch(location.href+'?_='+Date.now(), {cache:'no-store'})
+    // Version check — reload immediately if new tv.html deployed
+    fetch(location.href+'?_='+Date.now(),{cache:'no-store'})
       .then(function(r){ return r.text(); })
       .then(function(html){
-        var m2=html.match(/<!-- (v\d+) -->/);
-        if(m2 && m2[1]!==CURRENT_VER){
-          dbg('New version '+m2[1]+' — reloading');
+        var mv=html.match(/<!-- (v\d+) -->/);
+        if(mv && mv[1]!==CURRENT_VER){
+          dbg('New version '+mv[1]+' detected — reloading');
           location.reload(true);
         }
       })
       .catch(function(){});
-  }
-
-  setInterval(checkAndReload, 60000);
+  }, 60000);
 })();
 
 dbg("TV v5 ready");
