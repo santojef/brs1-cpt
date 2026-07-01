@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- v202607011922 -->
+<!-- v202607011946 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-store">
@@ -797,23 +797,39 @@ document.addEventListener('visibilitychange', function(){
   }
 });
 
-// Version-check every 60s — only reloads if a NEW tv.html was deployed.
-// This means fullscreen is NEVER broken by a routine refresh.
+// Version-check every 60s — reloads only if new tv.html deployed.
+// Also hard-reloads daily at 04:50 to clear any stale state.
 (function(){
-  var CURRENT_VER = 'v202607011922';
-  setInterval(function(){
-    fetch(location.href + '?_=' + Date.now(), {cache:'no-store'})
+  var CURRENT_VER = 'v202607011946';
+  var _lastReloadDate = null;
+
+  function checkAndReload(){
+    var now = new Date();
+    var h = now.getHours(), m = now.getMinutes();
+    var today = now.toDateString();
+
+    // Daily reset at 04:50 — clears stale CPT state from previous shift
+    if(h===4 && m>=50 && m<=52 && _lastReloadDate!==today){
+      _lastReloadDate=today;
+      dbg('Daily 04:50 reset — reloading');
+      location.reload(true);
+      return;
+    }
+
+    // Version-check — reload only if new build deployed
+    fetch(location.href+'?_='+Date.now(), {cache:'no-store'})
       .then(function(r){ return r.text(); })
       .then(function(html){
-        var m = html.match(/<!-- (v\d+) -->/);
-        if(m && m[1] !== CURRENT_VER){
-          // A new version was deployed — reload to pick it up
+        var m2=html.match(/<!-- (v\d+) -->/);
+        if(m2 && m2[1]!==CURRENT_VER){
+          dbg('New version '+m2[1]+' — reloading');
           location.reload(true);
         }
-        // Same version — do nothing, fullscreen stays intact
       })
       .catch(function(){});
-  }, 60000);
+  }
+
+  setInterval(checkAndReload, 60000);
 })();
 
 dbg("TV v5 ready");
